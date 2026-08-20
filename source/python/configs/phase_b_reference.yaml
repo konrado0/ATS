@@ -1,0 +1,12 @@
+phase_root: D:/Stock/data/ATS/phase_b
+trusted_phase_a_run: D:/Stock/data/ATS/phase_a/runs/phasea-2a2b3898aba37814
+source_data_root: D:/Stock/data
+compression: zstd
+compression_level: 3
+row_group_size: 122880
+split_size_review_bytes: 2147483648
+max_rows_per_file: null
+ingestion_timestamp: "2026-08-20T00:00:00Z"
+source_version: local_snapshot_2025_12_31
+us_start_date: null
+us_end_date: "2025-12-31"

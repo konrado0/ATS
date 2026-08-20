@@ -54,7 +54,7 @@ def _validate_source_snapshot(run_dir: Path, manifest: dict[str, object], projec
                 raise ValueError(f"source snapshot code hash mismatch: {name}")
 
 
-def validate_run_directory(run_dir: Path) -> dict[str, object]:
+def validate_run_directory(run_dir: Path, strict_current_checkout: bool = False) -> dict[str, object]:
     run_dir = run_dir.resolve()
     required = [run_dir / "config.yaml", run_dir / "metrics.json", run_dir / "manifest.json", run_dir / "artifacts"]
     missing = [str(path) for path in required if not path.exists()]
@@ -115,10 +115,12 @@ def validate_run_directory(run_dir: Path) -> dict[str, object]:
     for relative, expected_hash in manifest["source_file_hashes"].items():
         if sha256_file(source_root / relative) != expected_hash:
             raise ValueError(f"source input hash mismatch: {relative}")
-    for relative, expected_hash in manifest["code_file_hashes"].items():
-        if sha256_file(project_root / relative) != expected_hash:
-            raise ValueError(f"current code hash mismatch: {relative}")
     _validate_source_snapshot(run_dir, manifest, project_root)
+
+    if strict_current_checkout:
+        for relative, expected_hash in manifest["code_file_hashes"].items():
+            if sha256_file(project_root / relative) != expected_hash:
+                raise ValueError(f"current code hash mismatch: {relative}")
 
     repo_root = Path(__file__).resolve().parents[4]
     commit = str(manifest["git_commit"])
@@ -148,4 +150,5 @@ def validate_run_directory(run_dir: Path) -> dict[str, object]:
         "passed": True, "parsed_files": len(parsed), "manifest_artifacts": len(expected_files),
         "panel_rows": len(panel), "sessions": int(panel["session_date"].nunique()),
         "git_commit_reconstructable": True, "source_snapshot_valid": True,
+        "validation_mode": "strict_current_checkout" if strict_current_checkout else "archive_integrity",
     }

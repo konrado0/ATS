@@ -1,4 +1,4 @@
-# ATS Research Phase A
+# ATS Research Phase A and Canonical Data Phase B
 
 This package implements the minimum trustworthy GPW research slice over the existing local inputs. It deliberately stops before canonical-lake automation, MLflow, machine learning, portfolio simulation, vectorbt integration, or distributed infrastructure.
 
@@ -65,4 +65,10 @@ Overlapping labels, incomplete historical prices, regime selection, and multiple
 
 ## Known Phase A limitations
 
-Stooq adjustment semantics are not independently documented, so the validated bar artifact records them as vendor-adjusted but unverified. The five missing post-start series are not reconstructed; sensitivity tables quantify observed-sample dependence on their membership periods but cannot recreate their absent ranks or returns. IC, rank, quantile, uncertainty, turnover, and missing-state outputs remain hypothesis-generation diagnostics only. Phase B remains responsible for formal Arrow schemas, immutable canonical publication, manifest-backed DuckDB views, correction lineage, and cross-market hardening.
+Stooq adjustment semantics are not independently documented, so the validated bar artifact records them as vendor-adjusted but unverified. The five missing post-start series are not reconstructed; sensitivity tables quantify observed-sample dependence on their membership periods but cannot recreate their absent ranks or returns. IC, rank, quantile, uncertainty, turnover, and missing-state outputs remain hypothesis-generation diagnostics only. Phase B formalizes the canonical contracts without changing those limitations.
+
+## Phase B
+
+Phase B is implemented by `ats_contracts` and `ats_data`. Exact Arrow schemas and semantic validators cover identity, aliases, bars, universe membership, security events, corporate actions, macro series, lineage, manifests, and visible ingestion issues. See `PHASE_B.md` for the contracts, timestamp semantics, publication protocol, and reference commands.
+
+Canonical data lives beneath `D:/Stock/data/ATS/phase_b/versions`. A catalog `*.current.json` is discovery-only. Research code must pass an explicit `versions/<version_id>/manifest.json`; Polars and DuckDB readers reject mutable pointers.
