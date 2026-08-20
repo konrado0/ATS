@@ -68,6 +68,9 @@ class DatasetManifest(BaseModel):
     configuration_hash: str
     git_provenance: dict[str, Any]
     environment: dict[str, str]
+    implementation_provenance: dict[str, Any] | None = None
+    environment_lock: dict[str, str] | None = None
+    environment_lock_hash: str | None = None
     manifest_hash: str
 
     @model_validator(mode="after")

@@ -12,6 +12,46 @@ import numpy as np
 from ats_contracts.schemas import SORT_ORDERS
 
 
+class IncrementalArrowHasher:
+    """Chunk-boundary-independent logical Arrow hash with bounded buffering."""
+
+    def __init__(self, schema: pa.Schema, batch_size: int = 65_536):
+        self.schema = schema.remove_metadata()
+        self.batch_size = batch_size
+        self._digest = hashlib.sha256(self.schema.serialize().to_pybytes())
+        self._pending: list[pa.RecordBatch] = []
+        self._pending_rows = 0
+        self.rows = 0
+
+    def update(self, value: pa.RecordBatch | pa.Table) -> None:
+        table = pa.Table.from_batches([value], schema=value.schema) if isinstance(value, pa.RecordBatch) else value
+        table = table.replace_schema_metadata(None).cast(self.schema)
+        for batch in table.to_batches(max_chunksize=self.batch_size):
+            self._pending.append(batch)
+            self._pending_rows += batch.num_rows
+            self.rows += batch.num_rows
+            self._drain(False)
+
+    def _drain(self, final: bool) -> None:
+        while self._pending_rows >= self.batch_size or (final and self._pending_rows):
+            take_rows = min(self.batch_size, self._pending_rows)
+            combined = pa.Table.from_batches(self._pending, schema=self.schema).combine_chunks()
+            chunk = combined.slice(0, take_rows)
+            # Preserve the v2 byte contract used by existing Phase B versions.
+            chunk = chunk.take(pa.array(np.arange(take_rows, dtype=np.int32)))
+            sink = pa.BufferOutputStream()
+            with pa.ipc.new_stream(sink, self.schema) as writer:
+                writer.write_table(chunk)
+            self._digest.update(sink.getvalue().to_pybytes())
+            remainder = combined.slice(take_rows)
+            self._pending = remainder.to_batches() if remainder.num_rows else []
+            self._pending_rows = remainder.num_rows
+
+    def hexdigest(self) -> str:
+        self._drain(True)
+        return self._digest.hexdigest()
+
+
 def canonical_json(value: Any) -> bytes:
     return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False).encode("utf-8")
 

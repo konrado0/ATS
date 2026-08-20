@@ -6,7 +6,7 @@ import uuid
 import pyarrow as pa
 import pyarrow.compute as pc
 
-from ats_contracts.schemas import SCHEMA_VERSION, SCHEMAS, SEMANTIC_KEYS
+from ats_contracts.schemas import SCHEMA_REGISTRY, SCHEMAS, SEMANTIC_KEYS, schema_for
 
 
 class ContractError(ValueError):
@@ -20,7 +20,10 @@ ENUMS: dict[str, dict[str, frozenset[str]]] = {
         "instrument_type": frozenset({"common_equity", "etf", "index", "fund", "unknown"}),
     },
     "security_aliases": {
-        "identifier_type": frozenset({"ticker", "venue", "venue_mic", "isin", "vendor_symbol", "official_short_name"}),
+        "identifier_type": frozenset({
+            "ticker", "venue", "venue_mic", "isin", "vendor_symbol", "official_short_name",
+            "source_filename_ticker", "source_filename_vendor_symbol",
+        }),
         "resolution_status": frozenset({"resolved", "exact", "mapped_renamed", "mapped_successor", "provisional_source_scoped", "unresolved", "missing"}),
     },
     "bars": {
@@ -50,17 +53,25 @@ def _values(table: pa.Table, column: str) -> list[object]:
     return table[column].combine_chunks().to_pylist()
 
 
-def _validate_exact_schema(table_name: str, table: pa.Table) -> None:
-    expected = SCHEMAS[table_name]
+def _declared_version(table_name: str, table: pa.Table) -> str:
+    versions = {value.as_py() for value in pc.unique(table["schema_version"])}
+    if not versions and table.num_rows == 0:
+        matches = [version for version, schemas in SCHEMA_REGISTRY.items() if schemas[table_name] == table.schema.remove_metadata()]
+        if len(matches) == 1:
+            return matches[0]
+    if len(versions) != 1:
+        raise ContractError(f"incompatible schema versions for {table_name}: {sorted(map(str, versions))}")
+    version = str(next(iter(versions)))
+    if version not in SCHEMA_REGISTRY:
+        raise ContractError(f"incompatible schema versions for {table_name}: {[version]}")
+    return version
+
+
+def _validate_exact_schema(table_name: str, table: pa.Table, version: str) -> None:
+    expected = schema_for(table_name, version)
     actual = table.schema.remove_metadata()
     if actual != expected:
         raise ContractError(f"unexpected schema for {table_name}: expected {expected}, got {actual}")
-
-
-def _validate_versions(table_name: str, table: pa.Table) -> None:
-    versions = {value.as_py() for value in pc.unique(table["schema_version"])}
-    if versions != {SCHEMA_VERSION}:
-        raise ContractError(f"incompatible schema versions for {table_name}: {sorted(map(str, versions))}")
 
 
 def _validate_duplicates(table_name: str, table: pa.Table) -> None:
@@ -93,7 +104,7 @@ def _validate_uuid_ids(table: pa.Table) -> None:
 def _validate_intervals(table_name: str, table: pa.Table) -> None:
     if "valid_from" not in table.column_names:
         return
-    invalid = pc.and_(pc.is_valid(table["valid_to"]), pc.less(table["valid_to"], table["valid_from"]))
+    invalid = pc.and_(pc.is_valid(table["valid_from"]), pc.and_(pc.is_valid(table["valid_to"]), pc.less(table["valid_to"], table["valid_from"])))
     if pc.any(invalid).as_py():
         raise ContractError(f"invalid validity interval in {table_name}")
 
@@ -117,7 +128,10 @@ def _validate_alias_overlaps(table: pa.Table) -> None:
             continue
         prior_end = None
         prior_security = None
-        for start, end, security, _status in sorted(intervals, key=lambda item: item[0]):
+        # Unknown validity cannot be asserted to overlap. It remains explicit and
+        # is available for a later authoritative reconciliation.
+        known = [item for item in intervals if item[0] is not None]
+        for start, end, security, _status in sorted(known, key=lambda item: item[0]):
             if prior_end is None and prior_security is not None:
                 raise ContractError(f"overlapping open-ended alias intervals: {namespace}")
             if prior_end is not None and start <= prior_end:
@@ -161,8 +175,8 @@ def validate_table(table_name: str, table: pa.Table) -> dict[str, object]:
     if table_name not in SCHEMAS:
         raise ContractError(f"unknown canonical table: {table_name}")
     table.validate(full=True)
-    _validate_exact_schema(table_name, table)
-    _validate_versions(table_name, table)
+    version = _declared_version(table_name, table)
+    _validate_exact_schema(table_name, table, version)
     _validate_duplicates(table_name, table)
     _validate_enums(table_name, table)
     _validate_uuid_ids(table)

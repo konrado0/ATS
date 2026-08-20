@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+import csv
 import uuid
 from pathlib import Path
 
 import duckdb
 import pandas as pd
 import pyarrow as pa
+import pyarrow.parquet as pq
 
 from ats_contracts.schemas import SCHEMA_VERSION, schema_for
 from ats_contracts.validation import validate_table
@@ -47,6 +49,8 @@ def gpw_tables(config: PhaseBConfig) -> tuple[dict[str, pa.Table], dict[str, obj
         "base_currency": [*master_a["base_currency"].astype(str), "PLN"],
         "valid_from": [*_dates(master_a["valid_from"]), wig_a["session_date"].min().date()],
         "valid_to": [*_dates(master_a["valid_to"]), wig_a["session_date"].max().date()],
+        "observed_from": [*_dates(master_a["valid_from"]), wig_a["session_date"].min().date()],
+        "observed_to": [*_dates(master_a["valid_to"]), wig_a["session_date"].max().date()],
         "identity_status": ["authoritative"] * (len(master_a) + 1),
         "status": [*master_a["status"].astype(str), "active"],
         "source": ["trusted_phase_a_identity"] * len(master_a) + ["trusted_phase_a_wig_calendar"],
@@ -66,6 +70,8 @@ def gpw_tables(config: PhaseBConfig) -> tuple[dict[str, pa.Table], dict[str, obj
         alias_values["vendor"].append(str(row.vendor) if pd.notna(row.vendor) else None)
         alias_values["valid_from"].append(pd.Timestamp(row.valid_from).date() if pd.notna(row.valid_from) else master_start[str(row.security_id)])
         alias_values["valid_to"].append(pd.Timestamp(row.valid_to).date() if pd.notna(row.valid_to) else None)
+        alias_values["observed_from"].append(pd.Timestamp(row.valid_from).date() if pd.notna(row.valid_from) else master_start[str(row.security_id)])
+        alias_values["observed_to"].append(pd.Timestamp(row.valid_to).date() if pd.notna(row.valid_to) else None)
         alias_values["source"].append(str(row.source))
         alias_values["provenance"].append(str(row.provenance))
         alias_values["resolution_status"].append(str(row.resolution_status) if str(row.resolution_status) in {"resolved", "exact", "mapped_renamed", "mapped_successor", "missing"} else "unresolved")
@@ -80,6 +86,8 @@ def gpw_tables(config: PhaseBConfig) -> tuple[dict[str, pa.Table], dict[str, obj
         alias_values["vendor"].append("stooq" if identifier_type == "vendor_symbol" else None)
         alias_values["valid_from"].append(wig_a["session_date"].min().date())
         alias_values["valid_to"].append(wig_a["session_date"].max().date())
+        alias_values["observed_from"].append(wig_a["session_date"].min().date())
+        alias_values["observed_to"].append(wig_a["session_date"].max().date())
         alias_values["source"].append("trusted_phase_a_wig_calendar")
         alias_values["provenance"].append("Phase A wig_daily.parquet")
         alias_values["resolution_status"].append("resolved")
@@ -150,16 +158,24 @@ def _us_listing_rows(config: PhaseBConfig) -> pd.DataFrame:
         venue = venue_map.get(exchange)
         if venue is None:
             continue
-        ticker = path.stem.upper()
-        if ticker.endswith(".US"):
-            ticker = ticker[:-3]
+        filename_ticker = path.stem.upper()
+        if filename_ticker.endswith(".US"):
+            filename_ticker = filename_ticker[:-3]
+        with path.open("r", encoding="utf-8-sig", newline="") as handle:
+            reader = csv.DictReader(handle)
+            first = next(reader, None)
+        header_symbol = str(first.get("<TICKER>", "")).strip().upper() if first else ""
+        header_ticker = header_symbol[:-3] if header_symbol.endswith(".US") else header_symbol
         instrument = "etf" if segment.endswith("etfs") else "common_equity"
-        raw_symbol = ticker + ".US"
+        filename_symbol = filename_ticker + ".US"
         relative = path.relative_to(config.source_data_root).as_posix()
         security_id = str(uuid.uuid5(US_LISTING_NAMESPACE, f"stooq-path:{relative}"))
         rows.append({
             "filename": path.resolve().as_posix(), "relative": relative,
-            "security_id": security_id, "ticker": ticker, "raw_symbol": raw_symbol,
+            "security_id": security_id, "filename_ticker": filename_ticker,
+            "filename_symbol": filename_symbol, "header_ticker": header_ticker or None,
+            "header_symbol": header_symbol or None,
+            "ticker_mismatch": bool(header_symbol and header_symbol != filename_symbol),
             "venue_mic": venue, "instrument_type": instrument, "bytes": path.stat().st_size,
         })
     if not rows:
@@ -167,10 +183,20 @@ def _us_listing_rows(config: PhaseBConfig) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def us_tables(config: PhaseBConfig) -> tuple[dict[str, pa.Table], dict[str, object], list[Path]]:
+def stage_us_tables(config: PhaseBConfig, stage: Path) -> tuple[dict[str, list[Path]], dict[str, object], list[Path]]:
+    """Build U.S. canonical files without materializing the fact table.
+
+    DuckDB may externally sort into the Phase B cache, while Arrow validation,
+    coverage accounting and Parquet writing operate one configured batch at a
+    time. The result remains a single compact, security/event-sorted bars file.
+    """
     listings = _us_listing_rows(config)
     source_paths = [Path(value) for value in listings["filename"]]
     connection = duckdb.connect()
+    spill = config.phase_root / "cache" / "duckdb-spill"
+    spill.mkdir(parents=True, exist_ok=True)
+    connection.execute(f"SET memory_limit='{config.duckdb_memory_limit}'")
+    connection.execute(f"SET temp_directory='{spill.as_posix().replace(chr(39), chr(39) * 2)}'")
     connection.register("us_listing", listings)
     glob = (config.source_data_root / "daily" / "us" / "**" / "*.txt").as_posix().replace("'", "''")
     filters = []
@@ -201,15 +227,42 @@ def us_tables(config: PhaseBConfig) -> tuple[dict[str, pa.Table], dict[str, obje
                '{config.source_version}' AS adjustment_version,
                'us-{config.source_version}' AS ingest_batch_id,
                TIMESTAMPTZ '{config.ingestion_timestamp.isoformat()}' AS ingested_at,
-               'provisional' AS quality_state, '[\"identity_provisional_source_scoped\"]' AS quality_flags,
+               'provisional' AS quality_state,
+               CASE
+                 WHEN upper(CAST(r."<TICKER>" AS VARCHAR)) <> coalesce(l.header_symbol, '') THEN '[\"identity_provisional_source_scoped\",\"raw_ticker_inconsistent\"]'
+                 WHEN l.ticker_mismatch THEN '[\"identity_provisional_source_scoped\",\"ticker_filename_mismatch\"]'
+                 ELSE '[\"identity_provisional_source_scoped\"]'
+               END AS quality_flags,
                'provisional_source_scoped' AS resolution_state, '{SCHEMA_VERSION}' AS schema_version
         FROM {raw_relation} r
         JOIN us_listing l ON replace(r.filename, '\\', '/') = l.filename
         WHERE {where} AND ({valid_ohlcv})
         ORDER BY l.security_id, event_ts, source, adjustment_version
     """
+    staged: dict[str, list[Path]] = {}
+    coverage: dict[str, list[object]] = {}
+    bars_rows = mismatch_bar_rows = 0
+    bars_relative = Path("data/bars/market=US/frequency=daily/part-000.parquet")
+    bars_path = stage / bars_relative
+    bars_path.parent.mkdir(parents=True, exist_ok=True)
+    writer = pq.ParquetWriter(
+        bars_path, schema_for("bars"), compression=config.compression,
+        compression_level=config.compression_level, version="2.6", write_statistics=True,
+    )
     try:
-        bars = connection.execute(query).fetch_arrow_table().cast(schema_for("bars"))
+        reader = connection.execute(query).to_arrow_reader(config.stream_batch_size)
+        for batch in reader:
+            part = pa.Table.from_batches([batch]).cast(schema_for("bars"))
+            validate_table("bars", part)
+            writer.write_table(part, row_group_size=config.row_group_size)
+            bars_rows += part.num_rows
+            mismatch_bar_rows += sum("ticker_filename_mismatch" in str(value) for value in part["quality_flags"].to_pylist())
+            observed = part.select(["security_id", "session_date"]).group_by("security_id").aggregate([
+                ("session_date", "min"), ("session_date", "max"),
+            ]).to_pandas()
+            for row in observed.itertuples(index=False):
+                current = coverage.setdefault(str(row.security_id), [row.session_date_min, row.session_date_max])
+                current[0] = min(current[0], row.session_date_min); current[1] = max(current[1], row.session_date_max)
         issue_query = f"""
             SELECT 'stooq_local_bulk' AS source,
                    l.relative || '#' || CAST(r.\"<DATE>\" AS VARCHAR) || '#' || CAST(r.\"<TIME>\" AS VARCHAR) AS source_record_id,
@@ -222,45 +275,75 @@ def us_tables(config: PhaseBConfig) -> tuple[dict[str, pa.Table], dict[str, obje
             JOIN us_listing l ON replace(r.filename, '\\', '/') = l.filename
             WHERE {where} AND NOT ({valid_ohlcv})
         """
-        issues = connection.execute(issue_query).fetch_arrow_table().cast(schema_for("ingestion_issues"))
+        issues = connection.execute(issue_query).to_arrow_table().cast(schema_for("ingestion_issues"))
     finally:
+        writer.close()
         connection.close()
-    validate_table("bars", bars)
-    bars = mark_sorted("bars", bars)
-    validate_table("ingestion_issues", issues)
+    staged["bars"] = [bars_relative]
+    listings["observed_from"] = listings["security_id"].map(lambda value: coverage.get(str(value), [None, None])[0])
+    listings["observed_to"] = listings["security_id"].map(lambda value: coverage.get(str(value), [None, None])[1])
 
-    # Derive listing intervals from canonical facts without claiming issuer or ticker continuity.
-    dates = bars.select(["security_id", "session_date"]).group_by("security_id").aggregate([("session_date", "min"), ("session_date", "max")]).to_pandas()
-    dates = dates.rename(columns={"session_date_min": "min", "session_date_max": "max"}).set_index("security_id")
-    listings = listings.merge(dates, left_on="security_id", right_index=True, how="left")
     master = _table("security_master", {
         "security_id": listings["security_id"].astype(str).tolist(), "issuer_id": [None] * len(listings),
         "market": ["US"] * len(listings), "venue_mic": listings["venue_mic"].astype(str).tolist(),
         "instrument_type": listings["instrument_type"].astype(str).tolist(), "base_currency": ["USD"] * len(listings),
-        "valid_from": [value if pd.notna(value) else config.ingestion_timestamp.date() for value in listings["min"]],
-        "valid_to": [value if pd.notna(value) else None for value in listings["max"]],
+        "valid_from": [None] * len(listings), "valid_to": [None] * len(listings),
+        "observed_from": listings["observed_from"].tolist(), "observed_to": listings["observed_to"].tolist(),
         "identity_status": ["provisional_source_scoped"] * len(listings), "status": ["provisional_listing"] * len(listings),
         "source": ["stooq_path_scoped_listing"] * len(listings), "schema_version": [SCHEMA_VERSION] * len(listings),
     })
     aliases: dict[str, list[object]] = {name: [] for name in schema_for("security_aliases").names}
     for row in listings.itertuples(index=False):
-        for kind, value in (("ticker", row.ticker), ("vendor_symbol", row.raw_symbol), ("venue", row.venue_mic)):
+        evidence = (
+            ("ticker", row.header_ticker, row.header_symbol or "", "raw <TICKER> field"),
+            ("vendor_symbol", row.header_symbol, row.header_symbol or "", "raw <TICKER> field"),
+            ("source_filename_ticker", row.filename_ticker, row.filename_ticker, "source filename"),
+            ("source_filename_vendor_symbol", row.filename_symbol, row.filename_symbol, "source filename"),
+            ("venue", row.venue_mic, row.venue_mic, "source directory"),
+        )
+        for kind, value, raw_value, evidence_source in evidence:
             aliases["security_id"].append(row.security_id); aliases["identifier_type"].append(kind)
-            aliases["identifier_value"].append(value); aliases["raw_identifier"].append(value)
+            aliases["identifier_value"].append(value); aliases["raw_identifier"].append(raw_value)
             aliases["market"].append("US"); aliases["venue_mic"].append(row.venue_mic)
-            aliases["vendor"].append("stooq" if kind == "vendor_symbol" else None)
-            aliases["valid_from"].append(row.min if pd.notna(row.min) else config.ingestion_timestamp.date())
-            aliases["valid_to"].append(row.max if pd.notna(row.max) else None)
+            aliases["vendor"].append("stooq" if kind in {"vendor_symbol", "source_filename_vendor_symbol"} else None)
+            aliases["valid_from"].append(None); aliases["valid_to"].append(None)
+            aliases["observed_from"].append(row.observed_from); aliases["observed_to"].append(row.observed_to)
             aliases["source"].append("stooq_path_scoped_listing")
-            aliases["provenance"].append(f"{row.relative}; ticker continuity and issuer identity unresolved")
+            aliases["provenance"].append(f"{row.relative}; {evidence_source}; ticker continuity and issuer identity unresolved")
             aliases["resolution_status"].append("provisional_source_scoped")
             aliases["schema_version"].append(SCHEMA_VERSION)
     security_aliases = _table("security_aliases", aliases)
+
+    mismatch_rows: list[dict[str, object]] = []
+    for row in listings[listings["ticker_mismatch"]].itertuples(index=False):
+        mismatch_rows.append({
+            "source": "stooq_local_bulk", "source_record_id": f"{row.relative}#filename_header",
+            "market": "US", "raw_identifier": row.header_symbol,
+            "issue_code": "ticker_filename_mismatch",
+            "raw_payload_json": json.dumps({"filename_ticker": row.filename_symbol, "header_ticker": row.header_symbol}, sort_keys=True),
+            "detected_at": config.ingestion_timestamp, "resolution_state": "unresolved", "schema_version": SCHEMA_VERSION,
+        })
+    if mismatch_rows:
+        mismatch = pa.Table.from_pylist(mismatch_rows, schema=schema_for("ingestion_issues"))
+        issues = pa.concat_tables([issues, mismatch])
+    validate_table("ingestion_issues", issues)
+
+    for table_name, table in {
+        "security_master": master, "security_aliases": security_aliases, "ingestion_issues": issues,
+    }.items():
+        table = mark_sorted(table_name, table)
+        relative = Path("data") / table_name / "market=US" / "part-000.parquet"
+        path = stage / relative; path.parent.mkdir(parents=True, exist_ok=True)
+        pq.write_table(table, path, compression=config.compression, compression_level=config.compression_level,
+                       row_group_size=config.row_group_size, version="2.6", write_statistics=True)
+        staged[table_name] = [relative]
     report = {
-        "source_files": len(listings), "source_bytes": int(listings["bytes"].sum()), "bars": bars.num_rows,
+        "source_files": len(listings), "source_bytes": int(listings["bytes"].sum()), "bars": bars_rows,
         "provisional_listing_identities": master.num_rows, "unresolved_issuer_ids": master.num_rows,
-        "empty_or_no_bar_listings": int(listings["min"].isna().sum()), "quarantined_visible_records": issues.num_rows,
-        "identity_semantics": "UUIDv5 is raw-source-path scoped; it is explicitly provisional and makes no issuer/ticker-continuity claim; duplicate ticker/venue files remain separate reconciliation candidates; files without accepted bars begin at the deterministic ingestion observation date",
+        "empty_or_no_bar_listings": int(listings["observed_from"].isna().sum()), "visible_ingestion_issues": issues.num_rows,
+        "ticker_filename_mismatches": len(mismatch_rows), "ticker_filename_mismatch_bar_rows": mismatch_bar_rows,
+        "bounded_build": {"stream_batch_size": config.stream_batch_size, "duckdb_memory_limit": config.duckdb_memory_limit, "single_compact_sorted_bars_file": True},
+        "identity_semantics": "UUIDv5 is raw-source-path scoped and provisional; raw-header and filename identifiers are retained separately; valid_from/valid_to stay null absent authority, while observed_from/observed_to record bar coverage",
         "daily_timestamp_semantics": "event_ts models 16:00 America/New_York session close; available_ts models 16:05, converted to UTC; raw TIME is retained in source_record_id",
     }
-    return {"security_master": master, "security_aliases": security_aliases, "bars": bars, "ingestion_issues": issues}, report, source_paths
+    return staged, report, source_paths

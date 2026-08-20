@@ -32,7 +32,7 @@ def _pinned(manifest_path: Path) -> tuple[Path, object]:
             if parquet_path.stat().st_size != record.bytes:
                 raise ValueError(f"manifest file-size mismatch: {record.path}")
             schema = pq.read_schema(parquet_path).remove_metadata()
-            if schema != schema_for(table.table_name) or schema_fingerprint(schema) != record.schema_fingerprint:
+            if schema != schema_for(table.table_name, record.schema_version) or schema_fingerprint(schema) != record.schema_fingerprint:
                 raise ValueError(f"manifest Parquet schema mismatch: {record.path}")
     return path, manifest
 

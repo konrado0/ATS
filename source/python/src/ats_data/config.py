@@ -22,6 +22,9 @@ class PhaseBConfig(BaseModel):
     source_version: str = "local_snapshot_2025_12_31"
     us_start_date: str | None = None
     us_end_date: str | None = "2025-12-31"
+    stream_batch_size: int = Field(default=122_880, gt=0)
+    duckdb_memory_limit: str = "4GB"
+    require_clean_implementation: bool = False
 
     @field_validator("phase_root", "trusted_phase_a_run", "source_data_root", mode="before")
     @classmethod

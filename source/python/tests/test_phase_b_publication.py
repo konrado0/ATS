@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import duckdb
+import numpy as np
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
@@ -13,7 +14,8 @@ from ats_contracts.validation import ContractError
 from ats_data.config import PhaseBConfig
 from ats_data.discovery import clear_derived_cache, create_duckdb_catalog, scan_table
 from ats_data.manifest import DatasetManifest
-from ats_data.publication import PublishedVersionExists, Publisher, validate_manifest
+from ats_data.hashing import IncrementalArrowHasher, logical_table_hash, object_hash
+from ats_data.publication import PublicationError, PublishedVersionExists, Publisher, validate_manifest
 from test_phase_b_contracts import bar_table
 
 
@@ -105,3 +107,48 @@ def test_no_ticker_security_or_time_partitions_and_cache_boundary(tmp_path: Path
     assert not cache.exists() and manifest.exists()
     with pytest.raises(ValueError):
         clear_derived_cache(manifest.parent, cfg.phase_root)
+
+
+def _rewrite_manifest(path: Path, raw: dict[str, object]) -> None:
+    stable = dict(raw); stable.pop("manifest_hash", None)
+    raw["manifest_hash"] = object_hash(stable)
+    path.write_text(json.dumps(raw, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def test_manifest_recomputes_configuration_version_and_declared_table_metadata(tmp_path: Path) -> None:
+    _cfg, manifest = publish(tmp_path)
+    raw = json.loads(manifest.read_text(encoding="utf-8"))
+    raw["configuration"]["source_version"] = "tampered"
+    _rewrite_manifest(manifest, raw)
+    with pytest.raises(PublicationError, match="configuration hash"):
+        validate_manifest(manifest)
+
+    _cfg, manifest = publish(tmp_path / "second")
+    raw = json.loads(manifest.read_text(encoding="utf-8"))
+    raw["tables"][0]["semantic_key"] = ["source_record_id"]
+    _rewrite_manifest(manifest, raw)
+    with pytest.raises(PublicationError, match="metadata mismatch"):
+        validate_manifest(manifest)
+
+
+def test_manifest_recomputes_parent_row_and_content_differences(tmp_path: Path) -> None:
+    cfg, parent = publish(tmp_path)
+    correction = Publisher(cfg).publish(
+        "fixture", {"bars": corrected_bar()}, {"raw/a": "def"}, [{"kind": "fixture"}],
+        "historical vendor correction", parent.parent.name,
+    )
+    raw = json.loads(correction.read_text(encoding="utf-8"))
+    raw["row_differences"]["bars"] = 99
+    _rewrite_manifest(correction, raw)
+    with pytest.raises(PublicationError, match="row difference"):
+        validate_manifest(correction)
+
+
+def test_incremental_logical_hash_is_independent_of_input_batch_boundaries() -> None:
+    source = bar_table().take(pa.array(np.zeros(65_537, dtype=np.int32)))
+    incremental = IncrementalArrowHasher(source.schema)
+    for offset in range(0, source.num_rows, 7_777):
+        incremental.update(source.slice(offset, min(7_777, source.num_rows - offset)))
+    assert incremental.hexdigest() == logical_table_hash(
+        "bars", source, assume_sorted=True, algorithm="arrow_ipc_stream_batches_v2",
+    )

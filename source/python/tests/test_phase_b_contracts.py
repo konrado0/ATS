@@ -42,6 +42,7 @@ def alias_table(*, provisional: bool = False) -> pa.Table:
         "identifier_value": ["ABC", "ABC"], "raw_identifier": ["ABC", "ABC"],
         "market": ["US", "US"], "venue_mic": ["XNAS", "XNAS"], "vendor": [None, None],
         "valid_from": [date(2020, 1, 1), date(2021, 1, 1)], "valid_to": [date(2022, 1, 1), None],
+        "observed_from": [date(2020, 1, 1), date(2021, 1, 1)], "observed_to": [date(2022, 1, 1), None],
         "source": ["fixture", "fixture"], "provenance": ["one", "two"],
         "resolution_status": [status, status], "schema_version": [SCHEMA_VERSION, SCHEMA_VERSION],
     }, schema=schema_for("security_aliases"))

@@ -3,7 +3,8 @@ from __future__ import annotations
 import pyarrow as pa
 
 
-SCHEMA_VERSION = "ats.canonical.v1"
+SCHEMA_VERSION = "ats.canonical.v2"
+LEGACY_SCHEMA_VERSION = "ats.canonical.v1"
 UTC_US = pa.timestamp("us", tz="UTC")
 
 
@@ -11,7 +12,7 @@ def _field(name: str, dtype: pa.DataType, nullable: bool = False) -> pa.Field:
     return pa.field(name, dtype, nullable=nullable)
 
 
-SCHEMAS: dict[str, pa.Schema] = {
+_V1_SCHEMAS: dict[str, pa.Schema] = {
     "security_master": pa.schema([
         _field("security_id", pa.string()),
         _field("issuer_id", pa.string(), True),
@@ -181,6 +182,51 @@ SCHEMAS: dict[str, pa.Schema] = {
 }
 
 
+# Version 2 separates observed source coverage from asserted identifier/listing
+# validity.  The latter is intentionally nullable: a bar file is evidence that a
+# symbol was observed, not evidence of issuer continuity or an authoritative
+# listing interval.
+SCHEMAS: dict[str, pa.Schema] = dict(_V1_SCHEMAS)
+SCHEMAS["security_master"] = pa.schema([
+    _field("security_id", pa.string()),
+    _field("issuer_id", pa.string(), True),
+    _field("market", pa.string()),
+    _field("venue_mic", pa.string()),
+    _field("instrument_type", pa.string()),
+    _field("base_currency", pa.string()),
+    _field("valid_from", pa.date32(), True),
+    _field("valid_to", pa.date32(), True),
+    _field("observed_from", pa.date32(), True),
+    _field("observed_to", pa.date32(), True),
+    _field("identity_status", pa.string()),
+    _field("status", pa.string()),
+    _field("source", pa.string()),
+    _field("schema_version", pa.string()),
+])
+SCHEMAS["security_aliases"] = pa.schema([
+    _field("security_id", pa.string(), True),
+    _field("identifier_type", pa.string()),
+    _field("identifier_value", pa.string(), True),
+    _field("raw_identifier", pa.string()),
+    _field("market", pa.string()),
+    _field("venue_mic", pa.string(), True),
+    _field("vendor", pa.string(), True),
+    _field("valid_from", pa.date32(), True),
+    _field("valid_to", pa.date32(), True),
+    _field("observed_from", pa.date32(), True),
+    _field("observed_to", pa.date32(), True),
+    _field("source", pa.string()),
+    _field("provenance", pa.string()),
+    _field("resolution_status", pa.string()),
+    _field("schema_version", pa.string()),
+])
+
+SCHEMA_REGISTRY: dict[str, dict[str, pa.Schema]] = {
+    LEGACY_SCHEMA_VERSION: _V1_SCHEMAS,
+    SCHEMA_VERSION: SCHEMAS,
+}
+
+
 SEMANTIC_KEYS: dict[str, tuple[str, ...]] = {
     "security_master": ("security_id",),
     "security_aliases": ("security_id", "identifier_type", "identifier_value", "venue_mic", "vendor", "valid_from"),
@@ -209,11 +255,11 @@ SORT_ORDERS: dict[str, tuple[str, ...]] = {
 }
 
 
-def schema_for(table_name: str) -> pa.Schema:
+def schema_for(table_name: str, version: str = SCHEMA_VERSION) -> pa.Schema:
     try:
-        return SCHEMAS[table_name]
+        return SCHEMA_REGISTRY[version][table_name]
     except KeyError as exc:
-        raise KeyError(f"unknown canonical table: {table_name}") from exc
+        raise KeyError(f"unknown canonical table/version: {table_name}/{version}") from exc
 
 
 def semantic_key_for(table_name: str) -> tuple[str, ...]:

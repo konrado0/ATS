@@ -4,7 +4,7 @@ Phase B hardens analytical facts without adding a storage service. Raw files rem
 
 ## Contracts and semantic keys
 
-All canonical rows carry `schema_version=ats.canonical.v1`. PyArrow field order, types, nullability and version are exact and fail closed.
+New publications carry `schema_version=ats.canonical.v2`; immutable v1 versions remain readable through the schema registry. V2 separates nullable asserted `valid_from`/`valid_to` from `observed_from`/`observed_to` raw-fact coverage. PyArrow field order, types, nullability and version are exact and fail closed.
 
 | Table | Semantic key |
 |---|---|
@@ -21,7 +21,7 @@ All canonical rows carry `schema_version=ats.canonical.v1`. PyArrow field order,
 
 Resolved ticker/ISIN/vendor aliases may not overlap within a namespace. Multiple provisional U.S. candidates may overlap only while marked `provisional_source_scoped`; this retains ambiguity as evidence and does not adjudicate identity. Invalid intervals, duplicate keys, nonpositive prices, negative volume, inconsistent high/low, availability before event, unknown enums and schema/version drift fail publication.
 
-GPW security IDs and mappings are reused from the trusted Phase A archive. The WIG index has a separate stable index identity. U.S. files have UUIDv5 identities scoped to the full raw Stooq source path. Every U.S. identity is explicitly provisional, `issuer_id` stays null, and duplicated ticker/venue files remain separate reconciliation candidates. No ISIN or ticker continuity is invented. Files without accepted bars remain in the master; malformed OHLCV records are retained in `ingestion_issues` rather than silently dropped.
+GPW security IDs and mappings are reused from the trusted Phase A archive. The WIG index has a separate stable index identity. U.S. files have UUIDv5 identities scoped to the full raw Stooq source path. Every U.S. identity is explicitly provisional, `issuer_id` stays null, and duplicated ticker/venue files remain separate reconciliation candidates. Raw `<TICKER>` values and filename-derived symbols are retained as separate alias evidence; mismatches remain visible on affected bars and in `ingestion_issues`. No ISIN, ticker continuity, or validity end is invented. Files without accepted bars remain in the master; malformed OHLCV records are retained rather than silently dropped.
 
 ## Timestamp semantics
 
@@ -35,7 +35,9 @@ The writer defaults are ZSTD level 3 and 122,880 rows per row group. Data is sor
 
 Publication is stage → validate → atomic rename → safe discovery-pointer update. The version identity is derived from logical table hashes, source hashes, configuration, parent and reason. An existing version directory is never overwritten. Corrections and new data rebuild a complete version; there are no deltas or compaction. A failed stage cannot move a pointer, so the prior explicit manifest and its DuckDB views remain usable.
 
-Every manifest lists exact Parquet paths, sizes, physical and logical hashes, rows, row groups, semantic keys, schema fingerprints/versions, timestamps, market/frequency, sources, writer settings, lineage, environment and Git provenance. DuckDB views use only this list with `union_by_name=false`. Polars scans set `glob=false` and reject discovery pointers.
+The U.S. rebuild uses a bounded DuckDB external sort and Arrow record-batch iterator. Each batch is contract-validated and written through one Parquet writer; coverage statistics and logical hashes are accumulated incrementally. This retains one compact security/event-sorted file without holding the complete fact table in Python memory. The reference limits DuckDB to 4 GB and keeps spill files beneath `phase_b/cache`.
+
+Every manifest lists exact Parquet paths, sizes, physical and logical hashes, rows, row groups, semantic keys, schema fingerprints/versions, timestamps, market/frequency, sources, writer settings, lineage, environment and Git provenance. V2 validation independently recomputes configuration and version identities, file/table metadata, parent differences, environment-lock hash, and the committed implementation snapshot. Cleanliness is scoped to `source/python`, so unrelated research files cannot poison provenance. DuckDB views use only this list with `union_by_name=false`. Polars scans set `glob=false` and reject discovery pointers.
 
 Derived caches may be deleted only through a concrete child beneath `phase_b/cache`; canonical version paths and the cache root itself are rejected.
 
@@ -45,9 +47,9 @@ Derived caches may be deleted only through a concrete child beneath `phase_b/cac
 $python = 'C:\Users\konra\anaconda3\envs\ats-stack-research\python.exe'
 $env:PYTHONPATH = 'D:\Stock\ATS\source\python\src'
 & $python -m ats_research validate --run-dir 'D:\Stock\data\ATS\phase_a\runs\phasea-2a2b3898aba37814'
-& $python -m ats_data validate --manifest 'D:\Stock\data\ATS\phase_b\versions\phaseb-dd0bb7a8679ab9c658e9\manifest.json'
-& $python -m ats_data reconcile-gpw --config 'D:\Stock\ATS\source\python\configs\phase_b_reference.yaml' --manifest 'D:\Stock\data\ATS\phase_b\versions\phaseb-dd0bb7a8679ab9c658e9\manifest.json'
-& $python -m ats_data validate --manifest 'D:\Stock\data\ATS\phase_b\versions\phaseb-1ffe35fd776b58a5df7c\manifest.json'
+& $python -m ats_data validate --manifest 'D:\Stock\data\ATS\phase_b\versions\<pinned-gpw-version>\manifest.json'
+& $python -m ats_data reconcile-gpw --config 'D:\Stock\ATS\source\python\configs\phase_b_reference.yaml' --manifest 'D:\Stock\data\ATS\phase_b\versions\<pinned-gpw-version>\manifest.json'
+& $python -m ats_data validate --manifest 'D:\Stock\data\ATS\phase_b\versions\<pinned-us-version>\manifest.json'
 ```
 
 Archive-integrity Phase A validation uses the stored artifact hashes, source snapshot, environment lock and reconstructable commit. `--strict-current-checkout` adds an optional reproduction check against current files; normal source-tree evolution does not make an intact archive corrupt.

@@ -2,19 +2,19 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import time
 from datetime import date, datetime, timezone
 from pathlib import Path
 
 import psutil
 import pyarrow as pa
-import pyarrow.compute as pc
 import pyarrow.parquet as pq
 
 from ats_data.config import load_config
 from ats_data.discovery import create_duckdb_catalog, scan_table
-from ats_data.hashing import file_hash, mark_sorted
-from ats_data.ingest import gpw_tables, us_tables
+from ats_data.hashing import file_hash
+from ats_data.ingest import gpw_tables, stage_us_tables
 from ats_data.publication import Publisher, recover_valid_staging, validate_manifest
 from ats_data.reconciliation import reconcile_gpw
 from ats_contracts.schemas import SCHEMA_VERSION, schema_for
@@ -65,25 +65,33 @@ def _publish_gpw(config) -> dict[str, object]:
     return report
 
 
-def _publish_us(config) -> dict[str, object]:
+def _publish_us(config, parent_version_id: str | None = None, reason: str = "U.S. daily bounded rebuild; separate filename/header evidence and unresolved validity") -> dict[str, object]:
     started = time.perf_counter(); process = psutil.Process(); before = process.memory_info().rss
-    tables, ingest_report, paths = us_tables(config)
-    hash_started = time.perf_counter()
-    hashes = {path.relative_to(config.source_data_root).as_posix(): file_hash(path) for path in paths}
-    hash_seconds = time.perf_counter() - hash_started
-    manifest_path = Publisher(config).publish(
-        "us_daily", tables, hashes,
-        [{"kind": "immutable_local_raw_archive", "root": (config.source_data_root / "daily" / "us").as_posix(), "files": len(paths)}],
-        "initial U.S. daily Phase B publication with provisional source-scoped listing identities",
-    )
+    publisher = Publisher(config); stage = publisher.create_stage()
+    try:
+        staged, ingest_report, paths = stage_us_tables(config, stage)
+        hash_started = time.perf_counter()
+        hashes = {path.relative_to(config.source_data_root).as_posix(): file_hash(path) for path in paths}
+        hash_seconds = time.perf_counter() - hash_started
+        manifest_path = publisher.finalize_stage(
+            stage, "us_daily", staged, hashes,
+            [{"kind": "immutable_local_raw_archive", "root": (config.source_data_root / "daily" / "us").as_posix(), "files": len(paths)}],
+            reason, parent_version_id,
+        )
+    except Exception:
+        if stage.exists(): shutil.rmtree(stage)
+        raise
     catalog = create_duckdb_catalog(manifest_path, config.phase_root / "catalogs" / f"{manifest_path.parent.name}.duckdb")
     query_started = time.perf_counter()
     pl = __import__("polars")
     query = scan_table(manifest_path, "bars").filter((pl.col("venue_mic") == "XNAS") & (pl.col("session_date") >= pl.lit("2025-01-01").str.to_date())).select(["security_id", "session_date", "close"]).collect()
     report = {
         "manifest": manifest_path.as_posix(), "dataset_version_id": manifest_path.parent.name,
-        "ingestion": ingest_report, "duckdb": catalog,
-        "measurements": {"rebuild_seconds": time.perf_counter() - started, "source_hash_seconds": hash_seconds, "rss_before_bytes": before, "rss_after_bytes": process.memory_info().rss, "representative_polars_rows": query.height, "representative_polars_seconds": time.perf_counter() - query_started},
+        "ingestion": ingest_report, "duckdb": catalog, "parent_version_id": parent_version_id, "correction_reason": reason,
+        "measurements": {"rebuild_seconds": time.perf_counter() - started, "source_hash_seconds": hash_seconds, "rss_before_bytes": before,
+                         "rss_after_bytes": process.memory_info().rss, "process_peak_working_set_bytes": getattr(process.memory_info(), "peak_wset", None),
+                         "process_peak_private_bytes": getattr(process.memory_info(), "peak_pagefile", None),
+                         "representative_polars_rows": query.height, "representative_polars_seconds": time.perf_counter() - query_started},
     }
     _write_report(config, "us_reference.json", report)
     return report
@@ -130,19 +138,70 @@ def _publication_demo(config) -> dict[str, object]:
 
 def _profile_manifest(config, manifest_path: Path, market: str) -> dict[str, object]:
     raw = json.loads(manifest_path.read_text(encoding="utf-8")); manifest = DatasetManifest.model_validate(raw)
-    catalog = create_duckdb_catalog(manifest_path, config.phase_root / "catalogs" / f"{manifest.dataset_version_id}.duckdb")
-    pl = __import__("polars")
-    cutoff = "2025-01-01"
-    lazy = scan_table(manifest_path, "bars").filter(
-        (pl.col("market") == market) & (pl.col("session_date") >= pl.lit(cutoff).str.to_date())
-    ).select(["security_id", "session_date", "close"])
-    plan = lazy.explain(optimized=True)
-    started = time.perf_counter(); frame = lazy.collect(); elapsed = time.perf_counter() - started
+    catalog_path = config.phase_root / "catalogs" / f"{manifest.dataset_version_id}.duckdb"
+    catalog = create_duckdb_catalog(manifest_path, catalog_path)
+    pl = __import__("polars"); import duckdb
+    bars_lazy = scan_table(manifest_path, "bars")
+    with duckdb.connect(str(catalog_path), read_only=True) as connection:
+        security_id, maximum = connection.execute(
+            "select min(security_id), max(session_date) from bars where market = ?", [market],
+        ).fetchone()
+        cutoff = (maximum - __import__("datetime").timedelta(days=31)).isoformat()
+        duck_queries = {
+            "one_security_history": ("select session_date, close from bars where security_id = ? order by session_date", [security_id]),
+            "recent_cross_section": ("select security_id, close, volume from bars where market = ? and session_date = ?", [market, maximum]),
+            "bounded_date_range": ("select security_id, session_date, close from bars where market = ? and session_date >= ? and session_date <= ?", [market, cutoff, maximum]),
+            "count_checksum": ("select count(*) as row_count, sum(close) as close_sum, sum(volume) as volume_sum from bars where market = ?", [market]),
+        }
+        duck_results: dict[str, object] = {}
+        for name, (sql, params) in duck_queries.items():
+            started = time.perf_counter(); frame = connection.execute(sql, params).to_arrow_table()
+            duck_results[name] = {"rows_returned": frame.num_rows, "seconds": time.perf_counter() - started, "values": frame.to_pylist() if name == "count_checksum" else None}
+        duck_plan = connection.execute(
+            "explain analyze select session_date, close from bars where security_id = ?", [security_id],
+        ).fetchall()[0][1]
+
+    polars_queries = {
+        "one_security_history": bars_lazy.filter(pl.col("security_id") == security_id).select(["session_date", "close"]).sort("session_date"),
+        "recent_cross_section": bars_lazy.filter((pl.col("market") == market) & (pl.col("session_date") == maximum)).select(["security_id", "close", "volume"]),
+        "bounded_date_range": bars_lazy.filter((pl.col("market") == market) & (pl.col("session_date") >= pl.lit(cutoff).str.to_date()) & (pl.col("session_date") <= maximum)).select(["security_id", "session_date", "close"]),
+        "count_checksum": bars_lazy.filter(pl.col("market") == market).select([
+            pl.len().alias("row_count"), pl.col("close").sum().alias("close_sum"), pl.col("volume").sum().alias("volume_sum"),
+        ]),
+    }
+    polars_results: dict[str, object] = {}
+    for name, lazy in polars_queries.items():
+        started = time.perf_counter(); frame = lazy.collect()
+        polars_results[name] = {"rows_returned": frame.height, "seconds": time.perf_counter() - started, "values": frame.to_dicts() if name == "count_checksum" else None}
+    plan = polars_queries["one_security_history"].explain(optimized=True)
+
+    pruning = {"total_row_groups": 0, "one_security_candidate_row_groups": 0, "method": "Parquet security_id min/max statistics"}
+    bars_record = next(record for record in manifest.tables if record.table_name == "bars")
+    for file_record in bars_record.files:
+        parquet = pq.ParquetFile(manifest_path.parent / file_record.path)
+        index = parquet.schema_arrow.names.index("security_id")
+        for group in range(parquet.metadata.num_row_groups):
+            stats = parquet.metadata.row_group(group).column(index).statistics
+            pruning["total_row_groups"] += 1
+            if stats is None or stats.min <= security_id <= stats.max:
+                pruning["one_security_candidate_row_groups"] += 1
+        parquet.close()
     table_stats = {table.table_name: {"rows": table.rows, "files": len(table.files), "bytes": sum(item.bytes for item in table.files), "row_groups": sum(item.row_groups for item in table.files)} for table in manifest.tables}
+    duck_checksum = duck_results["count_checksum"]["values"][0]
+    polars_checksum = polars_results["count_checksum"]["values"][0]
+    checksum_match = duck_checksum["row_count"] == polars_checksum["row_count"] and all(
+        __import__("math").isclose(float(duck_checksum[name]), float(polars_checksum[name]), rel_tol=1e-12, abs_tol=1e-6)
+        for name in ("close_sum", "volume_sum")
+    )
     result = {
         "passed": True, "dataset_version_id": manifest.dataset_version_id, "manifest": manifest_path.as_posix(),
         "market": market, "tables": table_stats, "writer_settings": manifest.writer_settings,
-        "duckdb": catalog, "polars_query": {"cutoff": cutoff, "rows": frame.height, "seconds": elapsed, "optimized_plan": plan, "projection_pushdown_visible": "PROJECT" in plan, "predicate_pushdown_visible": "SELECTION" in plan},
+        "duckdb": {"catalog": catalog, "queries": duck_results, "one_security_explain_analyze": duck_plan},
+        "polars": {"queries": polars_results, "one_security_optimized_plan": plan,
+                    "projection_pushdown_visible": "PROJECT" in plan, "predicate_pushdown_visible": "SELECTION" in plan},
+        "parameters": {"security_id": security_id, "maximum_session": maximum.isoformat(), "bounded_cutoff": cutoff},
+        "row_group_pruning_evidence": pruning,
+        "engine_checksum_match": checksum_match, "checksum_tolerance": {"relative": 1e-12, "absolute": 1e-6},
     }
     _write_report(config, f"{market.lower()}_profile.json", result)
     return result
@@ -155,24 +214,11 @@ def _correct_validity(config, manifest_path: Path, market: str) -> dict[str, obj
         reason = "replace unresolved-alias placeholder starts with trusted membership starts"
         dataset_name = "gpw_phase_a_scope"
     else:
-        tables = {}
-        for record in parent.tables:
-            pieces = [pq.read_table(manifest_path.parent / item.path) for item in record.files]
-            table = pa.concat_tables(pieces)
-            tables[record.table_name] = mark_sorted(record.table_name, table)
-        observed = pa.scalar(config.ingestion_timestamp.date(), type=pa.date32())
-        old = pa.scalar(date(1900, 1, 1), type=pa.date32())
-        corrected_counts: dict[str, int] = {}
-        for name in ("security_master", "security_aliases"):
-            table = tables[name]
-            mask = pc.equal(table["valid_from"], old)
-            corrected_counts[name] = int(pc.sum(pc.cast(mask, pa.int64())).as_py())
-            replacement = pc.if_else(mask, observed, table["valid_from"])
-            tables[name] = table.set_column(table.schema.get_field_index("valid_from"), table.schema.field("valid_from"), replacement)
-        detail = {"corrected_rows": corrected_counts, "validity_semantics": "empty raw files are observed from deterministic ingestion date; no historical ticker continuity is claimed"}
-        source_hashes = parent.source_hashes; provenance = parent.source_provenance
-        reason = "replace provisional empty-file placeholder starts with deterministic ingestion observation date"
-        dataset_name = "us_daily"
+        reason = "complete bounded correction rebuild demonstrating explicit parent lineage"
+        result = _publish_us(config, parent.dataset_version_id, reason)
+        result.update({"passed": True, "market": market})
+        _write_report(config, f"{market.lower()}_validity_correction.json", result)
+        return result
     corrected = Publisher(config).publish(dataset_name, tables, source_hashes, provenance, reason, parent.dataset_version_id)
     result = {"passed": True, "market": market, "parent_version_id": parent.dataset_version_id, "dataset_version_id": corrected.parent.name, "manifest": corrected.as_posix(), "reason": reason, "detail": detail}
     _write_report(config, f"{market.lower()}_validity_correction.json", result)
