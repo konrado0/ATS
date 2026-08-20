@@ -186,8 +186,6 @@ def _inspect_files(
     for relative in relative_paths:
         path = root / relative
         parquet = pq.ParquetFile(path)
-        if parquet.schema_arrow.remove_metadata() != expected:
-            raise PublicationError(f"Parquet schema drift: {relative.as_posix()}")
         file_hasher = IncrementalArrowHasher(expected)
         file_min = file_max = None
         file_markets: set[str] = set()
@@ -195,34 +193,38 @@ def _inspect_files(
         rows = 0
         # Small dimension tables receive whole-table semantic validation. Large
         # facts are validated batchwise with sorted-key boundary checks.
-        small_parts: list[pa.Table] | None = [] if parquet.metadata.num_rows <= 1_000_000 else None
-        for batch in parquet.iter_batches(batch_size=122_880):
-            part = _batch_table(batch, expected)
-            validate_table(table_name, part)
-            if not sorted_table(table_name, part).equals(part):
-                raise PublicationError(f"non-deterministic sort order in {table_name}")
+        try:
+            if parquet.schema_arrow.remove_metadata() != expected:
+                raise PublicationError(f"Parquet schema drift: {relative.as_posix()}")
+            small_parts: list[pa.Table] | None = [] if parquet.metadata.num_rows <= 1_000_000 else None
+            for batch in parquet.iter_batches(batch_size=122_880):
+                part = _batch_table(batch, expected)
+                validate_table(table_name, part)
+                if not sorted_table(table_name, part).equals(part):
+                    raise PublicationError(f"non-deterministic sort order in {table_name}")
+                if small_parts is not None:
+                    small_parts.append(part)
+                semantic = list(SEMANTIC_KEYS[table_name])
+                if part.num_rows:
+                    first_key = tuple(part[name][0].as_py() for name in semantic)
+                    last_key = tuple(part[name][part.num_rows - 1].as_py() for name in semantic)
+                    if prior_semantic_key is not None and first_key == prior_semantic_key:
+                        raise PublicationError(f"duplicate semantic key across row groups in {table_name}")
+                    prior_semantic_key = last_key
+                if "event_ts" in part.column_names and part.num_rows:
+                    current_min = pc.min(part["event_ts"]).as_py()
+                    current_max = pc.max(part["event_ts"]).as_py()
+                    file_min = current_min if file_min is None else min(file_min, current_min)
+                    file_max = current_max if file_max is None else max(file_max, current_max)
+                file_markets.update(_unique_strings(part, "market"))
+                file_frequencies.update(_unique_strings(part, "frequency"))
+                file_hasher.update(part); table_hasher.update(part)
+                rows += part.num_rows
             if small_parts is not None:
-                small_parts.append(part)
-            semantic = list(SEMANTIC_KEYS[table_name])
-            if part.num_rows:
-                first_key = tuple(part[name][0].as_py() for name in semantic)
-                last_key = tuple(part[name][part.num_rows - 1].as_py() for name in semantic)
-                if prior_semantic_key is not None and first_key == prior_semantic_key:
-                    raise PublicationError(f"duplicate semantic key across row groups in {table_name}")
-                prior_semantic_key = last_key
-            if "event_ts" in part.column_names and part.num_rows:
-                current_min = pc.min(part["event_ts"]).as_py()
-                current_max = pc.max(part["event_ts"]).as_py()
-                file_min = current_min if file_min is None else min(file_min, current_min)
-                file_max = current_max if file_max is None else max(file_max, current_max)
-            file_markets.update(_unique_strings(part, "market"))
-            file_frequencies.update(_unique_strings(part, "frequency"))
-            file_hasher.update(part); table_hasher.update(part)
-            rows += part.num_rows
-        if small_parts is not None:
-            combined = pa.concat_tables(small_parts) if small_parts else pa.Table.from_batches([], schema=expected)
-            validate_table(table_name, combined)
-        parquet.close()
+                combined = pa.concat_tables(small_parts) if small_parts else pa.Table.from_batches([], schema=expected)
+                validate_table(table_name, combined)
+        finally:
+            parquet.close()
         total_rows += rows
         all_markets.update(file_markets); all_frequencies.update(file_frequencies)
         if file_min is not None:

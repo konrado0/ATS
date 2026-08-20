@@ -20,6 +20,12 @@ def test_filename_and_header_tickers_are_retained_and_validity_is_not_inferred(t
     )
     empty = raw.with_name("empty.us.txt")
     empty.write_text("<TICKER>,<PER>,<DATE>,<TIME>,<OPEN>,<HIGH>,<LOW>,<CLOSE>,<VOL>,<OPENINT>\n", encoding="utf-8")
+    malformed = raw.with_name("zzz.us.txt")
+    malformed.write_text(
+        "<TICKER>,<PER>,<DATE>,<TIME>,<OPEN>,<HIGH>,<LOW>,<CLOSE>,<VOL>,<OPENINT>\n"
+        "ZZZ.US,D,20250102,000000,10,8,9,10.5,100,0\n",
+        encoding="utf-8",
+    )
     trusted = source / "ATS" / "phase_a" / "runs" / "trusted"; trusted.mkdir(parents=True)
     config = PhaseBConfig(
         phase_root=source / "ATS" / "phase_b", trusted_phase_a_run=trusted,
@@ -43,7 +49,7 @@ def test_filename_and_header_tickers_are_retained_and_validity_is_not_inferred(t
     bars = pq.read_table(stage / files["bars"][0])
     assert "ticker_filename_mismatch" in bars["quality_flags"][0].as_py()
     issues = pq.read_table(stage / files["ingestion_issues"][0]).to_pandas()
-    assert issues["issue_code"].tolist() == ["ticker_filename_mismatch"]
+    assert issues["issue_code"].tolist() == ["ticker_filename_mismatch", "invalid_ohlcv"]
     assert report["ticker_filename_mismatches"] == 1
     assert report["ticker_filename_mismatch_bar_rows"] == 1
-    assert report["empty_or_no_bar_listings"] == 1
+    assert report["empty_or_no_bar_listings"] == 2

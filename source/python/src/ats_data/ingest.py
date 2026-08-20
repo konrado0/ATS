@@ -13,7 +13,7 @@ import pyarrow.parquet as pq
 from ats_contracts.schemas import SCHEMA_VERSION, schema_for
 from ats_contracts.validation import validate_table
 from ats_data.config import PhaseBConfig
-from ats_data.hashing import mark_sorted
+from ats_data.hashing import mark_sorted, sorted_table
 
 
 US_LISTING_NAMESPACE = uuid.UUID("2d98bac9-c420-55c5-8c42-3cb70141808c")
@@ -333,7 +333,7 @@ def stage_us_tables(config: PhaseBConfig, stage: Path) -> tuple[dict[str, list[P
     for table_name, table in {
         "security_master": master, "security_aliases": security_aliases, "ingestion_issues": issues,
     }.items():
-        table = mark_sorted(table_name, table)
+        table = mark_sorted(table_name, sorted_table(table_name, table))
         relative = Path("data") / table_name / "market=US" / "part-000.parquet"
         path = stage / relative; path.parent.mkdir(parents=True, exist_ok=True)
         pq.write_table(table, path, compression=config.compression, compression_level=config.compression_level,
