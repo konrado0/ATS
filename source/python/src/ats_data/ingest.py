@@ -294,9 +294,11 @@ def stage_us_tables(config: PhaseBConfig, stage: Path) -> tuple[dict[str, list[P
     })
     aliases: dict[str, list[object]] = {name: [] for name in schema_for("security_aliases").names}
     for row in listings.itertuples(index=False):
+        header_ticker = None if pd.isna(row.header_ticker) else str(row.header_ticker)
+        header_symbol = None if pd.isna(row.header_symbol) else str(row.header_symbol)
         evidence = (
-            ("ticker", row.header_ticker, row.header_symbol or "", "raw <TICKER> field"),
-            ("vendor_symbol", row.header_symbol, row.header_symbol or "", "raw <TICKER> field"),
+            ("ticker", header_ticker, header_symbol or "", "raw <TICKER> field"),
+            ("vendor_symbol", header_symbol, header_symbol or "", "raw <TICKER> field"),
             ("source_filename_ticker", row.filename_ticker, row.filename_ticker, "source filename"),
             ("source_filename_vendor_symbol", row.filename_symbol, row.filename_symbol, "source filename"),
             ("venue", row.venue_mic, row.venue_mic, "source directory"),
