@@ -1,0 +1,45 @@
+{
+  "canonical_data_writes": false,
+  "executed_at_utc": "2026-08-21T14:44:16.674049+00:00",
+  "fresh_kernel_per_notebook": true,
+  "network_required": false,
+  "results": [
+    {
+      "bytes": 27247,
+      "cell_errors": 0,
+      "code_cells": 4,
+      "elapsed_seconds": 4.426,
+      "notebook": "00_orientation_and_system_map.ipynb",
+      "retained_outputs": 5,
+      "sha256": "91fa21da5114e956cc8ff8994ce613c6fafab3a388f44cc1bb682c16b7c47f85"
+    },
+    {
+      "bytes": 67594,
+      "cell_errors": 0,
+      "code_cells": 9,
+      "elapsed_seconds": 6.076,
+      "notebook": "01_data_identity_and_point_in_time.ipynb",
+      "retained_outputs": 18,
+      "sha256": "e63d3381cd6ecd64c28c1e5eca5cd0bebc2dc214f83cd267a2cbdb53c90ead0d"
+    },
+    {
+      "bytes": 46118,
+      "cell_errors": 0,
+      "code_cells": 6,
+      "elapsed_seconds": 3.641,
+      "notebook": "02_research_findings_and_diagnostics.ipynb",
+      "retained_outputs": 11,
+      "sha256": "ffe08435c42a92a85a90684c535f1015fec1bc8dbf3e48a3f10717a840bdca93"
+    },
+    {
+      "bytes": 53512,
+      "cell_errors": 0,
+      "code_cells": 6,
+      "elapsed_seconds": 9.757,
+      "notebook": "03_portfolio_ledger_and_end_to_end_flow.ipynb",
+      "retained_outputs": 9,
+      "sha256": "66482ae0778a072e9c09d4da50be1ce6d7dccb54105eb467fc1debd9acc7a797"
+    }
+  ],
+  "schema_version": "ats.review_notebook_execution.v1"
+}
