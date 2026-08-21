@@ -1,0 +1,14 @@
+scenario,ledger,session_date,security_id,disposition,reason_code,quantity,price,market_value,cash,equity,status,source_quantity_after,related_quantity_after,cash_delta,official_denominator,usable_count,eligible_count,unallocated_weight
+missing_existing_open,rejections,2025-04-02,A,deferred,missing_next_session_open,,,,,,,,,,,,,
+missing_new_open,rejections,2025-04-02,B,rejected,missing_next_session_open,,,,,,,,,,,,,
+stale_close,valuations,2025-05-06,A,,,5.000000000000,100.00000000,500.000000,,,stale,,,,,,,
+unresolved_close,valuations,2025-05-07,A,,,5.000000000000,,,,,unresolved,,,,,,,
+official_57_of_60,portfolio_snapshots,2025-06-02,,,,,,,,,complete,,,,60,57,57,0.430000000000
+split_2_for_1,corporate_action_applications,2025-01-07,AAA,,,,,,,,,200.000000000000,,,,,,
+reverse_split_1_for_5,corporate_action_applications,2025-01-07,AAA,,,,,,,,,20.000000000000,,,,,,
+merger_half_share,corporate_action_applications,2025-01-07,AAA,,,,,,,,,0.000000000000,50.000000000000,,,,,
+cash_takeover_12,corporate_action_applications,2025-01-07,AAA,,,,,,,,,0.000000000000,,1200.000000,,,,
+delisting_without_terms,valuations,2025-01-07,AAA,,,100.000000000000,,,,,unresolved,,,,,,,
+identifier_change,positions,2025-01-07,AAA,,,100.000000000000,,,,,complete,,,,,,,
+suspension,rejections,2025-01-07,AAA,deferred,suspended,,,,,,,,,,,,,
+no_eligible_future_session,rejections,2025-07-02,A,rejected,no_eligible_future_session,,,,,,,,,,,,,
