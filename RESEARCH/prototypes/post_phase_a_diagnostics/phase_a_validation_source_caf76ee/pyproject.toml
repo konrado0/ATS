@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ats-research"
+version = "0.2.0"
+description = "Correctness-first Phase A GPW research slice"
+requires-python = ">=3.12"
+dependencies = [
+  "numpy",
+  "pandas>=3",
+  "polars>=1.43",
+  "pyarrow>=25",
+  "pydantic>=2.13",
+  "PyYAML",
+]
+
+[project.scripts]
+ats-research = "ats_research.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.setuptools.packages.find]
+where = ["src"]

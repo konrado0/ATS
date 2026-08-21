@@ -1,0 +1,6 @@
+research_item,classification,reason
+momentum,DATA-CONFOUNDED,"Rank IC is positive in aggregate and since 2023, but the Q4-over-Q5 hump occurs in the older 57-59/60 coverage regime and disappears on 60/60 dates, so persistence and coverage cannot be separated."
+strong-stock pullback,NOT SUPPORTED,"Under both frozen strength definitions, deep five-session pullbacks underperform nonnegative five-session returns at every horizon; only 2024 consistently reverses the ordering."
+proximity to high,PROMISING,"A single strict 252-session definition has positive standalone and momentum-controlled rank association at all horizons, with supportive results in most full years, although 2024 incremental association is near zero."
+relative volume,WEAK,"The aggregate rank association is small and the quintile profile is hump-shaped rather than monotonic, so relative volume is only a limited conditioning candidate."
+volatility,PROMISING,"The highest-volatility quintile materially underperforms and the negative association strengthens at longer horizons in later years, supporting use as a conditioning or risk variable rather than a standalone return rule."

@@ -1,0 +1,27 @@
+{
+  "schema_version": "ats.environment_kernel_repair_verification.v1",
+  "verified_at_utc": "2026-08-21T14:39:53.6312776Z",
+  "environment_root": "C:/Users/konra/anaconda3/envs/ats-stack-research",
+  "diagnosis": {
+    "direct_scientific_python_exit_decimal": -1066598273,
+    "direct_scientific_python_exit_hex": "0xC06D007F",
+    "interpretation": "Windows delayed-load procedure resolution failure when the Conda native-library directories are absent",
+    "pre_repair_kernelspec_env_block": "absent"
+  },
+  "repair": {
+    "packages_changed": false,
+    "kernelspec_path": "C:/Users/konra/anaconda3/envs/ats-stack-research/share/jupyter/kernels/python3/kernel.json",
+    "kernelspec_sha256": "6BE831FF2B0B32E7871C369A45637C52AF49493B0D1F805A0B904B94F0BDD661",
+    "canonical_wrapper_sha256": "8E48B04C775D7DF8F637F8D9253E79800A50C135F4DF426C70221DC80DCD1EAF",
+    "prototype_wrapper_sha256": "8E48B04C775D7DF8F637F8D9253E79800A50C135F4DF426C70221DC80DCD1EAF",
+    "required_native_path": "C:/Users/konra/anaconda3/envs/ats-stack-research/Library/bin",
+    "runtime_root": "D:/Stock/ATS/RESEARCH/.tmp/ats-env"
+  },
+  "verification": {
+    "fresh_kernel_native_path_assertion": "PASS",
+    "numpy_svd": [1.0, 1.0, 1.0],
+    "scipy_spearman": -1.0,
+    "ordered_notebooks": "PASS: 4/4, 0 cell errors",
+    "pytest": "PASS: 80/80 in 52.27 seconds"
+  }
+}

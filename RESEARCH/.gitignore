@@ -1,0 +1,12 @@
+.tmp/
+.ipynb_checkpoints/
+.runtime/
+pytest-*/
+.matplotlib_cache/
+.matplotlib_test/
+mplcache/
+numbacache/
+prototypes/environment_repair/retained_smoke*/
+prototypes/environment_repair/*.parquet
+prototypes/environment_repair/*.png
+*.log

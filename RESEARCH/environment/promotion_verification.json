@@ -1,0 +1,57 @@
+{
+  "date": "2026-08-20",
+  "canonical_environment": "ats-stack-research",
+  "canonical_prefix": "C:/Users/konra/anaconda3/envs/ats-stack-research",
+  "faulty_original_removed": true,
+  "temporary_repaired_name_removed_after_promotion": true,
+  "pre_promotion_comparison": {
+    "conda_package_records_original": 366,
+    "conda_package_records_repaired": 366,
+    "conda_record_differences_by_name_version_build_channel": 0,
+    "pip_freeze_lines_original": 203,
+    "pip_freeze_lines_repaired": 203,
+    "pip_freeze_differences": 0
+  },
+  "repaired_candidate_verification": {
+    "scientific_native_smoke_passed": true,
+    "standard_conda_run_clean": true,
+    "standard_conda_run_import_check": "numpy,pandas,scipy,pyarrow,sklearn,numba,torch",
+    "complete_ats_tests_passed": 47,
+    "complete_ats_tests_failed": 0,
+    "duration_seconds": 46.27
+  },
+  "canonical_post_promotion_verification": {
+    "conda_package_records": 366,
+    "pip_freeze_lines": 203,
+    "python_version": "3.12.13",
+    "scientific_native_smoke_passed": true,
+    "complete_ats_tests_passed": 47,
+    "complete_ats_tests_failed": 0,
+    "complete_ats_test_duration_seconds": 45.11,
+    "short_temp_path_phase_b_publication_tests_passed": 8,
+    "short_temp_path_phase_b_publication_tests_failed": 0
+  },
+  "recreation": {
+    "file": "D:/Stock/ATS/RESEARCH/environment/environment.yml",
+    "sha256": "290334A1C972E3780B354ACFC607C076CE4AE6A77B0905EB41DFB5AA45E48A6D",
+    "machine_specific_prefix_omitted": true,
+    "conda_env_create_dry_run_passed": true,
+    "platform": "win-64",
+    "exact_versions_and_build_strings_pinned": true
+  },
+  "canonical_wrapper": {
+    "file": "D:/Stock/ATS/RESEARCH/environment/invoke_ats_python.ps1",
+    "sha256": "C3B3E6934EE17D9160AF91F95F0CD0D9B04C3B7C0F57C9359628DCC6D5F000F0",
+    "uses_conda_run": false,
+    "isolates_temp_matplotlib_and_numba_paths": true
+  },
+  "opencl_activation_repair": {
+    "applied": true,
+    "reason": "Upstream Windows hook wrote temp.txt inside the Conda prefix and failed under restricted process permissions.",
+    "replacement_uses_prefix_temp_file": false,
+    "repair_script": "D:/Stock/ATS/RESEARCH/environment/repair_opencl_hook.ps1",
+    "repair_script_sha256": "C98DD0AF683B0F08F709FC2A0899DC4A08498D1E7DB55EB7827E6F9C6A8ACFD3",
+    "recreation_script": "D:/Stock/ATS/RESEARCH/environment/recreate_environment.ps1",
+    "recreation_script_sha256": "03FC325CBFE7687B17743C99A20088424565A7181BC021A86A6D008BEFC154E6"
+  }
+}
