@@ -248,3 +248,34 @@ mismatch.
 
 No Stage 1 item other than the two intentionally deferred clean-publication gates
 is FAIL or NOT PROVEN.
+
+## Stage 2 repair audit
+
+A subsequent review invalidated the original completion verdict. It reproduced a
+one-money-quantum overspend after proportional buy scaling: the old engine
+tolerated `-0.000001` and silently replaced it with zero outside the cash ledger.
+It also showed that artifact integrity alone did not prove the semantic
+target-to-order translation. The earlier retained run is immutable but
+superseded as completion evidence.
+
+The repair removes the clamp and selects the largest affordable common buy scale
+on the persisted weight grid after quantity, notional, and commission rounding.
+The exact `690176.600000` cash / `82935.90000000` open / `0.998228` target case is
+a regression test. Thirty generated cash/price/weight cases now run through the
+independent validator, not only engine-local assertions.
+
+Validation now independently reconstructs each real-data order from its retained
+intent, pre-order cash and positions, pinned canonical session open, cost model,
+and numeric policy. It verifies execution equity, current and requested quantity,
+target weight, side, sell proceeds, the common cash scale, generated quantity,
+and the exact expected order set. The reviewer’s in-memory rewrite to target
+weight `0.999`, execution equity `1`, and requested quantity `999` is an explicit
+negative regression.
+
+The repaired audit passed 33/33 focused Phase C tests and 80/80 full tests. The
+Phase A archive revalidated with 30 artifacts and 76,320 panel rows; pinned GPW
+and U.S. manifests revalidated with 147,687 and 30,937,812 bars; exact GPW
+reconciliation passed again. Applying the new validator to the prior retained
+real ledger independently reconstructed all five orders and checked all five fill
+sources and eleven valuation sources. Final immutable publication and a separate
+same-hash reproduction follow from the exact documentation-complete commit.
