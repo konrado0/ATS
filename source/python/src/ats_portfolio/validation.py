@@ -25,7 +25,17 @@ from ats_data.discovery import manifest_files
 from ats_portfolio.config import PortfolioConfig, load_config
 from ats_portfolio.hashing import file_hash, manifest_hash, object_hash
 from ats_portfolio.market import MARKET_FIELD_TIMING_POLICY, modeled_open_timestamp
-from ats_portfolio.numeric import NUMERIC_POLICY, RECONCILIATION_TOLERANCE, ZERO, decimal_value, money, price
+from ats_portfolio.numeric import (
+    NUMERIC_POLICY,
+    ONE,
+    RECONCILIATION_TOLERANCE,
+    WEIGHT_QUANTUM,
+    ZERO,
+    decimal_value,
+    money,
+    price,
+    quantity,
+)
 from ats_portfolio.storage import logical_intents_hash, logical_rows_hash, read_intents, read_ledger
 
 
@@ -194,6 +204,7 @@ def _validate_events(
     security_events: list[SecurityEventInput],
     corporate_actions: list[CorporateActionInput],
     config: PortfolioConfig,
+    canonical_bars: dict[tuple[Any, str], dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     retained_intents = ledgers["intents"]
     if [row.model_dump(mode="json") for row in retained_intents] != [
@@ -229,6 +240,14 @@ def _validate_events(
             raise RunValidationError(f"fill lineage is incomplete: {fill.event_id}")
         if fill.quantity != movement.quantity_delta or fill.quantity != order.generated_quantity:
             raise RunValidationError(f"fill/order/position quantity mismatch: {fill.event_id}")
+        if (
+            fill.intent_id != order.intent_id
+            or fill.security_id != order.security_id
+            or fill.side != order.side
+            or fill.raw_open_price != order.raw_open_price
+            or fill.currency != order.currency
+        ):
+            raise RunValidationError(f"fill differs from generated order: {fill.event_id}")
         if fill.timestamp < intent.earliest_eligible_execution_ts or fill.timestamp <= intent.decision_ts:
             raise RunValidationError(f"fill precedes intent eligibility: {fill.event_id}")
         if intent.information_available_ts > intent.decision_ts:
@@ -275,7 +294,7 @@ def _validate_events(
     cash = ZERO
     for movement in ledgers["cash_movements"]:
         cash = money(cash + movement.amount)
-        if movement.balance_after != cash or cash < -RECONCILIATION_TOLERANCE:
+        if movement.balance_after != cash or cash < ZERO:
             raise RunValidationError(f"cash balance mismatch: {movement.event_id}")
     positions: dict[str, Decimal] = defaultdict(lambda: ZERO)
     for movement in ledgers["position_movements"]:
@@ -374,13 +393,238 @@ def _validate_events(
             value = money(sum((row.market_value for row in rows), ZERO))
             if snapshot.market_value != value or snapshot.equity != money(snapshot.cash + value):
                 raise RunValidationError(f"portfolio snapshot does not reconcile: {snapshot.session_date}")
+    translated = _validate_order_translation(ledgers, intents, config, canonical_bars)
     return {
         "events": len(events),
         "fills": len(fills),
         "sessions": len(ledgers["portfolio_snapshots"]),
         "ending_cash": str(cash),
         "event_sequence_hash": object_hash([row.event_id for row in events]),
+        "orders_independently_reconstructed": translated,
     }
+
+
+def _independent_buy_cost(raw_open: Decimal, requested: Decimal, config: PortfolioConfig) -> Decimal:
+    fill_price = price(raw_open * (ONE + config.slippage_bps / Decimal("10000")))
+    notional = money(requested * fill_price)
+    return money(notional + abs(notional) * config.commission_bps / Decimal("10000"))
+
+
+def _independent_affordable_scale(
+    buys: list[tuple[Decimal, Decimal]], available_cash: Decimal, config: PortfolioConfig
+) -> Decimal:
+    def total(scale: Decimal) -> Decimal:
+        return sum(
+            (
+                _independent_buy_cost(raw_open, generated, config)
+                for raw_open, requested in buys
+                if (generated := quantity(requested * scale))
+            ),
+            ZERO,
+        )
+
+    if not buys or total(ONE) <= available_cash:
+        return ONE
+    low = 0
+    high = int(ONE / WEIGHT_QUANTUM)
+    while low < high:
+        midpoint = (low + high + 1) // 2
+        candidate = Decimal(midpoint) * WEIGHT_QUANTUM
+        if total(candidate) <= available_cash:
+            low = midpoint
+        else:
+            high = midpoint - 1
+    return Decimal(low) * WEIGHT_QUANTUM
+
+
+def _validate_order_translation(
+    ledgers: dict[str, list[Any]],
+    intents: list[TargetWeightIntent],
+    config: PortfolioConfig,
+    canonical_bars: dict[tuple[Any, str], dict[str, Any]] | None,
+) -> int:
+    """Rebuild target-to-order translation without calling portfolio-engine code."""
+    intent_by_id = {row.intent_id: row for row in intents}
+    orders = ledgers["orders"]
+    order_by_intent: dict[str, Any] = {}
+    for order in orders:
+        if order.intent_id in order_by_intent:
+            raise RunValidationError(f"intent generated more than one order: {order.intent_id}")
+        intent = intent_by_id.get(order.intent_id)
+        if intent is None:
+            raise RunValidationError(f"order has no retained intent: {order.event_id}")
+        if (
+            order.cause_id != intent.intent_id
+            or order.batch_id != intent.batch_id
+            or order.security_id != intent.security_id
+            or order.target_weight != intent.target_weight
+        ):
+            raise RunValidationError(f"order differs from retained intent: {order.event_id}")
+        expected_requested = quantity(
+            order.execution_equity * intent.target_weight / order.raw_open_price - order.current_quantity
+        )
+        if order.requested_quantity != expected_requested:
+            raise RunValidationError(f"order target translation mismatch: {order.event_id}")
+        if (
+            (order.side == Side.BUY and (order.requested_quantity <= ZERO or order.generated_quantity <= ZERO))
+            or (order.side == Side.SELL and (order.requested_quantity >= ZERO or order.generated_quantity >= ZERO))
+            or order.cash_scale < ZERO
+            or order.cash_scale > ONE
+        ):
+            raise RunValidationError(f"order side or cash scale is invalid: {order.event_id}")
+        order_by_intent[order.intent_id] = order
+
+    all_events = sorted(
+        [row for name, rows in ledgers.items() if name != "intents" for row in rows],
+        key=lambda row: row.sequence,
+    )
+    cash = ZERO
+    positions: dict[str, Decimal] = defaultdict(lambda: ZERO)
+    state_before: dict[int, tuple[Decimal, dict[str, Decimal]]] = {}
+    cash_ids = {row.event_id for row in ledgers["cash_movements"]}
+    position_ids = {row.event_id for row in ledgers["position_movements"]}
+    for event in all_events:
+        state_before[event.sequence] = (cash, dict(positions))
+        if event.event_id in cash_ids:
+            cash = money(cash + event.amount)
+        elif event.event_id in position_ids:
+            positions[str(event.security_id)] = event.quantity_after
+    for order in orders:
+        _cash, before_positions = state_before[order.sequence]
+        if order.current_quantity != before_positions.get(str(order.security_id), ZERO):
+            raise RunValidationError(f"order current quantity differs from ledger state: {order.event_id}")
+
+    batches: dict[str, list[TargetWeightIntent]] = defaultdict(list)
+    for intent in intents:
+        batches[intent.batch_id].append(intent)
+    valuation_history: dict[str, list[Any]] = defaultdict(list)
+    for valuation in ledgers["valuations"]:
+        if valuation.price is not None:
+            valuation_history[str(valuation.security_id)].append(valuation)
+    rejection_causes = {row.intent_id for row in ledgers["rejections"] if row.intent_id}
+    snapshot_sessions = sorted(row.session_date for row in ledgers["portfolio_snapshots"])
+    reconstructed = 0
+    for batch_id, batch in batches.items():
+        actual = sorted(
+            [row for row in orders if row.batch_id == batch_id], key=lambda row: row.sequence
+        )
+        eligible_sessions = [
+            session
+            for session in snapshot_sessions
+            if all(
+                modeled_open_timestamp(session, config.market_timezone, config.market_open_time)
+                >= intent.earliest_eligible_execution_ts
+                for intent in batch
+            )
+        ]
+        if not eligible_sessions:
+            continue
+        expected_timestamp = modeled_open_timestamp(
+            eligible_sessions[0], config.market_timezone, config.market_open_time
+        )
+        timestamps = {row.timestamp for row in actual}
+        if len(timestamps) > 1 or (timestamps and timestamps != {expected_timestamp}):
+            raise RunValidationError(f"batch orders have different execution timestamps: {batch_id}")
+        timestamp = expected_timestamp
+        session = timestamp.astimezone(ZoneInfo(config.market_timezone)).date()
+        batch_rejections = [row for row in ledgers["rejections"] if row.batch_id == batch_id]
+        anchors = actual + batch_rejections
+        if anchors:
+            anchor = min(anchors, key=lambda row: row.sequence)
+            starting_cash, starting_positions = state_before[anchor.sequence]
+        else:
+            starting_cash = ZERO
+            starting_positions = {}
+            for event in all_events:
+                if event.timestamp >= timestamp:
+                    break
+                if event.event_id in cash_ids:
+                    starting_cash = money(starting_cash + event.amount)
+                elif event.event_id in position_ids:
+                    starting_positions[str(event.security_id)] = event.quantity_after
+        marks: dict[str, Decimal] = {}
+        for security_id, held in starting_positions.items():
+            if not held:
+                continue
+            canonical = canonical_bars.get((session, security_id)) if canonical_bars is not None else None
+            if canonical is not None and canonical.get("open") is not None and str(canonical.get("currency")) == config.account_currency:
+                marks[security_id] = price(decimal_value(canonical["open"]))
+                continue
+            same_security = next((row for row in actual if str(row.security_id) == security_id), None)
+            if same_security is not None:
+                marks[security_id] = same_security.raw_open_price
+                continue
+            previous = [row for row in valuation_history[security_id] if row.timestamp < timestamp]
+            if previous:
+                marks[security_id] = previous[-1].price
+        if set(marks) != {key for key, held in starting_positions.items() if held}:
+            raise RunValidationError(f"cannot independently reconstruct execution equity: {batch_id}")
+        expected_equity = money(
+            starting_cash + sum((starting_positions[key] * marks[key] for key in marks), ZERO)
+        )
+        if any(row.execution_equity != expected_equity for row in actual):
+            raise RunValidationError(f"order execution equity mismatch: {batch_id}")
+
+        expected: dict[str, tuple[Decimal, Decimal]] = {}
+        for intent in batch:
+            order = order_by_intent.get(intent.intent_id)
+            canonical = canonical_bars.get((session, intent.security_id)) if canonical_bars is not None else None
+            if canonical_bars is not None:
+                if (
+                    canonical is None
+                    or canonical.get("open") is None
+                    or str(canonical.get("currency")) != config.account_currency
+                    or intent.intent_id in rejection_causes
+                ):
+                    continue
+                raw_open = price(decimal_value(canonical["open"]))
+                if order is not None and (
+                    order.raw_open_price != raw_open
+                    or order.currency != str(canonical.get("currency"))
+                ):
+                    raise RunValidationError(f"order open/currency differs from canonical source: {order.event_id}")
+            elif order is not None:
+                raw_open = order.raw_open_price
+            else:
+                continue
+            current = starting_positions.get(intent.security_id, ZERO)
+            requested = quantity(expected_equity * intent.target_weight / raw_open - current)
+            if requested:
+                expected[intent.intent_id] = (raw_open, requested)
+        sells = sorted(
+            [(intent_id, raw, requested) for intent_id, (raw, requested) in expected.items() if requested < ZERO],
+            key=lambda row: intent_by_id[row[0]].security_id,
+        )
+        buys = sorted(
+            [(intent_id, raw, requested) for intent_id, (raw, requested) in expected.items() if requested > ZERO],
+            key=lambda row: intent_by_id[row[0]].security_id,
+        )
+        cash_after_sells = starting_cash
+        for intent_id, raw_open, requested in sells:
+            fill_price = price(raw_open * (ONE - config.slippage_bps / Decimal("10000")))
+            notional = money(requested * fill_price)
+            commission = money(abs(notional) * config.commission_bps / Decimal("10000"))
+            cash_after_sells = money(cash_after_sells - notional - commission)
+            order = order_by_intent.get(intent_id)
+            if order is None or order.requested_quantity != requested or order.generated_quantity != requested or order.cash_scale != ONE:
+                raise RunValidationError(f"sell order reconstruction mismatch: {intent_id}")
+            reconstructed += 1
+        scale = _independent_affordable_scale(
+            [(raw, requested) for _intent_id, raw, requested in buys], cash_after_sells, config
+        )
+        for intent_id, _raw_open, requested in buys:
+            generated = quantity(requested * scale)
+            order = order_by_intent.get(intent_id)
+            if generated:
+                if order is None or order.requested_quantity != requested or order.generated_quantity != generated or order.cash_scale != scale:
+                    raise RunValidationError(f"buy order reconstruction mismatch: {intent_id}")
+                reconstructed += 1
+            elif order is not None:
+                raise RunValidationError(f"zero-sized buy unexpectedly generated an order: {intent_id}")
+        expected_ids = {intent_id for intent_id, _raw, _requested in sells + buys if quantity(_requested * (scale if _requested > ZERO else ONE))}
+        if {row.intent_id for row in actual} != expected_ids:
+            raise RunValidationError(f"batch order set differs from reconstructed targets: {batch_id}")
+    return reconstructed
 
 
 def _group_actions(actions: list[CorporateActionInput]) -> dict[str, list[CorporateActionInput]]:
@@ -453,20 +697,25 @@ def _validate_security_event_states(
 
 def _validate_market_sources(
     ledgers: dict[str, list[Any]], manifest: LedgerRunManifest, config: PortfolioConfig
-) -> dict[str, int]:
+) -> tuple[dict[str, int], dict[tuple[Any, str], dict[str, Any]]]:
     fills = ledgers["fills"]
     resolved_valuations = [row for row in ledgers["valuations"] if row.source_bar_id is not None]
-    if not fills and not resolved_valuations:
-        return {"fills": 0, "valuations": 0}
+    snapshots = ledgers["portfolio_snapshots"]
+    if not fills and not resolved_valuations and not snapshots:
+        return {"fills": 0, "valuations": 0}, {}
     manifest_path = Path(manifest.phase_b_manifest_path)
     files = manifest_files(manifest_path, "bars")
     security_ids = sorted(
         {str(fill.security_id) for fill in fills}
         | {str(valuation.security_id) for valuation in resolved_valuations}
+        | {str(intent.security_id) for intent in ledgers["intents"]}
+        | {str(position.security_id) for position in ledgers["positions"]}
     )
     source_timestamps = [fill.source_bar_event_ts for fill in fills] + [
         valuation.source_timestamp for valuation in resolved_valuations
     ]
+    if not source_timestamps:
+        source_timestamps = [row.timestamp for row in snapshots]
     minimum = min(source_timestamps)
     maximum = max(source_timestamps)
     dataset = ds.dataset([str(path) for path in files], format="parquet")
@@ -488,6 +737,7 @@ def _validate_market_sources(
     )
     rows = table.to_pylist()
     canonical: dict[str, dict[str, Any]] = {}
+    canonical_by_session: dict[tuple[Any, str], dict[str, Any]] = {}
     for row in rows:
         bar_id = "|".join(
             [str(row["security_id"]), row["event_ts"].isoformat(), str(row["source"]), str(row["adjustment_version"])]
@@ -495,6 +745,13 @@ def _validate_market_sources(
         if bar_id in canonical:
             raise RunValidationError(f"duplicate canonical fill source key: {bar_id}")
         canonical[bar_id] = row
+        session_key = (
+            row["event_ts"].astimezone(ZoneInfo(config.market_timezone)).date(),
+            str(row["security_id"]),
+        )
+        if session_key in canonical_by_session:
+            raise RunValidationError(f"ambiguous canonical session/security row: {session_key}")
+        canonical_by_session[session_key] = row
     for fill in fills:
         row = canonical.get(fill.source_bar_id)
         if row is None:
@@ -544,7 +801,7 @@ def _validate_market_sources(
                 or valuation.stale_age_sessions > config.max_stale_valuation_sessions
             ):
                 raise RunValidationError(f"stale valuation age/policy mismatch: {valuation.event_id}")
-    return {"fills": len(fills), "valuations": len(resolved_valuations)}
+    return {"fills": len(fills), "valuations": len(resolved_valuations)}, canonical_by_session
 
 
 def validate_run(run_dir: Path, require_directory_identity: bool = True) -> dict[str, Any]:
@@ -554,8 +811,10 @@ def validate_run(run_dir: Path, require_directory_identity: bool = True) -> dict
         run_dir, manifest, require_directory_identity
     )
     ledgers = _validate_artifacts(run_dir, manifest)
-    accounting = _validate_events(ledgers, intents, security_events, corporate_actions, config)
-    market_sources = _validate_market_sources(ledgers, manifest, config)
+    market_sources, canonical_bars = _validate_market_sources(ledgers, manifest, config)
+    accounting = _validate_events(
+        ledgers, intents, security_events, corporate_actions, config, canonical_bars
+    )
     accounting["canonical_fill_sources_checked"] = market_sources["fills"]
     accounting["canonical_valuation_sources_checked"] = market_sources["valuations"]
     return {

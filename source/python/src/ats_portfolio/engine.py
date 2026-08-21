@@ -37,6 +37,7 @@ from ats_portfolio.market import MARKET_FIELD_TIMING_POLICY, MarketBar, modeled_
 from ats_portfolio.numeric import (
     ONE,
     RECONCILIATION_TOLERANCE,
+    WEIGHT_QUANTUM,
     ZERO,
     money,
     price,
@@ -541,8 +542,7 @@ class DailyPortfolioEngine:
         buys = sorted((row for row in candidates if row[2] > ZERO), key=lambda row: row[0].security_id)
         for intent, bar, delta in sells:
             self._execute_order(intent, bar, delta, delta, ONE, execution_equity, open_ts)
-        required = sum((self._buy_cash_required(bar.open, delta) for _intent, bar, delta in buys), ZERO)
-        scale = ONE if required <= self.cash or required == ZERO else self.cash / required
+        scale = self._affordable_buy_scale(buys, self.cash)
         if scale < ONE:
             self._reject(
                 timestamp=open_ts,
@@ -558,6 +558,39 @@ class DailyPortfolioEngine:
             if generated:
                 self._execute_order(intent, bar, delta, generated, scale, execution_equity, open_ts)
         return self._batch_metrics(batch, gross, rejected_weight, deferred_weight)
+
+    def _affordable_buy_scale(
+        self,
+        buys: list[tuple[TargetWeightIntent, MarketBar, Decimal]],
+        available_cash: Decimal,
+    ) -> Decimal:
+        """Return the largest persisted common scale whose rounded cost is affordable."""
+        if not buys or self._scaled_buy_cost(buys, ONE) <= available_cash:
+            return ONE
+        low = 0
+        high = int(ONE / WEIGHT_QUANTUM)
+        while low < high:
+            midpoint = (low + high + 1) // 2
+            candidate = Decimal(midpoint) * WEIGHT_QUANTUM
+            if self._scaled_buy_cost(buys, candidate) <= available_cash:
+                low = midpoint
+            else:
+                high = midpoint - 1
+        return Decimal(low) * WEIGHT_QUANTUM
+
+    def _scaled_buy_cost(
+        self,
+        buys: list[tuple[TargetWeightIntent, MarketBar, Decimal]],
+        scale: Decimal,
+    ) -> Decimal:
+        return sum(
+            (
+                self._buy_cash_required(bar.open, generated)
+                for _intent, bar, requested in buys
+                if (generated := quantity(requested * scale))
+            ),
+            ZERO,
+        )
 
     def _batch_metrics(
         self,
@@ -687,10 +720,8 @@ class DailyPortfolioEngine:
             quantity_after=new_quantity,
             fill_id=fill.event_id,
         )
-        if self.cash < -RECONCILIATION_TOLERANCE:
-            raise LedgerInvariantError(f"negative cash after fill: {self.cash}")
         if self.cash < ZERO:
-            self.cash = ZERO
+            raise LedgerInvariantError(f"negative cash after fill: {self.cash}")
 
     def _value_session(
         self,

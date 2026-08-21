@@ -193,7 +193,7 @@ def test_insufficient_cash_scales_all_buys_by_one_common_fraction() -> None:
 
     for scenario in ("insufficient_cash_a", "insufficient_cash_b"):
         assert_golden_fill(result, golden_rows(scenario)[0])
-    assert result.orders[0].cash_scale == result.orders[1].cash_scale == D("0.997504741888")
+    assert result.orders[0].cash_scale == result.orders[1].cash_scale == D("0.997504752870")
     assert result.rejections[0].disposition == RejectionDisposition.DEFERRED
     assert result.rejections[0].reason_code == "insufficient_cash_buy_scale"
     assert result.portfolio_snapshots[-1].cash == D("0.000000")

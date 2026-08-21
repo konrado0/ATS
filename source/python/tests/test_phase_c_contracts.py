@@ -14,6 +14,7 @@ from ats_portfolio.config import PortfolioConfig
 from ats_portfolio.engine import DailyPortfolioEngine
 from ats_portfolio.market import MarketBar
 from ats_portfolio.storage import logical_rows_hash
+from ats_portfolio.validation import _validate_events
 
 
 TZ = ZoneInfo("Europe/Warsaw")
@@ -96,6 +97,12 @@ def engine(bars: list[MarketBar], intents: list[TargetWeightIntent], run_id: str
         MANIFEST,
         MANIFEST_HASH,
     )
+
+
+def validate_result(result: object, intents: list[TargetWeightIntent], local_config: PortfolioConfig) -> dict[str, object]:
+    ledgers = result.ledgers()
+    ledgers["intents"] = sorted(intents, key=lambda row: (row.batch_id, row.security_id, row.intent_id))
+    return _validate_events(ledgers, intents, [], [], local_config)
 
 
 def test_contracts_fail_closed_on_temporal_counts_mutable_manifest_and_forbidden_config() -> None:
@@ -227,6 +234,44 @@ def test_identical_replay_has_identical_event_and_ledger_hashes() -> None:
     }
 
 
+def test_scaled_buy_rounding_never_spends_more_than_available_cash() -> None:
+    initial_cash = Decimal("690176.600000")
+    local_config = config(initial_cash=initial_cash)
+    market_bar = bar(open_="82935.90000000", close="82935.90000000")
+    intents = [intent(target_weight="0.998228")]
+    result = DailyPortfolioEngine(
+        local_config,
+        "cash-rounding-regression",
+        [market_bar],
+        intents,
+        {"A"},
+        "phaseb-pinned",
+        MANIFEST,
+        MANIFEST_HASH,
+    ).run()
+    ledger_cash = sum((row.amount for row in result.cash_movements), Decimal("0"))
+    assert ledger_cash >= 0
+    assert result.portfolio_snapshots[-1].cash == ledger_cash
+    assert result.orders[0].cash_scale < 1
+    assert validate_result(result, intents, local_config)["fills"] == 1
+
+
+def test_independent_validator_rejects_semantically_rewritten_order() -> None:
+    intents = [intent(target_weight="0.5")]
+    result = engine([bar()], intents).run()
+    ledgers = result.ledgers()
+    ledgers["intents"] = intents
+    ledgers["orders"][0] = ledgers["orders"][0].model_copy(
+        update={
+            "target_weight": Decimal("0.999"),
+            "execution_equity": Decimal("1"),
+            "requested_quantity": Decimal("999"),
+        }
+    )
+    with pytest.raises(ValueError, match="order differs from retained intent|order target translation mismatch"):
+        _validate_events(ledgers, intents, [], [], config())
+
+
 @settings(max_examples=30, deadline=None)
 @given(
     cash=st.decimals(min_value="10", max_value="100000", places=2, allow_nan=False, allow_infinity=False),
@@ -257,3 +302,6 @@ def test_generated_small_ledgers_preserve_cash_and_complete_equity(
         cash_rows = [row for row in portfolio.cash_movements if row.fill_id == fill.event_id]
         assert movement.quantity_delta == fill.quantity
         assert sum((row.amount for row in cash_rows), Decimal("0")) == -fill.notional - fill.commission
+    assert validate_result(portfolio, [intent(target_weight=str(target))], local_config)["fills"] == len(
+        portfolio.fills
+    )

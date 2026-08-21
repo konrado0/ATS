@@ -103,8 +103,12 @@ position without an open cannot trade and retains its shares; its target is
 deferred. Available target deltas are sorted by security ID. Sells execute first.
 The buy cash requirement includes adverse slippage and commission. When it
 exceeds cash after sells, all buys in that batch are reduced by one common
-deterministic scale; the shortfall is explicit. No short, borrowing, or negative
-cash configuration is accepted. Tiny residual cash remains explicit.
+deterministic scale. The scale is the largest value on the persisted
+0.000000000001 weight grid whose per-order rounded notionals and commissions sum
+to no more than available cash; the shortfall is explicit. Negative cash is an
+unconditional invariant failure and is never clamped or adjusted outside the
+cash-movement ledger. No short, borrowing, or negative-cash configuration is
+accepted. Tiny residual cash remains explicit.
 
 Default commission is 10 bps of absolute fill notional. Default slippage is 15
 bps applied to raw open (higher for buys, lower for sells). Commission and
@@ -157,6 +161,8 @@ environment lock, numeric/timing/action policies, calendar, costs, and seed.
 Every ledger artifact is listed with byte and logical hashes. Validation ignores
 stored success claims: it re-hashes inputs and artifacts, parses every row through
 the contracts, checks sequence/set coherence, timing, quantities, cash equations,
+independently rebuilds execution equity and target-to-order translation (including
+sell proceeds, requested quantities, the common buy scale, and generated quantities),
 complete/incomplete valuations, and manifest provenance. Reconciliation is
 trade-by-trade and session-by-session. Existing completed runs are never edited
 or overwritten.
