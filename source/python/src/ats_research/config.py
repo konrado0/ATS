@@ -38,11 +38,17 @@ class PhaseAConfig(BaseModel):
     bootstrap_samples: int = Field(default=1_000, ge=100, le=100_000)
     bootstrap_block_sessions: int = Field(default=20, ge=2, le=252)
     confidence_level: float = Field(default=0.95, gt=0.5, lt=1.0)
+    supplemental_bar_mapping_path: Path | None = None
 
     @field_validator("source_data_root", "output_root", mode="before")
     @classmethod
     def normalize_path(cls, value: object) -> Path:
         return Path(str(value)).resolve()
+
+    @field_validator("supplemental_bar_mapping_path", mode="before")
+    @classmethod
+    def normalize_optional_path(cls, value: object) -> Path | None:
+        return None if value is None else Path(str(value)).resolve()
 
     @model_validator(mode="after")
     def validate_contract(self) -> "PhaseAConfig":
@@ -70,6 +76,8 @@ class PhaseAConfig(BaseModel):
         data["source_data_root"] = self.source_data_root.as_posix()
         data["output_root"] = self.output_root.as_posix()
         data["label_horizons"] = list(self.label_horizons)
+        if self.supplemental_bar_mapping_path is not None:
+            data["supplemental_bar_mapping_path"] = self.supplemental_bar_mapping_path.as_posix()
         return data
 
 

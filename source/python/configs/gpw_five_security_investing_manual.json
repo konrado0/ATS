@@ -1,0 +1,61 @@
+{
+  "acquisition_method": "manual_copy_paste_from_displayed_web_table",
+  "archive_manifest": "raw/investing_com/gpw/daily/manual_page_copy_2026-08-24/source_manifest.json",
+  "observed_acquisition_date": "2026-08-24",
+  "parser_version": "investing_com_manual_tsv_v1",
+  "quality_flags": [
+    "manual_copy_paste",
+    "display_rounded_volume",
+    "adjustment_semantics_unverified",
+    "source_url_unknown"
+  ],
+  "source": "investing_com_manual_history",
+  "source_version": "manual_page_copy_2026-08-24",
+  "mappings": [
+    {
+      "company": "LOTOS",
+      "expected_sha256": "ce4beedc0eb6329b16ac1913443e7dec2c03235ba85e24a9674df30a46c35ad3",
+      "isin": "PLLOTOS00025",
+      "last_trade_date": "2022-07-28",
+      "listing_date": "1997-06-10",
+      "security_id": "bd52f489-c099-53f7-bf4f-c0a8522ab691",
+      "source_file": "raw/investing_com/gpw/daily/manual_page_copy_2026-08-24/PLLOTOS00025_lotos.tsv"
+    },
+    {
+      "company": "PGNiG",
+      "expected_sha256": "d743ebb9eb77ef4d35f6c6201b8fd0faf0a541217e9c2add9b3fb832cbc1caa6",
+      "isin": "PLPGNIG00014",
+      "last_trade_date": "2022-10-28",
+      "listing_date": "2005-09-23",
+      "security_id": "0a091b66-5a77-5e09-a77f-3f8ee3495374",
+      "source_file": "raw/investing_com/gpw/daily/manual_page_copy_2026-08-24/PLPGNIG00014_pgnig.tsv"
+    },
+    {
+      "company": "CIECH",
+      "expected_sha256": "af41d016aab896cfcdc01e149b43b2719883716965377865c0ce6f0a90d963d2",
+      "isin": "PLCIECH00018",
+      "last_trade_date": "2023-11-06",
+      "listing_date": "2005-02-10",
+      "security_id": "ff9065f8-dd14-5c1a-a82c-6ca53812d287",
+      "source_file": "raw/investing_com/gpw/daily/manual_page_copy_2026-08-24/PLCIECH00018_ciech.tsv"
+    },
+    {
+      "company": "STS Holding",
+      "expected_sha256": "9dd03ec93468e288b117e480ed690d9970bc8e3cebbab7175bf19605163c93b0",
+      "isin": "PLSTSHL00012",
+      "last_trade_date": "2023-10-04",
+      "listing_date": "2021-12-10",
+      "security_id": "5e6e6cb6-c8ca-5f5f-afec-094eec3f3786",
+      "source_file": "raw/investing_com/gpw/daily/manual_page_copy_2026-08-24/PLSTSHL00012_sts_holding.tsv"
+    },
+    {
+      "company": "TIM",
+      "expected_sha256": "18d05ecccde44e8949f5f09ea4da4d1293edfa46ef27272b4a395d463b936121",
+      "isin": "PLTIM0000016",
+      "last_trade_date": "2024-03-01",
+      "listing_date": "1998-06-19",
+      "security_id": "05d3c2df-e256-5452-94e0-6a4be766041a",
+      "source_file": "raw/investing_com/gpw/daily/manual_page_copy_2026-08-24/PLTIM0000016_tim.tsv"
+    }
+  ]
+}

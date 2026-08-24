@@ -12,6 +12,7 @@ from ats_research.features.definitions import (
     regime_feature_column,
 )
 from ats_research.labels.forward_returns import compute_forward_returns
+from ats_research.identity import RESOLVED_VENDOR_STATUSES
 
 
 class PanelValidationError(ValueError):
@@ -96,8 +97,8 @@ def build_panel(
     securities_with_files = set(bar_data.bars["security_id"].dropna().astype(str))
     panel["source_file_available"] = panel["security_id"].astype(str).isin(securities_with_files)
     missing_identity = panel["security_id"].isna()
-    missing_vendor = ~panel["vendor_resolution_status"].isin(["exact", "mapped_renamed", "mapped_successor"])
-    source_missing = panel["stooq_symbol"].notna() & ~panel["source_file_available"]
+    missing_vendor = ~panel["vendor_resolution_status"].isin(RESOLVED_VENDOR_STATUSES)
+    source_missing = ~missing_vendor & ~panel["source_file_available"]
     suspended = panel["trading_suspension_from"].notna() & panel["session_date"].ge(panel["trading_suspension_from"])
     missing_prior_price = panel["feature_input_close"].isna()
 
@@ -131,7 +132,7 @@ def build_panel(
     for column in columns:
         eligibility = panel["is_price_usable_member"] & panel[column].notna()
         reason = panel["price_exclusion_reason"].copy()
-        reason.loc[panel["is_price_usable_member"] & panel[column].isna()] = "insufficient_feature_history"
+        reason.loc[panel["is_price_usable_member"] & panel[column].isna()] = "insufficient_lookback"
         panel[feature_eligibility_column(column)] = eligibility
         panel[feature_exclusion_column(column)] = reason
         count = eligibility.groupby(panel["session_date"]).transform("sum").astype("int64")

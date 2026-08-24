@@ -7,9 +7,11 @@ from pathlib import Path
 
 import pandas as pd
 
+from ats_research.investing_manual import load_supplemental_mapping
+
 
 SECURITY_NAMESPACE = uuid.UUID("6398c638-d145-5bee-82c2-1c165adea4df")
-RESOLVED_VENDOR_STATUSES = frozenset({"exact", "mapped_renamed", "mapped_successor"})
+RESOLVED_VENDOR_STATUSES = frozenset({"exact", "mapped_renamed", "mapped_successor", "supplemental_external_mapping"})
 
 
 class IdentityResolutionError(ValueError):
@@ -78,6 +80,7 @@ def build_identity_tables(
     membership_intervals: pd.DataFrame,
     mapping_path: Path,
     venue_mic: str,
+    supplemental_mapping_path: Path | None = None,
 ) -> IdentityTables:
     membership = membership_intervals.copy()
     membership["security_id"] = membership["isin"].map(lambda value: stable_security_id(value, venue_mic))
@@ -87,6 +90,25 @@ def build_identity_tables(
     mapping = pd.read_csv(mapping_path)
     vendor = _collapse_vendor_mapping(mapping, set(membership["isin"].astype(str)))
     vendor["security_id"] = vendor["isin"].map(lambda value: stable_security_id(value, venue_mic))
+    supplemental = load_supplemental_mapping(supplemental_mapping_path)
+    supplemental_rows = [] if supplemental is None else list(supplemental["mappings"])
+    for row in supplemental_rows:
+        isin = str(row["isin"])
+        expected_security_id = stable_security_id(isin, venue_mic)
+        if isin not in set(vendor["isin"]):
+            raise IdentityResolutionError(f"supplemental identity is not an official membership identity: {isin}")
+        if str(row.get("security_id")) != expected_security_id:
+            raise IdentityResolutionError(f"supplemental security_id mismatch for {isin}")
+        mask = vendor["isin"].eq(isin)
+        vendor.loc[mask, "vendor_resolution_status"] = "supplemental_external_mapping"
+        vendor.loc[mask, "mapping_provenance"] = (
+            vendor.loc[mask, "mapping_provenance"].astype(str)
+            + " | externally supplied Investing.com file-to-ISIN mapping; file has no authoritative ISIN"
+        )
+        vendor.loc[mask, "mapping_confidence"] = "externally supplied mapping validated against existing ATS identity and boundaries"
+        vendor.loc[mask, "supplemental_source"] = str(supplemental["source"])
+        vendor.loc[mask, "supplemental_source_file"] = str(row["source_file"])
+        vendor.loc[mask, "supplemental_mapping_status"] = "externally_supplied_file_to_isin"
 
     spans = membership.groupby(["security_id", "isin"], as_index=False).agg(
         valid_from=("effective_from", "min"), valid_to=("effective_to", "max")
@@ -166,6 +188,22 @@ def build_identity_tables(
                 "resolution_status": row.vendor_resolution_status,
             }
         )
+    for row in supplemental_rows:
+        alias_rows.append(
+            {
+                "security_id": stable_security_id(str(row["isin"]), venue_mic),
+                "identifier_type": "source_file_mapping",
+                "identifier_value": str(row["source_file"]),
+                "raw_identifier": Path(str(row["source_file"])).name,
+                "venue_mic": venue_mic,
+                "vendor": "investing.com",
+                "valid_from": pd.Timestamp(str(row["listing_date"])),
+                "valid_to": pd.Timestamp(str(row["last_trade_date"])),
+                "source": str(supplemental_mapping_path),
+                "provenance": "externally supplied file-to-ISIN mapping; source file contains no authoritative ISIN",
+                "resolution_status": "supplemental_external_mapping",
+            }
+        )
     aliases = pd.DataFrame(alias_rows).sort_values(["security_id", "identifier_type", "valid_from"], na_position="last").reset_index(drop=True)
     return IdentityTables(master.reset_index(drop=True), aliases, vendor)
 
@@ -183,4 +221,3 @@ def resolve_alias(aliases: pd.DataFrame, identifier_type: str, value: str, as_of
     if len(ids) > 1:
         raise IdentityResolutionError(f"ambiguous alias {identifier_type}:{value} at {as_of}")
     return str(ids[0]) if len(ids) == 1 else None
-

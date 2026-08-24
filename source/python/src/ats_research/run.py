@@ -24,6 +24,8 @@ from ats_research.diagnostics import compute_diagnostics
 from ats_research.features.definitions import feature_specs
 from ats_research.hashing import content_hash, hash_files, logical_manifest_hash
 from ats_research.identity import build_identity_tables
+from ats_research.identity import RESOLVED_VENDOR_STATUSES
+from ats_research.investing_manual import load_supplemental_mapping
 from ats_research.labels.forward_returns import label_definitions
 from ats_research.panel import build_panel
 from ats_research.universe import load_exit_events, membership_intervals, session_membership
@@ -157,7 +159,12 @@ def execute_run(config: PhaseAConfig, destination_override: Path | None = None) 
     _progress("loading official membership and identity evidence")
     reference_root = config.source_data_root / "reference" / "gpw_indices"
     intervals = membership_intervals(reference_root, pd.Timestamp(config.start_date), pd.Timestamp(config.end_date))
-    identities = build_identity_tables(intervals, reference_root / "stooq_symbol_map.csv", config.venue_mic)
+    identities = build_identity_tables(
+        intervals,
+        reference_root / "stooq_symbol_map.csv",
+        config.venue_mic,
+        config.supplemental_bar_mapping_path,
+    )
     exits = load_exit_events(config.source_data_root / "analysis" / "top60_exit_event_audit.csv")
     _progress("loading and validating local GPW bars")
     bar_data = load_bar_data(config, identities.vendor_resolution)
@@ -203,6 +210,18 @@ def execute_run(config: PhaseAConfig, destination_override: Path | None = None) 
     writer.parquet("artifacts/membership_intervals.parquet", intervals, ["effective_from", "universe_component", "isin"])
     writer.parquet("artifacts/validated_daily_bars.parquet", bar_data.bars, ["security_id", "event_ts"])
     writer.parquet("artifacts/wig_daily.parquet", bar_data.wig, ["session_date"])
+    if config.supplemental_bar_mapping_path is not None:
+        writer.json("artifacts/supplemental_source_mapping.json", load_supplemental_mapping(config.supplemental_bar_mapping_path))
+        writer.csv(
+            "artifacts/supplemental_source_inspection.csv",
+            bar_data.source_inspection,
+            ["isin"],
+        )
+        writer.csv(
+            "artifacts/source_overlap_resolution.csv",
+            bar_data.source_overlaps,
+            ["security_id", "session_date", "source"],
+        )
     writer.parquet("artifacts/feature_values.parquet", features, ["security_id", "session_date"])
     writer.parquet("artifacts/research_panel.parquet", diagnostics.cross_section, ["session_date", "security_id"])
     writer.csv("artifacts/coverage.csv", diagnostics.coverage, ["session_date"])
@@ -226,7 +245,7 @@ def execute_run(config: PhaseAConfig, destination_override: Path | None = None) 
     writer.json("artifacts/label_definitions.json", definitions)
 
     unresolved = identities.vendor_resolution.loc[
-        ~identities.vendor_resolution["vendor_resolution_status"].isin(["exact", "mapped_renamed", "mapped_successor"]),
+        ~identities.vendor_resolution["vendor_resolution_status"].isin(RESOLVED_VENDOR_STATUSES),
         ["isin", "vendor_resolution_status", "mapping_provenance"],
     ].to_dict("records")
     coverage = diagnostics.coverage
@@ -263,6 +282,8 @@ def execute_run(config: PhaseAConfig, destination_override: Path | None = None) 
         "wig_daily": len(bar_data.wig), "feature_values": len(features),
         "research_panel": len(diagnostics.cross_section), "rank_ic": len(diagnostics.rank_ic),
         "quantile_returns": len(diagnostics.quantile_returns), "uncertainty": len(diagnostics.uncertainty),
+        "supplemental_source_inspection": len(bar_data.source_inspection),
+        "source_overlap_resolution": len(bar_data.source_overlaps),
     }
     manifest: dict[str, Any] = {
         "run_id": run_id, "creation_timestamp": datetime.now(timezone.utc).isoformat(),
