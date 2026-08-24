@@ -58,6 +58,25 @@ def test_rejects_duplicate_dates(tmp_path: Path) -> None:
         parse_investing_manual_history(_write_variant(tmp_path, line, line))
 
 
+def test_missing_display_volume_requires_explicit_opt_in(tmp_path: Path) -> None:
+    path = _write_variant(tmp_path, "03.01.2022\t12,00\t12,00\t12,00\t12,00\t\t0.00%")
+    with pytest.raises(InvestingManualValidationError, match="unsupported volume"):
+        parse_investing_manual_history(path)
+    result = parse_investing_manual_history(path, allow_missing_display_volume=True)
+    assert pd.isna(result.bars.loc[0, "volume"])
+    assert pd.isna(result.bars.loc[0, "volume_display_suffix"])
+    assert result.inspection["missing_display_volume_rows"] == 1
+
+
+def test_dot_thousands_prices_require_explicit_opt_in(tmp_path: Path) -> None:
+    path = _write_variant(tmp_path, "03.01.2022\t1.234,50\t1.230,00\t1.240,00\t1.225,00\t1,00K\t0.00%")
+    with pytest.raises(InvestingManualValidationError, match="malformed close"):
+        parse_investing_manual_history(path)
+    result = parse_investing_manual_history(path, allow_dot_thousands_in_prices=True)
+    assert result.bars.loc[0, "close"] == 1234.5
+    assert result.inspection["dot_thousands_price_rows"] == 1
+
+
 def test_supplemental_mapping_reuses_existing_identity_and_retains_source(tmp_path: Path) -> None:
     isin = "PLSTSHL00012"
     mapping = {

@@ -16,6 +16,7 @@ PARSER_VERSION = "investing_com_manual_tsv_v1"
 SOURCE_NAME = "investing_com_manual_history"
 EXPECTED_HEADER = ("Data", "Ostatnio", "Otwarcie", "Max.", "Min.", "Wol.", "Zmiana%")
 _DECIMAL = re.compile(r"^[0-9]+(?:,[0-9]+)?$")
+_DECIMAL_WITH_DOT_THOUSANDS = re.compile(r"^[0-9]{1,3}(?:\.[0-9]{3})+(?:,[0-9]+)?$")
 _VOLUME = re.compile(r"^(?P<value>[0-9]+(?:,[0-9]+)?)(?P<suffix>[KM])$")
 _PERCENT = re.compile(r"^[+-]?[0-9]+(?:[.,][0-9]+)?%$")
 
@@ -60,11 +61,14 @@ def listing_state(session_date: str | pd.Timestamp, listing_date: str | pd.Times
     return "not_yet_listed" if pd.Timestamp(session_date) < pd.Timestamp(listing_date) else "listed"
 
 
-def _decimal(value: str, field: str, line_number: int) -> float:
-    if not _DECIMAL.fullmatch(value):
+def _decimal(value: str, field: str, line_number: int, *, allow_dot_thousands: bool = False) -> float:
+    standard = _DECIMAL.fullmatch(value)
+    dot_thousands = allow_dot_thousands and _DECIMAL_WITH_DOT_THOUSANDS.fullmatch(value)
+    if not standard and not dot_thousands:
         raise InvestingManualValidationError(f"line {line_number}: malformed {field} value {value!r}")
     try:
-        return float(Decimal(value.replace(",", ".")))
+        normalized = value.replace(".", "") if dot_thousands else value
+        return float(Decimal(normalized.replace(",", ".")))
     except InvalidOperation as error:
         raise InvestingManualValidationError(f"line {line_number}: malformed {field} value {value!r}") from error
 
@@ -86,7 +90,12 @@ def _percent(value: str, line_number: int) -> float:
     return float(Decimal(value[:-1].replace(",", ".")))
 
 
-def parse_investing_manual_history(path: Path) -> InvestingManualHistory:
+def parse_investing_manual_history(
+    path: Path,
+    *,
+    allow_missing_display_volume: bool = False,
+    allow_dot_thousands_in_prices: bool = False,
+) -> InvestingManualHistory:
     try:
         text = path.read_text(encoding="utf-8", errors="strict")
     except UnicodeDecodeError as error:
@@ -106,11 +115,14 @@ def parse_investing_manual_history(path: Path) -> InvestingManualHistory:
             session_date = pd.to_datetime(date_raw, format="%d.%m.%Y", errors="raise")
         except (TypeError, ValueError) as error:
             raise InvestingManualValidationError(f"line {line_number}: invalid date {date_raw!r}") from error
-        close = _decimal(close_raw, "close", line_number)
-        open_ = _decimal(open_raw, "open", line_number)
-        high = _decimal(high_raw, "high", line_number)
-        low = _decimal(low_raw, "low", line_number)
-        volume, suffix, uncertainty = _volume(volume_raw, line_number)
+        close = _decimal(close_raw, "close", line_number, allow_dot_thousands=allow_dot_thousands_in_prices)
+        open_ = _decimal(open_raw, "open", line_number, allow_dot_thousands=allow_dot_thousands_in_prices)
+        high = _decimal(high_raw, "high", line_number, allow_dot_thousands=allow_dot_thousands_in_prices)
+        low = _decimal(low_raw, "low", line_number, allow_dot_thousands=allow_dot_thousands_in_prices)
+        if not volume_raw and allow_missing_display_volume:
+            volume, suffix, uncertainty = np.nan, pd.NA, np.nan
+        else:
+            volume, suffix, uncertainty = _volume(volume_raw, line_number)
         displayed_change = _percent(change_raw, line_number)
         if min(open_, high, low, close) <= 0 or volume < 0 or high < max(open_, close, low) or low > min(open_, close, high):
             raise InvestingManualValidationError(
@@ -159,7 +171,11 @@ def parse_investing_manual_history(path: Path) -> InvestingManualHistory:
         "input_order": input_order,
         "duplicate_dates": 0,
         "malformed_rows": 0,
-        "volume_forms": sorted(frame["volume_display_suffix"].unique().tolist()),
+        "volume_forms": sorted(frame["volume_display_suffix"].dropna().unique().tolist()),
+        "missing_display_volume_rows": int(frame["volume"].isna().sum()),
+        "dot_thousands_price_rows": int(
+            sum(any("." in value for value in fields[1:5]) for fields in (line.split("\t") for _number, line in lines[len(EXPECTED_HEADER) :]))
+        ),
         "change_pct_max_abs_error_pp": float(change_error.dropna().max()) if change_error.notna().any() else None,
         "change_pct_rows_over_0_15pp_error": int(change_error.gt(0.15).sum()),
         "absolute_close_jumps_over_25pct": int(close_jump.gt(0.25).sum()),

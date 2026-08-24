@@ -12,10 +12,10 @@ Official TOP60 denominator: 60 on every evaluation session
 
 ## Decision summary
 
-1. **Are the histories sufficiently trustworthy?** **Yes for bounded return-based Phase A research, with caveats.** All five files are byte-pinned, strictly parsed, chronologically complete within most observed ranges, internally OHLC-consistent, and aligned with existing ATS identity and terminal-date evidence. They are manual table copies, have no known page URLs or vendor instrument IDs, have no independent overlapping price source, and Investing.com's exact adjustment semantics were not established. Volume is display-rounded and is not exact share volume.
+1. **Are the histories sufficiently trustworthy?** **Yes for identity, session availability, raw displayed OHLC, and most non-distribution daily moves; not yet proven homogeneous with Stooq for return-based research.** Three owner-supplied 2014+ controls map Investing.com one-for-one to Stooq sessions and almost exactly on stable-scale daily returns. They also show persistent price-ratio steps at distribution events and reciprocal historical-volume scaling in Stooq. The five missing histories remain byte-pinned and internally valid, but have no same-identity Stooq overlap from which to recover their adjustment factors. Treating their raw/display returns as interchangeable with backward-adjusted Stooq can create ex-distribution artifacts.
 2. **What does TOP60 coverage look like?** The post-start vendor-history limitation is eliminated. Old price coverage averaged 58.6266/60 and ranged 57–60; enriched coverage averages 59.9944/60 and ranges 59–60. Full 60/60 sessions rise from 630 to 1,422 of 1,430. The remaining eight 59/60 sessions are explicitly classified as non-tradeable suspension periods for LOTOS and PGNiG, not vendor gaps.
-3. **Did the missing histories materially bias the previous findings?** **No material reversal.** The recovered observations materially improve denominators and cause 2.0%–2.6% of otherwise-comparable existing-member quintile assignments to move, predominantly near quantile boundaries. Overall mean rank-IC changes are small: at most 0.000596 for momentum, 0.001786 for five-session return, 0.000730 for volatility, 0.000657 for relative volume, and 0.002253 for strict 252-session proximity. The feature conclusions remain diagnostic, not executable or proof of alpha.
-4. **Should this later become the next canonical GPW Phase B version?** **Yes, with conditions.** The owner must accept the manual-copy provenance and data-use basis; canonical rows must retain Investing.com lineage, rounded-volume uncertainty, and unverified adjustment state; the STS four-session opening gap and seven isolated TIM no-bar sessions must remain visible; and the normal Phase B stage/validate/atomic-publication process must pass before any catalog pointer changes.
+3. **Did the missing histories materially bias the previous findings?** **No numerical reversal in the completed sensitivity run, but the causal claim is now provisional.** The recovered observations materially improve denominators and cause 2.0%–2.6% of otherwise-comparable existing-member quintile assignments to move, predominantly near quantile boundaries. Overall mean rank-IC changes remain small. However, the run mixes raw/display Investing returns with backward-adjusted Stooq returns at distribution events, so it is evidence about coverage sensitivity, not a fully normalized vendor-replacement result.
+4. **Should this later become the next canonical GPW Phase B version?** **No as-is; yes only after price-basis remediation.** Phase B must either adjust the five histories from authoritative corporate-action evidence into the pinned Stooq basis or retain a separate raw-price basis and exclude cross-basis return/volume features. Manual-copy provenance, rounded-volume uncertainty, visible missing sessions, and normal stage/validate/atomic publication remain additional conditions.
 
 ## Baseline and boundary record
 
@@ -26,6 +26,7 @@ Official TOP60 denominator: 60 on every evaluation session
 - Accepted diagnostic comparison evidence: `D:\Stock\data\ATS\decision_oriented_phase_a\analysis_runs\decision-20260820T164218Z`.
 - Enriched Phase A run: `D:\Stock\data\ATS\phase_a\runs\phasea-7a3066ed3da2b075`; manifest SHA-256 `CD573A6004498733D3C37E66574CA4F2BA4E98A6AEC51270ED3382778AF3A6B5`.
 - Compact comparison evidence: `D:\Stock\data\ATS\five_security_enrichment\runs\enrichment-phasea-7a3066ed3da2b075-v3`; manifest SHA-256 `3F291F450169482BE44B783693CB118628751891EBECE8347C8DC7B56F148171`.
+- 2014+ vendor-overlap controls: `D:\Stock\data\ATS\five_security_enrichment\vendor_overlap_runs\investing-stooq-controls-2014-v2`; manifest SHA-256 `AE532BF8D0ADF49A18D709880AF609F9152A248E5E7C95B95B0D6C3CD4FCFC14`. The contract hard-excludes every pre-2014 Stooq row and compares only exact same-identity sessions through the shared endpoint.
 - The fixed evaluation start, warm-up, end, PIT membership, official denominator, feature/label definitions, horizons, timing rules, quantiles, and inference settings are identical between the selected old baseline and the enrichment.
 
 The pre-existing modified `source/python/README.md` and untracked environment-export material were recorded at task start and were not included in the scoped implementation commit. No raw or generated history was staged in Git.
@@ -42,6 +43,8 @@ Archive provenance files:
 - `source_manifest.json` — SHA-256 `9E67102F5141DE383A391DB4AA1AD9D91ADA47302135998379DABEA1798C16E2`
 
 The authenticated Investing.com download feature was not used. Acquisition method is `manual_copy_paste_from_displayed_web_table`. Exact acquisition time, page URLs, and vendor instrument IDs are `unknown`. File-to-ISIN mappings were supplied externally by the owner and then checked against the existing stable ATS identities, official membership, observed price ranges, and exit evidence. The five exact convenience files were removed from the Stooq tree only after archived byte length and SHA-256 matched; no replacement is represented as Stooq.
+
+At the owner's request, byte-identical copies of all five archives now also reside under `D:\Stock\data\reference\investing.com\` beside the three controls. `reference_manifest.json` (SHA-256 `73362602C0F603FFF7CBA9CDFE384448EC066CE67020D051B3143FC3A27805CE`) records roles, byte lengths, hashes, identities, and authoritative raw paths. The raw archive above remains authoritative.
 
 | Security | ISIN | Stable `security_id` | Rows | Observed range | Bytes | SHA-256 |
 |---|---|---|---:|---|---:|---|
@@ -72,11 +75,38 @@ Observed validation results:
 - LOTOS, CIECH, TIM: maximum `Zmiana%` consistency error is 0.005 percentage point; STS maximum is 0.0657 percentage point;
 - PGNiG: 15 rows exceed 0.15 percentage-point error, maximum 0.2602 percentage point. Price continuity contains no >25% jump, so the discrepancy is consistent with the redundant display percentage and rounded two-decimal prices; it is retained as a caveat, not used to modify OHLC;
 - TIM: one >25% close change, +28.33% on 2023-03-27. OHLC is internally consistent and the move is an isolated market gap, not sufficient evidence of a split or adjustment defect;
-- zero source overlaps were found because these identities had no validated Stooq or Bossa histories. There was therefore no opportunity for an independent same-session price comparison.
+- zero same-identity overlaps still exist for the five recovered securities because they have no validated Stooq or Bossa histories. The three new controls provide indirect evidence about how the same Investing.com representation maps to Stooq; they do not manufacture overlap for LOTOS, PGNiG, CIECH, STS, or TIM.
 
 The displayed volumes are central rounded quantities, not exact shares. Two-decimal `K` implies approximately ±5 shares; two-decimal `M` implies approximately ±5,000 shares. Unsupported suffixes fail closed.
 
-Public Investing.com pages expose separate split-history information, but the readily available material located for this checkpoint did not establish the exact adjustment method used by the displayed historical OHLC tables. The run therefore retains `adjustment_state = vendor_adjusted_semantics_unverified`. No series was transformed to resemble Stooq.
+The enriched immutable run retains `adjustment_state = vendor_adjusted_semantics_unverified`, because that was the truthful state at construction and no immutable artifact was rewritten. The new controls refine the interpretation to `likely_raw_display_prices_versus_stooq_backward_adjusted; missing-security_factor_unresolved`. No series was transformed to resemble Stooq.
+
+## Investing.com to Stooq mapping controls — 2014 onward only
+
+The control contract uses no Stooq observation before `2014-01-01`. ORLEN and mBank comparisons begin on `2014-01-02`; KGHM begins on its first copied observation, `2014-01-24`. All comparisons stop at the shared Stooq endpoint, `2026-08-18`; later Investing rows are retained in the source files but excluded from overlap metrics.
+
+Identity mapping is high-confidence and validity-aware: ORLEN `PLPKN0000018 → PKN`, KGHM `PLKGHM000017 → KGH`, and mBank `PLBRE0000012 → MBK`, with the earlier BRE name preserved as the same ISIN. The parser kept one ORLEN displayed volume on 2020-06-01 explicitly missing and accepted mBank's Polish dot thousands separator only through opt-in comparison flags; default production parsing remains fail-closed.
+
+| Control | Shared sessions | Investing-only | Stooq-only | Raw close ratio first → last | Persistent scale steps | Stable-scale return Pearson | Stable pairs within 0.05 pp |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| ORLEN | 3,156 | 0 | 0 | 1.80050 → 1.00000 | 13 | 0.9999994 | 100.000% |
+| KGHM | 3,141 | 0 | 0 | 1.17660 → 1.00000 | 8 | 0.9999954 | 99.968% |
+| mBank | 3,156 | 0 | 0 | 1.04687 → 1.00000 | 2 | 0.9999975 | 99.936% |
+
+The evidence supports four bounded findings:
+
+1. **Identity and calendar mapping pass.** Every Investing observation inside each shared span has the same Stooq session; there are no source-only dates in either direction.
+2. **Stable-scale OHLC returns map almost exactly after display rounding.** Median absolute close-return differences are 0.00035, 0.00049, and 0.00000 percentage point for ORLEN, KGHM, and mBank. The apparent full-sample outliers are concentrated on price-ratio step dates.
+3. **Raw price levels are not interchangeable.** Persistent Investing/Stooq ratios decline toward 1.0 over time. Checked steps line up with ex-sessions immediately before official dividend record dates: ORLEN changes on 2023-08-09 before its 2023-08-10 record date, KGHM changes on 2024-06-27 before its 2024-06-28 record date, and mBank changes on 2018-05-23 before its 2018-05-24 record date. This is strong evidence—still explicitly an inference—that Investing supplies raw/display history while the local Stooq archive backward-adjusts historical prices for cash distributions. [ORLEN official report](https://raportzintegrowany2022.orlen.pl/en/financial-results/explanatory-notes/14-explanatory-notes/14-9-equity/14-9-6-proposal-for-distribution-of-the-parent-company-s-profit-for-2022-and-the-dividend-payment-in-2023/), [KGHM AGM resolution](https://kghm.com/sites/default/files/2024-06/Resolutions_AGM_7.06.2024_1.pdf), [mBank investor relations](https://www.mbank.pl/en/investor-relations/shares/).
+4. **Volume is scaled reciprocally in Stooq and rounded in Investing.** The median product of the close-price ratio and volume ratio is 1.000001 for ORLEN, 1.000002 for KGHM, and 1.000009 for mBank. Thus Stooq's historical volume is not the same unit-level observation as the displayed Investing volume even when turnover is approximately preserved. These columns must not be spliced.
+
+There are 31 close-ratio moves above 0.5% across the three controls: 23 persistent steps and eight transient one-session dislocations. The transient cases reinforce the need to keep immutable vendor evidence and never infer a corporate action from price behavior alone.
+
+### Implication for the five-security enrichment
+
+The controls substantially improve confidence that the five files refer to the intended GPW session structure and that ordinary daily moves are represented consistently with Stooq after accounting for a scale factor. They also disprove the stronger assumption that the files can be dropped into the Stooq-adjusted panel unchanged.
+
+For LOTOS, PGNiG, CIECH, STS, and TIM, the time-varying factor cannot be estimated from a same-identity overlap. Until authoritative dividends, splits, rights issues, mergers, and other adjustment inputs are assembled and independently reconciled, these histories should be used as raw price-availability evidence. The completed Phase A comparison remains a useful coverage sensitivity, but return, momentum, volatility, proximity, and relative-volume observations involving the five names are not yet normalized to the surrounding Stooq basis.
 
 ## Session completeness and terminal boundaries
 
@@ -153,6 +183,8 @@ Other long-lookback limitations remain visible and are unrelated to the five-fil
 
 ## Diagnostic comparison
 
+The numbers below are unchanged outputs from the immutable enrichment run. In light of the control mapping, they are interpreted as a **coverage sensitivity under mixed price bases**, not as a validated adjusted-price replacement. Small aggregate changes do not prove that individual ex-distribution feature/label rows are comparable.
+
 ### Overall rank IC
 
 Mean rank IC old → enriched:
@@ -209,35 +241,40 @@ The rounded volumes therefore do not materially change the prior `WEAK` relative
 
 | Prior conclusion | Enriched classification | Reason |
 |---|---|---|
-| Momentum: `DATA-CONFOUNDED` | **Strengthened as a diagnostic, still temporally unstable** | Removing the five-name coverage defect barely changes overall IC and does not remove Q4>Q5; calendar/year instability remains, so no alpha claim follows. |
-| Strong-stock pullback: `NOT SUPPORTED` | **Unchanged** | Prespecified deep-pullback contrasts remain negative at all horizons. |
-| Strict proximity-to-high: `PROMISING` | **Weakened slightly, conclusion unchanged** | Mean IC falls by 0.0007–0.0023 but remains positive and materially larger than the short-return diagnostic. |
-| Relative volume: `WEAK` | **Unchanged** | Overall changes and rounded-volume exclusion sensitivity are very small. |
-| Volatility: `PROMISING` as conditioning/risk | **Strengthened slightly, conclusion unchanged** | Negative IC magnitude and Q5-minus-Q1 spreads become modestly larger; this remains conditioning/risk evidence, not a standalone trading rule. |
+| Momentum: `DATA-CONFOUNDED` | **Still data-confounded; normalization now an explicit blocker** | The coverage sensitivity barely changes overall IC, but raw Investing ex-distribution returns are not homogeneous with Stooq-adjusted returns. Calendar/year instability also remains. |
+| Strong-stock pullback: `NOT SUPPORTED` | **Numerically unchanged, provisional under mixed basis** | Prespecified contrasts remain negative, but the five recovered series require normalized rerun before treating this as a clean vendor-replacement result. |
+| Strict proximity-to-high: `PROMISING` | **Provisional; mixed price levels can distort the feature** | The numerical sensitivity is small, but proximity is level/path dependent and the control factors vary through time. |
+| Relative volume: `WEAK` | **Still weak; cross-vendor volume is non-comparable as stored** | Aggregate exclusion sensitivity is small, but Stooq reciprocally scales volume while Investing is display-rounded. |
+| Volatility: `PROMISING` as conditioning/risk | **Provisional; distribution events need normalization** | Most stable-scale returns map closely, but raw ex-distribution drops can inflate realized-volatility windows. |
 
-Overall classification: **MIXED, with no material reversal**.
+Overall classification: **MIXED and provisional; no numerical reversal, but homogeneous adjusted-price comparability is NOT PROVEN**.
 
 ## Recommendation for later Phase B publication
 
-**YES WITH CONDITIONS:**
+**NO AS-IS. CONDITIONAL YES AFTER PRICE-BASIS REMEDIATION:**
 
 1. Owner review must explicitly accept the manual page-copy acquisition method and confirm the intended storage/use basis for Investing.com-displayed data.
-2. Phase B must retain source `investing_com_manual_history`, original raw hashes, archive manifest, manual-copy flag, source URL/instrument ID as `unknown`, display-rounded volume uncertainty, and `vendor_adjusted_semantics_unverified`. No row may be labeled Stooq or assigned a Stooq adjustment version.
-3. The four STS post-listing/pre-first-observation gaps and seven isolated TIM sessions must remain explicit missing/no-trade observations; no flat or synthetic bars may be created.
-4. The PGNiG redundant-percentage discrepancies and TIM 2023-03-27 price gap must remain quality evidence. No “correction” is authorized without stronger source evidence.
-5. The canonical schema must represent rounded-volume uncertainty truthfully. If it cannot, prices may be accepted for return research while these volumes remain excluded or separately qualified; do not coerce them to exact shares.
-6. Merger conversion, takeover cash settlement, and post-delisting valuation must remain separate corporate-event work. This enrichment restores pre-exit bars only.
-7. A new Phase B version may be staged only after the normal focused tests, full suite, GPW reconciliation, source/identity validation, artifact hashing, and atomic-publication validation pass. No existing version or pointer may be overwritten, and no catalog pointer may advance until the owner separately approves publication.
+2. Before publication into a Stooq-adjusted panel, independently assemble authoritative corporate actions for each of the five securities and reproduce a pinned adjustment factor, or publish a separate raw-price basis that is excluded from homogeneous Stooq return/volume features. The control-derived factor must not be copied across identities.
+3. Phase B must retain source `investing_com_manual_history`, original raw hashes, archive manifest, manual-copy flag, source URL/instrument ID as `unknown`, display-rounded volume uncertainty, and the actual price-basis state. No row may be labeled Stooq or assigned a Stooq adjustment version merely because a transformed value resembles Stooq.
+4. The four STS post-listing/pre-first-observation gaps and seven isolated TIM sessions must remain explicit missing/no-trade observations; no flat or synthetic bars may be created.
+5. The PGNiG redundant-percentage discrepancies and TIM 2023-03-27 price gap must remain quality evidence. No “correction” is authorized without stronger source evidence.
+6. The canonical schema must represent rounded-volume uncertainty truthfully. Investing and Stooq volumes must not be spliced; if a valid adjustment cannot be reproduced, volume features for these rows remain excluded or separately qualified.
+7. Merger conversion, takeover cash settlement, and post-delisting valuation must remain separate corporate-event work. This enrichment restores pre-exit bars only.
+8. A new Phase B version may be staged only after adjusted-versus-raw semantics, focused tests, full suite, GPW reconciliation, source/identity validation, artifact hashing, and atomic-publication validation pass. No existing version or pointer may be overwritten, and no catalog pointer may advance until the owner separately approves publication.
 
 ## Verification and handoff
 
 - Baseline focused Phase A archive tests: **2 passed**.
 - Baseline complete Python suite: **80 passed**.
-- Focused Investing.com parser/identity tests: **8 passed**.
-- Post-implementation complete Python suite: **88 passed**.
+- Focused Investing.com parser/identity tests before controls: **8 passed**.
+- Focused parser tests after explicit missing-volume and Polish-thousands control handling: **10 passed**; default fail-closed behavior is tested.
+- Post-control implementation complete Python suite: **90 passed**.
 - Enriched run strict validation: **PASS** — 33 manifest artifacts, 85,800 panel rows, 1,430 sessions, valid source snapshot, reconstructable Git commit.
 - Enriched run reproduction: **PASS** — run ID, configuration, environment lock, metrics, logical artifact hashes, and manifest logical hash all match.
 - Compact comparison manifest: **PASS** — every retained file's byte length and SHA-256 match its manifest.
+- 2014+ overlap-control contract: **PASS** — no pre-2014 Stooq row was used; 9,453 exact shared sessions and zero session disagreements across the three bounded spans.
+- Overlap-control scale interpretation: **PASS WITH CAVEATS** — stable-scale returns map almost exactly and checked persistent steps align with dividend timing; eight transient ratio dislocations remain visible, so no automatic corporate-action inference is authorized.
+- Five-security adjusted-price equivalence: **NOT PROVEN** — no same-identity Stooq overlap exists and no authoritative adjustment factor has yet been built.
 - Accepted Phase A archive after enrichment: **PASS** — unchanged trusted run validates with 30 artifacts, 76,320 rows, and 1,272 sessions.
 - Phase B pointer remains `phaseb-f88fc2d38e9811ed1573`; pointer SHA-256 `F23D14C63A53419C942855380906573E27475E19F6A43FA40041FC6915057013` and timestamp remain from 2026-08-20.
 - Accepted Phase C run manifest remains `phasec-fa439d650410376aae9e`; SHA-256 `81B9B301E86A0BDB28304C2F05AF55A1AD0160C352EDC8178651A16CF4B7B21A` and timestamp remain from 2026-08-21.
@@ -246,10 +283,11 @@ Overall classification: **MIXED, with no material reversal**.
 Final checkpoint:
 
 - Investing.com provenance: **PASS WITH CAVEATS**
-- Investing.com parsing and validation: **PASS WITH CAVEATS**
+- Investing.com parsing, identity, and session mapping: **PASS WITH CAVEATS**
+- Investing-to-Stooq adjusted-price equivalence for the five histories: **NOT PROVEN**
 - 2020-11-27 onward TOP60 price coverage: **PASS WITH CAVEATS**
-- Long-lookback feature eligibility: **PASS WITH CAVEATS**
-- Previous Phase A conclusions: **MIXED**
-- Recommend canonical Phase B publication: **YES WITH CONDITIONS**
+- Homogeneous cross-vendor return/volume features: **NOT PROVEN**
+- Previous Phase A conclusions: **MIXED AND PROVISIONAL**
+- Recommend canonical Phase B publication: **NO AS-IS; CONDITIONAL YES AFTER PRICE-BASIS REMEDIATION**
 
 This checkpoint stops here for owner review. It does not authorize Phase B publication, a catalog-pointer change, corporate-event settlement implementation, a Phase C run, or strategy development.
