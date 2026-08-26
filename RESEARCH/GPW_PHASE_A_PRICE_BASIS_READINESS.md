@@ -1,5 +1,26 @@
 # GPW Phase A price-basis rebuild readiness
 
+## 2026-08-26 bounded evidence-freeze and split-normalization checkpoint
+
+The bounded prerequisite is complete and is documented in `GPW_TOP60_SPLIT_NORMALIZATION_CHECKPOINT.md`. The pinned conditional candidate is `gpw-split-normalization-20260826-v4`, with manifest `D:\Stock\data\ATS\gpw_split_normalization\runs\gpw-split-normalization-20260826-v4\manifest.json`.
+
+Dino Polska (`PLDINPL00011`) is direct in-universe evidence: it was an official WIG20/TOP60 member when its 1-for-10 split became effective on 2025-07-31. Native Bossa close `502.00 -> 49.61` becomes ATS split-adjusted close `50.20 -> 49.61`; the approximately -90% mechanical return disappears. SUNEX, BLOOBER, and CASPAR remain external transformer controls and must not be described as TOP60 evidence unless the PIT membership record independently places them in this experiment.
+
+The former open-ended "complete action ledger" requirement is replaced by the requested bounded gate: enumerate the 100 consumed identities and spans; run authoritative/structured discovery plus an independent numerical scan; resolve every detected in-scope candidate; record confirmed events and per-event/source-series treatment; and validate a deterministic split-normalized candidate. That gate resolved both detected candidates and has zero known unresolved events. It does **not** prove exhaustive authoritative discovery: KDPW's comprehensive corporate-event report was unavailable without the paid package, and public issuer/ESPI searches do not establish complete no-event coverage for all identity-intervals.
+
+Accordingly, **detected-event resolution is PASS**, while **authoritative discovery coverage is NOT PROVEN**. The candidate panel is **ACCEPT WITH CAVEATS** and Phase A v2 readiness is **OWNER DECISION REQUIRED**. A known unresolved event affecting a consumed feature or label window would instead make readiness **NO**.
+
+Any price-only return materialized from this panel is named `split_adjusted_price_return` and carries:
+
+```text
+cash_distributions_included = false
+cash_dividend_price_gaps_preserved = true
+```
+
+Cash-dividend gaps remain. The panel is neither total-return data nor execution-price data; total-return construction is future work. Phase A v2 has not been run, Phase B has not been published or replaced, and Phase C has not been modified.
+
+The material below is retained as the pre-checkpoint evidence history. Where its readiness or implementation status conflicts with this section, this final bounded checkpoint supersedes it.
+
 **Checkpoint date:** 2026-08-25  
 **Scope:** determine whether the accepted GPW Phase A can be rebuilt from a Bossa-primary, Investing.com-supplemented observation layer, with Stooq retained only as an independent adjusted reference  
 **Decision boundary:** reporting and verification only; no Phase A/B/C run, canonical publication, parser change, corporate-action implementation, or source-file mutation
@@ -31,7 +52,7 @@ Two narrower statements do pass:
 1. **Observation coverage: PASS.** Bossa plus the existing Investing.com histories cover every Stooq-covered official TOP60 member-session in the accepted Phase A evaluation interval. They also cover every other expected official row except eight explicitly classified non-trading rows.
 2. **Source/native panel construction: READY WITH CAVEATS.** It is possible to select one complete source-native bar per security/session using Bossa first and Investing.com only where Bossa is absent, while retaining source and display precision.
 
-The replacement research panel remains gated because source-native split treatment is not uniform. Bossa is demonstrably mixed across the tested splits, and Investing.com is demonstrably split-adjusted for BLOOBER even though the cash-dividend controls behave like unadjusted displayed prices relative to Stooq. A complete authoritative split ledger and a fail-closed per-series/event normalization map are therefore required before split-adjusted features can be trusted. ATS total returns additionally require cash-distribution and other economic corporate-action data and are not yet proven.
+The pre-checkpoint research panel was gated because source-native split treatment is not uniform. Bossa is demonstrably mixed across the tested splits, and Investing.com is demonstrably split-adjusted for BLOOBER even though the cash-dividend controls behave like unadjusted displayed prices relative to Stooq. The bounded discovery and fail-closed per-event/source-series normalization gate described above now supplies the candidate split-adjusted view, subject to the explicit authoritative-discovery caveat. ATS total returns additionally require cash-distribution and other economic corporate-action data and are not yet proven.
 
 ## Required data flow
 
@@ -46,11 +67,11 @@ DERIVED ATS DATA
 ├── source/native OHLCV
 ├── split-adjusted OHLC
 ├── split-adjusted volume
-├── raw price returns
+├── split_adjusted_price_return
 └── eventually ATS total returns
 ```
 
-The term `source/native` means exactly what the selected vendor currently stores. It must not be interpreted as `raw_through_splits`. The term `raw price return` in this design means a **split-neutral price-only return with no cash distribution reinvestment**. It must be computed from the validated split-adjusted close, not blindly from the source-native close. A less ambiguous implementation name would be `price_return_no_distributions`.
+The term `source/native` means exactly what the selected vendor currently stores. It must not be interpreted as `raw_through_splits`. `split_adjusted_price_return` is a split-neutral price-only return with no cash distribution reinvestment. It is computed from the validated split-adjusted close, not blindly from the source-native close, and retains cash-dividend price gaps.
 
 ## Coverage evidence
 
@@ -153,7 +174,7 @@ For each selected source series and event, record one of:
 
 ### 3. Split-adjusted OHLC and volume
 
-For a 1:N split, pre-event unadjusted OHLC is divided by N and pre-event volume is multiplied by N. Already-adjusted source history is passed through. The transformation must preserve the native observation separately and record event IDs, cumulative factor, transformation version, input manifest, and output hashes. It must be idempotent and reject double application.
+For a 1:N split, pre-event unadjusted OHLC is divided by N and pre-event volume is multiplied by N. Already-adjusted source history is passed through. The transformation preserves the native observation separately and records event IDs, cumulative factor, transformation version, input manifest, and output hashes. Regeneration from the same immutable native observations, ledger, configuration, and code must produce identical output. Derived or split-adjusted output is rejected as source/native input to guard against double application.
 
 ### 4. Price-only returns
 
@@ -172,9 +193,10 @@ Total returns require authoritative cash dividends and any economically relevant
 | Whole-bar Bossa-first selection | PASS AS A SPECIFICATION | measured coverage and no Stooq fallback; implementation/publication not performed here |
 | Source provenance and rounded-volume visibility | PASS WITH CAVEATS | manual Investing acquisition and display precision remain explicit |
 | Uniform native split semantics | FAIL | Bossa is mixed; Investing is not globally characterized |
-| Complete authoritative split ledger for the full warm-up/evaluation universe | NOT PROVEN | only three supplied split events were tested |
-| Derived split-adjusted OHLC/volume implementation | NOT IMPLEMENTED | required before technical features |
-| Independent split golden/adversarial tests | NOT IMPLEMENTED | must cover adjusted, unadjusted, unknown, and double-application cases |
+| Bounded authoritative/structured split discovery for all consumed identities | NOT PROVEN | KDPW paid event feed unavailable; public searches non-exhaustive |
+| Detected split/anomaly resolution | PASS | two of two relevant candidates resolved; zero known unresolved events |
+| Derived split-adjusted OHLC/volume implementation | PASS WITH CAVEATS | pinned conditional v4 panel; authoritative absence not proven |
+| Independent split golden/adversarial tests | PASS | adjusted, unadjusted, reverse, cumulative, unknown, and derived-input cases |
 | Price-only Phase A semantics accepted | OWNER DECISION REQUIRED | differs economically from the existing Stooq-adjusted research basis around cash distributions |
 | ATS total-return inputs and derivation | NOT PROVEN | cash distributions and other economic actions remain incomplete |
 | Replacement Phase A reproducibility and comparison | NOT RUN | requires a pinned derived-data manifest and fresh immutable run |
@@ -198,7 +220,7 @@ Total returns require authoritative cash dividends and any economically relevant
 - call a split-adjusted price-only run a reproduction of the accepted Stooq Phase A;
 - replace the accepted Phase A or publish a new canonical Phase B version.
 
-After the complete split inventory and derived-view validation pass, a **new, explicitly named Phase A price-only variant** may be run for comparison. A semantically comparable replacement for economic momentum and forward investor-return labels should wait for the ATS total-return layer, unless the owner explicitly approves price-only returns as a changed research question.
+After owner review of the bounded v4 checkpoint and its residual discovery uncertainty, a later task may run a **new, explicitly named Phase A price-only variant** for comparison. A semantically comparable replacement for economic momentum and forward investor-return labels should wait for the ATS total-return layer, unless the owner explicitly approves price-only returns as a changed research question.
 
 ## Verification evidence
 

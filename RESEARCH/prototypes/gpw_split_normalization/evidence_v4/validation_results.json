@@ -1,0 +1,75 @@
+{
+  "authoritative_event_discovery_coverage": "NOT PROVEN",
+  "candidate_count": 2,
+  "cash_distributions_included": false,
+  "cash_dividend_price_gaps_preserved": true,
+  "covered_expected_trading_member_sessions": 99721,
+  "cross_engine_rows": {
+    "arrow": 130204,
+    "duckdb": 130204,
+    "polars": 130204
+  },
+  "detected_event_and_anomaly_resolution": "PASS",
+  "dino": {
+    "native_close": [
+      502.0,
+      49.61
+    ],
+    "native_return": -0.9011752988047809,
+    "split_adjusted_close": [
+      50.2,
+      49.61
+    ],
+    "split_adjusted_price_return": -0.011752988047808777,
+    "stooq_event_window_invariant_rows": 15,
+    "stooq_price_ratio_max": 1.0000000000000002,
+    "stooq_price_ratio_min": 1.0,
+    "stooq_volume_ratio_max": 1.0,
+    "stooq_volume_ratio_min": 1.0
+  },
+  "expected_trading_member_sessions": 99721,
+  "native_observations_preserved": true,
+  "numerical_methods": [
+    "large_price_scale_discontinuity",
+    "reciprocal_price_volume_scale_discontinuity",
+    "stable_cross_source_ratio_regime_change",
+    "source_switch_level_discontinuity",
+    "structured_vendor_split_record"
+  ],
+  "official_member_sessions": 99780,
+  "official_source_counts": {
+    "bossa_mstall": 91415,
+    "bossa_session_page": 85,
+    "explicit_missing": 59,
+    "investing_com": 8221
+  },
+  "price_usable_panel_rows": 129076,
+  "unaffected_derived_equal_native": true,
+  "unresolved_candidate_count": 0,
+  "volume_quality": [
+    {
+      "rows": 117782,
+      "usable_for_relative_volume": 117782,
+      "volume_basis": "shares",
+      "volume_precision_state": "exact_source_reported_shares"
+    },
+    {
+      "rows": 1131,
+      "usable_for_relative_volume": 0,
+      "volume_basis": "missing",
+      "volume_precision_state": "missing_volume"
+    },
+    {
+      "rows": 271,
+      "usable_for_relative_volume": 0,
+      "volume_basis": "shares_unknown_vendor_derivation",
+      "volume_precision_state": "unknown_precision"
+    },
+    {
+      "rows": 11020,
+      "usable_for_relative_volume": 11020,
+      "volume_basis": "vendor_displayed_shares",
+      "volume_precision_state": "vendor_displayed_rounded_volume"
+    }
+  ]
+}
