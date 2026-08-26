@@ -7,7 +7,7 @@
   "forward_label_horizon_sessions": 20,
   "history_floor": "2018-12-17",
   "official_denominator_per_session": 60,
-  "pinned_run_id": "gpw-split-normalization-20260826-v3",
+  "pinned_run_id": "gpw-split-normalization-20260826-v4",
   "schema_version": "ats.gpw_split_normalization.config.v1",
   "source_priority": [
     "bossa_mstall",

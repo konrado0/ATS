@@ -54,6 +54,11 @@ def native_frame(
     precision: str,
 ) -> pd.DataFrame:
     result = frame[["session_date", *PRICE, "volume"]].copy()
+    result["vendor_stock_split"] = (
+        pd.to_numeric(frame["stock_split"], errors="coerce").fillna(0.0).to_numpy()
+        if "stock_split" in frame.columns
+        else 0.0
+    )
     result["security_id"] = f"isin:{isin}"
     result["isin"] = isin
     result["selected_source"] = source
@@ -287,9 +292,28 @@ def anomaly_scan(panel: pd.DataFrame, data_root: Path) -> pd.DataFrame:
         work = group.copy()
         work["native_price_ratio"] = work["native_close"] / work["native_close"].shift()
         work["native_volume_ratio"] = work["native_volume"] / work["native_volume"].shift()
+        work["previous_source"] = work["selected_source"].shift()
         for row in work.loc[work["native_price_ratio"].le(0.5) | work["native_price_ratio"].ge(2.0)].itertuples(index=False):
             key = (isin, str(pd.Timestamp(row.session_date).date()))
-            candidates[key] = {"isin": isin, "candidate_session": key[1], "triggers": "large_native_price_scale_discontinuity", "native_price_ratio": row.native_price_ratio, "native_volume_ratio": row.native_volume_ratio, "selected_source": row.selected_source}
+            triggers = {"large_native_price_scale_discontinuity"}
+            reciprocal = row.native_price_ratio * row.native_volume_ratio
+            if pd.notna(reciprocal) and 0.5 <= reciprocal <= 2.0:
+                triggers.add("reciprocal_price_volume_scale_discontinuity")
+            candidates[key] = {"isin": isin, "candidate_session": key[1], "triggers": "|".join(sorted(triggers)), "native_price_ratio": row.native_price_ratio, "native_volume_ratio": row.native_volume_ratio, "selected_source": row.selected_source}
+        switches = work.loc[
+            work["previous_source"].notna()
+            & work["selected_source"].ne(work["previous_source"])
+            & (work["native_price_ratio"].le(0.8) | work["native_price_ratio"].ge(1.25))
+        ]
+        for row in switches.itertuples(index=False):
+            key = (isin, str(pd.Timestamp(row.session_date).date()))
+            existing = candidates.setdefault(key, {"isin": isin, "candidate_session": key[1], "triggers": "", "native_price_ratio": row.native_price_ratio, "native_volume_ratio": row.native_volume_ratio, "selected_source": row.selected_source})
+            existing["triggers"] = "|".join(sorted(set(filter(None, str(existing["triggers"]).split("|"))) | {"source_switch_level_discontinuity"}))
+        structured = work.loc[pd.to_numeric(work["vendor_stock_split"], errors="coerce").fillna(0).ne(0)]
+        for row in structured.itertuples(index=False):
+            key = (isin, str(pd.Timestamp(row.session_date).date()))
+            existing = candidates.setdefault(key, {"isin": isin, "candidate_session": key[1], "triggers": "", "native_price_ratio": row.native_price_ratio, "native_volume_ratio": row.native_volume_ratio, "selected_source": row.selected_source})
+            existing["triggers"] = "|".join(sorted(set(filter(None, str(existing["triggers"]).split("|"))) | {"structured_vendor_split_record"}))
 
     symbol_map = pd.read_csv(data_root / "reference" / "gpw_indices" / "stooq_symbol_map.csv")
     mappings = symbol_map.loc[symbol_map["status"].isin(["exact", "mapped_renamed", "mapped_successor"])].dropna(subset=["stooq_symbol"])
@@ -427,6 +451,18 @@ def main() -> int:
         raise ValueError("Dino golden transformation mismatch")
     dino_return = float(dino["split_adjusted_close"].iloc[1] / dino["split_adjusted_close"].iloc[0] - 1)
     native_return = float(dino["native_close"].iloc[1] / dino["native_close"].iloc[0] - 1)
+    stooq_dino = pd.read_csv(args.data_root / "daily" / "pl" / "wse stocks" / "dnp.txt")
+    stooq_dino.columns = [str(value).strip("<>").lower() for value in stooq_dino.columns]
+    stooq_dino["session_date"] = pd.to_datetime(stooq_dino["date"].astype(str), format="%Y%m%d")
+    invariant = transformed.loc[
+        transformed["isin"].eq("PLDINPL00011")
+        & transformed["session_date"].between("2025-07-21", "2025-08-08"),
+        ["session_date", "split_adjusted_close", "split_adjusted_volume"],
+    ].merge(stooq_dino[["session_date", "close", "vol"]], on="session_date", how="inner")
+    invariant["price_ratio"] = invariant["split_adjusted_close"] / invariant["close"]
+    invariant["volume_ratio"] = invariant["split_adjusted_volume"] / invariant["vol"]
+    if len(invariant) != 15 or not invariant["price_ratio"].sub(1).abs().lt(1e-12).all() or not invariant["volume_ratio"].eq(1).all():
+        raise ValueError("Dino Stooq event-window invariant failed")
 
     panel_path = output / "candidate_panel.parquet"
     transformed.to_parquet(panel_path, index=False, compression="zstd")
@@ -440,17 +476,26 @@ def main() -> int:
     write_csv(output / "numerical_candidate_dispositions.csv", dispositions, ["isin", "candidate_session"])
     write_csv(output / "source_event_treatments.csv", treatments, ["event_id", "source_series_version"])
     (output / "confirmed_event_ledger.json").write_text(json.dumps(event_payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    volume_quality = (
+        transformed.groupby(["volume_precision_state", "volume_basis"], dropna=False)
+        .agg(rows=("session_date", "size"), usable_for_relative_volume=("volume_usable_for_relative_volume", "sum"))
+        .reset_index()
+        .to_dict("records")
+    )
     validation = {
         "authoritative_event_discovery_coverage": "NOT PROVEN",
         "detected_event_and_anomaly_resolution": "PASS",
         "candidate_count": len(candidates),
         "unresolved_candidate_count": int(dispositions["disposition"].eq("unresolved").sum()),
-        "dino": {"native_close": [502.0, 49.61], "split_adjusted_close": [50.2, 49.61], "native_return": native_return, "split_adjusted_price_return": dino_return},
+        "dino": {"native_close": [502.0, 49.61], "split_adjusted_close": [50.2, 49.61], "native_return": native_return, "split_adjusted_price_return": dino_return, "stooq_event_window_invariant_rows": len(invariant), "stooq_price_ratio_min": float(invariant["price_ratio"].min()), "stooq_price_ratio_max": float(invariant["price_ratio"].max()), "stooq_volume_ratio_min": float(invariant["volume_ratio"].min()), "stooq_volume_ratio_max": float(invariant["volume_ratio"].max())},
         "native_observations_preserved": transformed[[*['native_'+c for c in PRICE], 'native_volume']].equals(panel[[*['native_'+c for c in PRICE], 'native_volume']]),
         "unaffected_derived_equal_native": bool((transformed.loc[transformed["applied_event_ids"].eq(""), "split_adjusted_close"].fillna(-1) == transformed.loc[transformed["applied_event_ids"].eq(""), "native_close"].fillna(-1)).all()),
         "official_member_sessions": len(official), "expected_trading_member_sessions": int(official["expected_trading"].fillna(False).sum()),
         "covered_expected_trading_member_sessions": int((official["expected_trading"].fillna(False) & official["native_close"].notna()).sum()),
         "official_source_counts": {str(k): int(v) for k,v in counts.items()},
+        "price_usable_panel_rows": int(transformed["price_usable_for_features"].sum()),
+        "volume_quality": volume_quality,
+        "numerical_methods": ["large_price_scale_discontinuity", "reciprocal_price_volume_scale_discontinuity", "stable_cross_source_ratio_regime_change", "source_switch_level_discontinuity", "structured_vendor_split_record"],
         "cross_engine_rows": {"arrow": arrow_rows, "polars": polars_rows, "duckdb": duck_rows},
         "cash_distributions_included": False, "cash_dividend_price_gaps_preserved": True,
     }
