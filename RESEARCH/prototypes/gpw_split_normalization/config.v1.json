@@ -1,0 +1,21 @@
+{
+  "authoritative_discovery_status": "NOT PROVEN",
+  "checkpoint_1a_evidence_commit": "f79c7cfb068543047a5cd43319d922f3b8097872",
+  "data_basis_version": "gpw_split_adjusted_price_candidate.v1",
+  "evaluation_end": "2026-08-18",
+  "evaluation_start": "2019-12-23",
+  "forward_label_horizon_sessions": 20,
+  "history_floor": "2018-12-17",
+  "official_denominator_per_session": 60,
+  "pinned_run_id": "gpw-split-normalization-20260826-v3",
+  "schema_version": "ats.gpw_split_normalization.config.v1",
+  "source_priority": [
+    "bossa_mstall",
+    "bossa_session_page",
+    "investing_com",
+    "yahoo_finance_accepted_clean_wse_series",
+    "explicit_missing"
+  ],
+  "stooq_role": "independent adjusted QA reference only; never selected fallback",
+  "transformation_version": "ats.gpw.split_adjustment.v1"
+}

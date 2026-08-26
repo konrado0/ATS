@@ -1,0 +1,42 @@
+{
+  "events": [
+    {
+      "announcement_timestamp": "2025-07-28T00:00:00+02:00",
+      "availability_timestamp": "2025-07-28T00:00:00+02:00",
+      "company": "Dino Polska S.A.",
+      "event_id": "PLDINPL00011-2025-07-31-split-1-to-10-v1",
+      "event_record_version": "ats.gpw.split_event.v1",
+      "event_status": "confirmed",
+      "event_type": "split",
+      "evidence_identifier": "DINO_CURRENT_REPORT_10_2025_KDPW_STATEMENT_672_2025",
+      "evidence_url": "https://grupadino.pl/en/current-report-no-10-2025-kdpw-statement-regarding-the-designation-of-the-split-date-for-dino-polska-s-a-shares/",
+      "first_post_event_session": "2025-07-31",
+      "isin": "PLDINPL00011",
+      "last_pre_event_session": "2025-07-30",
+      "new_share_count_unit": 10,
+      "official_evidence_summary": "KDPW statement 672/2025: 98,040,000 shares became 980,400,000 shares on 2025-07-31; first post-split trading session 2025-07-31.",
+      "old_share_count_unit": 1,
+      "pre_event_ohlc_multiplier": 0.1,
+      "pre_event_volume_multiplier": 10.0,
+      "security_id": "isin:PLDINPL00011",
+      "ticker": "DNP"
+    }
+  ],
+  "schema_version": "ats.gpw.confirmed_split_event_ledger.v1",
+  "scope": {
+    "event_types": [
+      "split",
+      "reverse_split",
+      "equivalent_share_consolidation"
+    ],
+    "excludes": [
+      "cash_dividend",
+      "rights_issue",
+      "spin_off",
+      "merger_accounting",
+      "takeover_accounting",
+      "total_return",
+      "execution_accounting"
+    ]
+  }
+}
