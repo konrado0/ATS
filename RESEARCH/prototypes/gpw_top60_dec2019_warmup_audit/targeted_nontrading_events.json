@@ -1,0 +1,27 @@
+{
+  "as_of": "2026-08-26",
+  "events": [
+    {
+      "authority": "GPW Resolution No. 283/2020",
+      "evidence_url": "https://strefainwestorow.pl/wiadomosci/20200409/gpw-w-sprawie-zawieszenia-obrotu-akcjami-spolki-orbis-sa",
+      "isin": "PLORBIS00014",
+      "last_trade_date": "2020-04-08",
+      "nontrading_sessions_before_suspension": [
+        "2019-04-11",
+        "2019-05-09",
+        "2019-05-21",
+        "2019-05-23",
+        "2019-06-05",
+        "2019-06-06",
+        "2020-02-07",
+        "2020-03-24",
+        "2020-03-25"
+      ],
+      "nontrading_session_evidence": "absent from Investing.com and Stooq trade histories; retained Yahoo historical-symbol rows have zero volume and flat OHLC",
+      "reason": "suspension following compulsory buyout request",
+      "security": "ORBIS",
+      "suspension_from": "2020-04-09"
+    }
+  ],
+  "scope": "targeted expected-trading classification only; no bar synthesis"
+}

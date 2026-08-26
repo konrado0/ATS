@@ -32,16 +32,21 @@ These labels are close-to-close diagnostic outcomes. They are not executable por
 
 ## Run and verify
 
-Use the existing environment directly; no installation is required:
+Use the repaired environment through Conda so Windows adds the environment's
+`Library\\bin` directory to the DLL search path. Do not invoke the environment's
+`python.exe` directly: delayed MKL/LAPACK calls can otherwise terminate Python
+with exception `0xC06D007F`.
 
 ```powershell
-$python = 'C:\Users\konra\anaconda3\envs\ats-stack-research\python.exe'
+$conda = 'C:\Users\konra\anaconda3\Scripts\conda.exe'
+$environment = 'ats-stack-research-repaired'
 $env:PYTHONPATH = 'D:\Stock\ATS\source\python\src'
 $env:PYTHONDONTWRITEBYTECODE = '1'
-& $python -m pytest -p no:cacheprovider D:\Stock\ATS\source\python\tests
-& $python -m ats_research run --config D:\Stock\ATS\source\python\configs\phase_a_reference.yaml
-& $python -m ats_research validate --run-dir D:\Stock\data\ATS\phase_a\runs\<run_id>
-& $python -m ats_research reproduce --run-dir D:\Stock\data\ATS\phase_a\runs\<run_id>
+$testTemp = Join-Path 'D:\Stock\ATS\RESEARCH\prototypes\environment_repair' ('pytest-' + [guid]::NewGuid().ToString('N'))
+& $conda run -n $environment --no-capture-output python -m pytest -p no:cacheprovider --basetemp $testTemp D:\Stock\ATS\source\python\tests
+& $conda run -n $environment --no-capture-output python -m ats_research run --config D:\Stock\ATS\source\python\configs\phase_a_reference.yaml
+& $conda run -n $environment --no-capture-output python -m ats_research validate --run-dir D:\Stock\data\ATS\phase_a\runs\<run_id>
+& $conda run -n $environment --no-capture-output python -m ats_research reproduce --run-dir D:\Stock\data\ATS\phase_a\runs\<run_id>
 ```
 
 The authoritative run directory contains `config.yaml`, `metrics.json`, `manifest.json`, and `artifacts/`. The manifest pins code and input hashes, feature fingerprints, label/timestamp semantics, environment versions, row counts, coverage, and physical/logical artifact hashes. Reproduction writes a separately validated copy beneath `phase_a/cache/reproductions` and compares metrics plus logical hashes.

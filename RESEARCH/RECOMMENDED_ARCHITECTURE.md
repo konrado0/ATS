@@ -6,7 +6,7 @@
 
 ```mermaid
 flowchart LR
-  R["Immutable raw vendor archive"] --> I["Validated ingestion + identity resolution"]
+  R["Immutable source-native vendor archive"] --> I["Validated ingestion + identity resolution"]
   M["Security master, aliases, memberships, events"] --> I
   I --> C["Versioned canonical Parquet\ncompact manifest-backed files"]
   C --> A["Arrow schemas"]
@@ -30,7 +30,26 @@ flowchart LR
 
 ### 1. What is canonical?
 
-Immutable raw source files are evidence; versioned normalized Parquet is the canonical analytical store. DuckDB tables, wide panels, feature matrices and notebook frames are derived and reproducible.
+Immutable vendor files are source evidence; `raw` in the archival sense must not imply that their prices are raw through corporate actions. Versioned normalized Parquet is the canonical analytical store. DuckDB tables, wide panels, feature matrices and notebook frames are derived and reproducible.
+
+For the GPW Phase A rebuild, the canonical price-basis design is layered:
+
+```text
+SOURCE OBSERVATIONS
+├── Bossa          -> primary source-native OHLCV
+├── Investing.com  -> supplemental source-native/display OHLCV
+├── Yahoo Finance  -> tertiary, accepted clean WSE histories only
+└── Stooq          -> independent adjusted reference, never a fallback
+
+DERIVED ATS DATA
+├── source/native OHLCV
+├── split-adjusted OHLC
+├── split-adjusted volume
+├── price-only returns without distributions
+└── later ATS total returns
+```
+
+Whole bars are selected Bossa first, then Investing.com, then only accepted clean Yahoo WSE histories. Degraded Yahoo historical symbols are validation evidence unless a bounded whole-bar exception is explicitly approved. Fields are never spliced across sources. Source-native is not synonymous with raw-through-splits: local Bossa is proven mixed across tested splits, while Investing.com BLOOBER and tested Yahoo prices are already split-adjusted. A versioned authoritative corporate-action table plus a per-series/event state determines whether each event transformation is applied, passed through, or rejected as unknown. Stooq is used for independent reconciliation only and never supplies an observation or authoritative corporate-action factor to this panel. The complete-PIT price audit now passes 99,721/99,721 expected-trading observations from the recommended 2019-12-23 start; full volume remains explicitly incomplete on two Investing rows. The focused readiness gate is documented in `GPW_PHASE_A_PRICE_BASIS_READINESS.md`.
 
 ### 2. What are the daily partition keys?
 
@@ -78,7 +97,7 @@ A lightweight DuckDB catalog contains no canonical bar copy. It stores security 
 
 ### 13. What is the bar schema?
 
-`security_id`, `event_ts`, `available_ts`, `session_date`, `market`, `venue_mic`, `frequency`, `open`, `high`, `low`, `close`, `volume`, optional `turnover`, `currency`, `source`, `adjustment_state`, `adjustment_version`, `ingest_batch_id`, `ingested_at`, `quality_flags`, `schema_version`. Decimal/raw price policy is source-specific; research projections may use float64/float32 explicitly.
+`security_id`, `event_ts`, `available_ts`, `session_date`, `market`, `venue_mic`, `frequency`, `open`, `high`, `low`, `close`, `volume`, optional `turnover`, `currency`, `source`, `observation_basis`, `source_precision`, `adjustment_state`, `adjustment_version`, `ingest_batch_id`, `ingested_at`, `quality_flags`, `schema_version`. Source/native bars remain immutable facts. Split-adjusted bars are a separate derived version with input manifest, applied/pass-through event IDs, cumulative factor, and transformation version. Price-only returns and total returns are separately named derived facts, never overloaded into generic `close` or `return`. Decimal/source-price policy is vendor-specific; research projections may use float64/float32 explicitly.
 
 ### 14. How are membership and events represented?
 

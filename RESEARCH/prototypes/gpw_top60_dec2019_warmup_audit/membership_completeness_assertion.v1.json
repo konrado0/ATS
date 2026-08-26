@@ -1,0 +1,639 @@
+{
+  "assertion_version": "gpw-top60-completeness-20191223-20260818-v1",
+  "authoritative_membership_inputs": {
+    "authority": "GPW Benchmark historical portfolio and official announcement archives",
+    "files": [
+      {
+        "bytes": 42776,
+        "relative_path": "manifest.csv",
+        "sha256": "4d58f4c47f76fb7d482d93818a98f79e389eea292cdbcfa9772a225be1f815ae"
+      },
+      {
+        "bytes": 125374,
+        "relative_path": "sources.csv",
+        "sha256": "d027da266548b2ade4c0523d99713435805e37b486a904cabacf2706919f0ecf"
+      },
+      {
+        "bytes": 5078,
+        "relative_path": "README.md",
+        "sha256": "540a9d2171a12b7e646c8e264bd63d2614a663a9a12b72306c098458f2754cdb"
+      },
+      {
+        "bytes": 4206,
+        "relative_path": "BUILD_REPORT.md",
+        "sha256": "9a3cf6dd84fe00f78f1879406ba7122c5224fc2358d1783468710b334df70c55"
+      }
+    ]
+  },
+  "duplicate_and_overlap_rules": {
+    "conflicting_effective_snapshot_key_allowed": false,
+    "duplicate_key": [
+      "session_date",
+      "role",
+      "isin"
+    ],
+    "duplicate_key_allowed": false,
+    "same_isin_in_both_roles_same_session_allowed": false
+  },
+  "effective_snapshots": [
+    {
+      "constituents": 20,
+      "effective_date": "2019-12-23",
+      "relative_path": "snapshots/WIG20/2019-12-23.csv",
+      "role": "WIG20",
+      "sha256": "212b981f0ce6e38888841b93605f3ff35b9f6659ade28f28e88518071949a1c2",
+      "source_id": "GPWB_ATTACHMENT_2019_12_23_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2019-12-23",
+      "relative_path": "snapshots/mWIG40/2019-12-23.csv",
+      "role": "mWIG40",
+      "sha256": "d55ffb011a3a8efebbab76dd4c595ee05da8a43e2d717ec8e95110130106353a",
+      "source_id": "GPWB_ATTACHMENT_2019_12_23_mWIG40"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2020-03-17",
+      "relative_path": "snapshots/mWIG40/2020-03-17.csv",
+      "role": "mWIG40",
+      "sha256": "ce1eaf55656d6e797d9f499b7c721206f7450a24ee002e7bea59ca60c163aa3b",
+      "source_id": "GPWB_CMN_1146"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2020-03-23",
+      "relative_path": "snapshots/WIG20/2020-03-23.csv",
+      "role": "WIG20",
+      "sha256": "7cfaaebfbc4fbf0c70e86c35d7d741d3f1b654ae5f404e66b6cdfeb33dee9819",
+      "source_id": "GPWB_ATTACHMENT_2020_03_23_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2020-03-23",
+      "relative_path": "snapshots/mWIG40/2020-03-23.csv",
+      "role": "mWIG40",
+      "sha256": "306ece07a75ec351169dae530e75d3f9a337866bab0bb9849859f6f1eb6ffca9",
+      "source_id": "GPWB_ATTACHMENT_2020_03_23_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2020-06-22",
+      "relative_path": "snapshots/WIG20/2020-06-22.csv",
+      "role": "WIG20",
+      "sha256": "006b8412201f4a73f7a435bb51fe67fc77c53424b7b00d4424b5fbbdfb207e8b",
+      "source_id": "GPWB_ATTACHMENT_2020_06_22_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2020-06-22",
+      "relative_path": "snapshots/mWIG40/2020-06-22.csv",
+      "role": "mWIG40",
+      "sha256": "2f7221531328532ae71d1f054491df46012827d629f464ce8b967ee032b6153d",
+      "source_id": "GPWB_ATTACHMENT_2020_06_22_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2020-09-21",
+      "relative_path": "snapshots/WIG20/2020-09-21.csv",
+      "role": "WIG20",
+      "sha256": "6a6c538b41a05b57cadc4805f52fccbbc13851299db6052090ddf48576b649e2",
+      "source_id": "GPWB_ATTACHMENT_2020_09_21_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2020-09-21",
+      "relative_path": "snapshots/mWIG40/2020-09-21.csv",
+      "role": "mWIG40",
+      "sha256": "51e06dfe6992994521a650fe99a77811c1727649de55736b2b11e3980a6e96a8",
+      "source_id": "GPWB_ATTACHMENT_2020_09_21_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2020-10-15",
+      "relative_path": "snapshots/WIG20/2020-10-15.csv",
+      "role": "WIG20",
+      "sha256": "66e1e3e1c691e4d08f993ec9e18b7c34ba0bb9b590e9e239303b249a602e61ad",
+      "source_id": "GPWB_CMN_1309"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2020-10-15",
+      "relative_path": "snapshots/mWIG40/2020-10-15.csv",
+      "role": "mWIG40",
+      "sha256": "c8e1e88eb059ed434ff41e63d446f47efd77a9ff79437671d7fe1f9c233b21df",
+      "source_id": "GPWB_CMN_1309"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2020-11-27",
+      "relative_path": "snapshots/WIG20/2020-11-27.csv",
+      "role": "WIG20",
+      "sha256": "022a56479ab70886a3aa61520c0915e81e2b630600d4f7a179df95ea430d326f",
+      "source_id": "GPWB_CMN_1333"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2020-11-27",
+      "relative_path": "snapshots/mWIG40/2020-11-27.csv",
+      "role": "mWIG40",
+      "sha256": "f7320c0d7cacf31b83ab42e8df3e54463673386b676e6c1a1ce421a49798e0d4",
+      "source_id": "GPWB_CMN_1333"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2020-12-04",
+      "relative_path": "snapshots/mWIG40/2020-12-04.csv",
+      "role": "mWIG40",
+      "sha256": "fc5eff04aa292f9eb703180e441cfcdc4ddd6afc952a9e9c6445b2532c4f60bd",
+      "source_id": "GPWB_CMN_1345"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2020-12-21",
+      "relative_path": "snapshots/WIG20/2020-12-21.csv",
+      "role": "WIG20",
+      "sha256": "4f31d8a8ddf1e9b5490e80fb81077c755e7aa2e8e42c93108dd1209e18df94f3",
+      "source_id": "GPWB_ATTACHMENT_2020_12_21_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2020-12-21",
+      "relative_path": "snapshots/mWIG40/2020-12-21.csv",
+      "role": "mWIG40",
+      "sha256": "39ab0f44c1a36ed2f56141e29fd5765bdcb1bf3557df04d83b1effff0c097b8c",
+      "source_id": "GPWB_ATTACHMENT_2020_12_21_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2021-03-22",
+      "relative_path": "snapshots/WIG20/2021-03-22.csv",
+      "role": "WIG20",
+      "sha256": "bf43ad8bb2bdb743270959572399d90b00fc6c6c2fe3a14c7fe252e94587178b",
+      "source_id": "GPWB_ATTACHMENT_2021_03_22_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2021-03-22",
+      "relative_path": "snapshots/mWIG40/2021-03-22.csv",
+      "role": "mWIG40",
+      "sha256": "da6d917b779e273ad05a62f1ea953d96336599d46b6daad9044bf909c0817f9f",
+      "source_id": "GPWB_ATTACHMENT_2021_03_22_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2021-06-21",
+      "relative_path": "snapshots/WIG20/2021-06-21.csv",
+      "role": "WIG20",
+      "sha256": "ba0063e57852e4bdf81dc1c91e370c3cd3d81ee07cdff3ebb13804173722273d",
+      "source_id": "GPWB_ATTACHMENT_2021_06_21_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2021-06-21",
+      "relative_path": "snapshots/mWIG40/2021-06-21.csv",
+      "role": "mWIG40",
+      "sha256": "6b36a4f901722608b1ec9eeb8221ff168a40098c58e7d932edb8aa134eb83209",
+      "source_id": "GPWB_ATTACHMENT_2021_06_21_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2021-09-20",
+      "relative_path": "snapshots/WIG20/2021-09-20.csv",
+      "role": "WIG20",
+      "sha256": "1b58d70b5ab3e9be352bc902ac52fd7468acfcca6ca7b022d70a1a7101c8419d",
+      "source_id": "GPWB_ATTACHMENT_2021_09_20_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2021-09-20",
+      "relative_path": "snapshots/mWIG40/2021-09-20.csv",
+      "role": "mWIG40",
+      "sha256": "625794b62a4a6e2bbdc374042010cdb396f60a38e5aa716e7fa9053f101ac778",
+      "source_id": "GPWB_ATTACHMENT_2021_09_20_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2021-12-20",
+      "relative_path": "snapshots/WIG20/2021-12-20.csv",
+      "role": "WIG20",
+      "sha256": "869d3947670412e927029e149886d44debb486d44c9e3015476fd9f46d5455f7",
+      "source_id": "GPWB_ATTACHMENT_2021_12_20_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2021-12-20",
+      "relative_path": "snapshots/mWIG40/2021-12-20.csv",
+      "role": "mWIG40",
+      "sha256": "8b474841c0e9bc3be30edf6d47d93d407f48372bae7a9f8926c429a1c31818a2",
+      "source_id": "GPWB_ATTACHMENT_2021_12_20_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2022-03-21",
+      "relative_path": "snapshots/WIG20/2022-03-21.csv",
+      "role": "WIG20",
+      "sha256": "ec7f88a7045eae70a29a7007e1673d8efd2569f737350147c371cc7df9d84431",
+      "source_id": "GPWB_ATTACHMENT_2022_03_21_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2022-03-21",
+      "relative_path": "snapshots/mWIG40/2022-03-21.csv",
+      "role": "mWIG40",
+      "sha256": "620f4d2042dec6bc103fb4b450d159c45cd5ff479a1285f09633ab910e824604",
+      "source_id": "GPWB_ATTACHMENT_2022_03_21_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2022-06-20",
+      "relative_path": "snapshots/WIG20/2022-06-20.csv",
+      "role": "WIG20",
+      "sha256": "2f5efd8d784eb8d82b009f4c2df947853fe49b430443bb19fd5220b8d5712287",
+      "source_id": "GPWB_ATTACHMENT_2022_06_20_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2022-06-20",
+      "relative_path": "snapshots/mWIG40/2022-06-20.csv",
+      "role": "mWIG40",
+      "sha256": "7b18cce46bc1d51edfd1e680d2bafdc422912e2207f492a62d7305b1fc7180f9",
+      "source_id": "GPWB_ATTACHMENT_2022_06_20_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2022-08-04",
+      "relative_path": "snapshots/WIG20/2022-08-04.csv",
+      "role": "WIG20",
+      "sha256": "5a9b2ea6b93bb1c5a1d7d76fffcbd8bf4ea226d435b2e1a9de23e13c482c18e1",
+      "source_id": "GPWB_CMN_1874"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2022-08-04",
+      "relative_path": "snapshots/mWIG40/2022-08-04.csv",
+      "role": "mWIG40",
+      "sha256": "a0a9e532756658fc3bf974d036a66f4d54eac78a6f66779d7cc8b795338cd112",
+      "source_id": "GPWB_CMN_1874"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2022-09-19",
+      "relative_path": "snapshots/WIG20/2022-09-19.csv",
+      "role": "WIG20",
+      "sha256": "1bb30b9bbbf114544982fc3c4cdc190db0a069fc787557fac7db641325eb7889",
+      "source_id": "GPWB_ATTACHMENT_2022_09_19_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2022-09-19",
+      "relative_path": "snapshots/mWIG40/2022-09-19.csv",
+      "role": "mWIG40",
+      "sha256": "6046f388375239e7fc46bf3a37b6f67269bd0265a23e4b7b899b8490751d0358",
+      "source_id": "GPWB_ATTACHMENT_2022_09_19_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2022-11-07",
+      "relative_path": "snapshots/WIG20/2022-11-07.csv",
+      "role": "WIG20",
+      "sha256": "48cd424b482ce97bdca8b934392ecf8c5f65e2958df91d945fe300717146e7a6",
+      "source_id": "GPWB_CMN_1939"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2022-11-07",
+      "relative_path": "snapshots/mWIG40/2022-11-07.csv",
+      "role": "mWIG40",
+      "sha256": "f30a7c26841ca7bb1a76ddadb545d0bb23597b52343bb4a8bcb664d916e894ba",
+      "source_id": "GPWB_CMN_1939"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2022-12-19",
+      "relative_path": "snapshots/WIG20/2022-12-19.csv",
+      "role": "WIG20",
+      "sha256": "fea7d960510f3ec5237059cb52ae07e8ecb7a292884a47293ed9be301569acd6",
+      "source_id": "GPWB_ATTACHMENT_2022_12_19_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2022-12-19",
+      "relative_path": "snapshots/mWIG40/2022-12-19.csv",
+      "role": "mWIG40",
+      "sha256": "278366e80d89ecbf3176e3f34d7dd43744f7cf62ec8f1ff81e0a68c1fbe2f5ac",
+      "source_id": "GPWB_ATTACHMENT_2022_12_19_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2023-03-20",
+      "relative_path": "snapshots/WIG20/2023-03-20.csv",
+      "role": "WIG20",
+      "sha256": "3cbb24856e19233856d824d7393b133b0e7778d65b168d8085e836d7ccc40cd6",
+      "source_id": "GPWB_ATTACHMENT_2023_03_20_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2023-03-20",
+      "relative_path": "snapshots/mWIG40/2023-03-20.csv",
+      "role": "mWIG40",
+      "sha256": "9d3bafae1ca8fee2c1bc756c13cc6431867e2b573e7163caa0f77ad1832dc844",
+      "source_id": "GPWB_ATTACHMENT_2023_03_20_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2023-06-19",
+      "relative_path": "snapshots/WIG20/2023-06-19.csv",
+      "role": "WIG20",
+      "sha256": "57813fea10b20c44e7871619ab35bb82b2fc441d5fb22f020f16ea927f691f84",
+      "source_id": "GPWB_ATTACHMENT_2023_06_19_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2023-06-19",
+      "relative_path": "snapshots/mWIG40/2023-06-19.csv",
+      "role": "mWIG40",
+      "sha256": "bc7a50305eb299a036e1bc50488c505c179ab6e16acfdea8226352dd8b06f7ea",
+      "source_id": "GPWB_ATTACHMENT_2023_06_19_mWIG40"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2023-09-01",
+      "relative_path": "snapshots/mWIG40/2023-09-01.csv",
+      "role": "mWIG40",
+      "sha256": "4dcc316bb4341fccd8c1e74eb47da1698db67d327620b2e4dba9e29063eeaac2",
+      "source_id": "GPWB_CMN_2145"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2023-09-08",
+      "relative_path": "snapshots/mWIG40/2023-09-08.csv",
+      "role": "mWIG40",
+      "sha256": "f08a3eb9ad02bd80f51345610fa142c5c3123df5086f476d6e786acde5fc1257",
+      "source_id": "GPWB_CMN_2158"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2023-09-18",
+      "relative_path": "snapshots/WIG20/2023-09-18.csv",
+      "role": "WIG20",
+      "sha256": "f48f26e59025e8e90fcdc30be9314c30ea18220fa1befd0697c3650e23de9d17",
+      "source_id": "GPWB_ATTACHMENT_2023_09_18_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2023-09-18",
+      "relative_path": "snapshots/mWIG40/2023-09-18.csv",
+      "role": "mWIG40",
+      "sha256": "52d79a511e6a46a7c33b351bc9ed94cdc89b2eb8a1f2d1ca09bc4189c8992d87",
+      "source_id": "GPWB_CMN_2158"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2023-10-04",
+      "relative_path": "snapshots/mWIG40/2023-10-04.csv",
+      "role": "mWIG40",
+      "sha256": "3c8ea37ad4066200e00e2c45d00a52b8abf6c42816b812e093cbc4b8bb180655",
+      "source_id": "GPWB_CMN_2176"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2023-12-18",
+      "relative_path": "snapshots/WIG20/2023-12-18.csv",
+      "role": "WIG20",
+      "sha256": "574093ae3c1af56c7a7d29800e20bbb541fc87f221f2d0db4c82c295b84b5423",
+      "source_id": "GPWB_ATTACHMENT_2023_12_18_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2023-12-18",
+      "relative_path": "snapshots/mWIG40/2023-12-18.csv",
+      "role": "mWIG40",
+      "sha256": "dfe4fd5ef3a2a942512a7eb84c220aaa32bfe7960771605b287a9f2ec63c24ba",
+      "source_id": "GPWB_ATTACHMENT_2023_12_18_mWIG40"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2024-02-07",
+      "relative_path": "snapshots/mWIG40/2024-02-07.csv",
+      "role": "mWIG40",
+      "sha256": "5c97901718643c20591a47483253ff3953b34ae93af0136ed230584811b8b021",
+      "source_id": "GPWB_CMN_2261"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2024-03-18",
+      "relative_path": "snapshots/WIG20/2024-03-18.csv",
+      "role": "WIG20",
+      "sha256": "72938ca14ddebeeaf1b808174b81f6b20f8232ee15d5e6f863e512ecdcecc5fd",
+      "source_id": "GPWB_ATTACHMENT_2024_03_18_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2024-03-18",
+      "relative_path": "snapshots/mWIG40/2024-03-18.csv",
+      "role": "mWIG40",
+      "sha256": "edc77d69f022208ad6aeb2d867779d8ec7e38f45cea70141392b252c3d2c9c7d",
+      "source_id": "GPWB_ATTACHMENT_2024_03_18_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2024-06-24",
+      "relative_path": "snapshots/WIG20/2024-06-24.csv",
+      "role": "WIG20",
+      "sha256": "20fc77719e7eaf3007d7a63573087916a95126a5d0addb498cfa4246c01be494",
+      "source_id": "GPWB_ATTACHMENT_2024_06_24_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2024-06-24",
+      "relative_path": "snapshots/mWIG40/2024-06-24.csv",
+      "role": "mWIG40",
+      "sha256": "f5318e22f9501b1c9dff30ced5d5240939755b64955540af45f459a44d780c5a",
+      "source_id": "GPWB_ATTACHMENT_2024_06_24_mWIG40"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2024-07-09",
+      "relative_path": "snapshots/mWIG40/2024-07-09.csv",
+      "role": "mWIG40",
+      "sha256": "da6e9a5bf6541b77602d6870f9fc8a03f5849ba7a27408a0c80f890dcf37e4de",
+      "source_id": "GPWB_CMN_2365"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2024-09-23",
+      "relative_path": "snapshots/WIG20/2024-09-23.csv",
+      "role": "WIG20",
+      "sha256": "0e5b8b9292740d48115c6f950ec0089881e825861f372825687f6f1001daa23e",
+      "source_id": "GPWB_ATTACHMENT_2024_09_23_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2024-09-23",
+      "relative_path": "snapshots/mWIG40/2024-09-23.csv",
+      "role": "mWIG40",
+      "sha256": "88dbac9fdf328db2fbd8b6a2e64b454b6a3257973b8425483a876d4c81a6f0ce",
+      "source_id": "GPWB_ATTACHMENT_2024_09_23_mWIG40"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2024-10-21",
+      "relative_path": "snapshots/mWIG40/2024-10-21.csv",
+      "role": "mWIG40",
+      "sha256": "321896ea95238f4a05b77ba3827f3b4bf56879515d9df3027a022a61e92086b6",
+      "source_id": "GPWB_CMN_2431"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2024-10-30",
+      "relative_path": "snapshots/mWIG40/2024-10-30.csv",
+      "role": "mWIG40",
+      "sha256": "b07491b8114f2feb8eaaa7c392c140256aa40b77c2558525de818d1bdda62460",
+      "source_id": "GPWB_CMN_2441+2443"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2024-12-23",
+      "relative_path": "snapshots/WIG20/2024-12-23.csv",
+      "role": "WIG20",
+      "sha256": "2440713c5006cf181871ba2c91a4302661538bf31790ef5a98dbf27c986ba17e",
+      "source_id": "GPWB_ATTACHMENT_2024_12_23_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2024-12-23",
+      "relative_path": "snapshots/mWIG40/2024-12-23.csv",
+      "role": "mWIG40",
+      "sha256": "8b99d7d60ab02b635343709b640b0ceef11854b80b27233d2e2e95415ece917b",
+      "source_id": "GPWB_ATTACHMENT_2024_12_23_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2025-03-24",
+      "relative_path": "snapshots/WIG20/2025-03-24.csv",
+      "role": "WIG20",
+      "sha256": "b8b201d50c15151bd36c7fdbecfc297b8e7f526661a596512092e67b5ffc655d",
+      "source_id": "GPWB_ATTACHMENT_2025_03_24_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2025-03-24",
+      "relative_path": "snapshots/mWIG40/2025-03-24.csv",
+      "role": "mWIG40",
+      "sha256": "94e13024e7563711d0397fbc3722b15bfb55122ac2436682b1d269d00ec07d65",
+      "source_id": "GPWB_ATTACHMENT_2025_03_24_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2025-06-23",
+      "relative_path": "snapshots/WIG20/2025-06-23.csv",
+      "role": "WIG20",
+      "sha256": "6ab08fb514e31a58cd634a57c8e5d1b0d7f0f96c6e99588e80cd985a83a74957",
+      "source_id": "GPWB_ATTACHMENT_2025_06_23_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2025-06-23",
+      "relative_path": "snapshots/mWIG40/2025-06-23.csv",
+      "role": "mWIG40",
+      "sha256": "f14d34b85cc1447bbfb5d273b2ac51307b82fc3c14ee1a3bca02a7c45cd960f2",
+      "source_id": "GPWB_ATTACHMENT_2025_06_23_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2025-09-22",
+      "relative_path": "snapshots/WIG20/2025-09-22.csv",
+      "role": "WIG20",
+      "sha256": "ce614c80e1407a3e5471ac740d7907f9d133b817575c4a93555234b1a2c8b2a4",
+      "source_id": "GPWB_ATTACHMENT_2025_09_22_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2025-09-22",
+      "relative_path": "snapshots/mWIG40/2025-09-22.csv",
+      "role": "mWIG40",
+      "sha256": "2953937aef21d7d91012a578531bc9a8b697b6480cb141f62a2dacbe23887eb6",
+      "source_id": "GPWB_ATTACHMENT_2025_09_22_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2025-12-22",
+      "relative_path": "snapshots/WIG20/2025-12-22.csv",
+      "role": "WIG20",
+      "sha256": "35704b3b89967db38da2089be42a0940612fb4aab3abf52744b574475c3c9a1e",
+      "source_id": "GPWB_ATTACHMENT_2025_12_22_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2025-12-22",
+      "relative_path": "snapshots/mWIG40/2025-12-22.csv",
+      "role": "mWIG40",
+      "sha256": "1b0cd2f4573bad8360327ab4484fe97475bbe3922f9b6829345742504160935d",
+      "source_id": "GPWB_ATTACHMENT_2025_12_22_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2026-03-23",
+      "relative_path": "snapshots/WIG20/2026-03-23.csv",
+      "role": "WIG20",
+      "sha256": "f6c30a9fbc061a28835188812248b2593cfae21be49fc9fcb95f6f191ab7c9a5",
+      "source_id": "GPWB_ATTACHMENT_2026_03_23_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2026-03-23",
+      "relative_path": "snapshots/mWIG40/2026-03-23.csv",
+      "role": "mWIG40",
+      "sha256": "fbb49a25e9e54c31164d90152272a36479db3e22318c0b9cbf2974874c1d6819",
+      "source_id": "GPWB_ATTACHMENT_2026_03_23_mWIG40"
+    },
+    {
+      "constituents": 20,
+      "effective_date": "2026-06-22",
+      "relative_path": "snapshots/WIG20/2026-06-22.csv",
+      "role": "WIG20",
+      "sha256": "48c47f402fe189ca553a21bfd7603253b42f9c7a6b9a0a0c0bb7c1fbd0c1d82f",
+      "source_id": "GPWB_ATTACHMENT_2026_06_22_WIG20"
+    },
+    {
+      "constituents": 40,
+      "effective_date": "2026-06-22",
+      "relative_path": "snapshots/mWIG40/2026-06-22.csv",
+      "role": "mWIG40",
+      "sha256": "f3e6677cb55945ad300e2f19cbe32f19c68591b3f0b5b707f1d9c6def304940f",
+      "source_id": "GPWB_ATTACHMENT_2026_06_22_mWIG40"
+    }
+  ],
+  "expected_role_counts_per_session": {
+    "WIG20": 20,
+    "mWIG40": 40
+  },
+  "fail_closed_rules": [
+    "request_before_start",
+    "request_after_end",
+    "role_count_not_20_or_40",
+    "duplicate_or_conflicting_membership_key",
+    "source_or_snapshot_hash_mismatch",
+    "unasserted_snapshot_used"
+  ],
+  "inclusive_completeness_interval": {
+    "end": "2026-08-18",
+    "start": "2019-12-23"
+  },
+  "known_limitations": [
+    "The assertion covers only WIG20 plus mWIG40 and only the stated inclusive interval.",
+    "It establishes membership completeness, not price coverage, trading state, or corporate-action completeness.",
+    "Source URLs and retained originals are registered by the hashed source registry and build report."
+  ],
+  "roles": {
+    "WIG20": "official large-cap component selected independently at each session",
+    "mWIG40": "official mid-cap component selected independently at each session"
+  },
+  "schema_version": "ats.gpw_membership_completeness.v1",
+  "snapshot_semantics": {
+    "change_event": "official extraordinary changes are materialized as new complete effective snapshots",
+    "effective_snapshot": "latest complete role snapshot whose effective_date is on or before the session",
+    "publication_date_is_not_effective_date": true
+  }
+}

@@ -22,8 +22,8 @@ Build one end-to-end GPW path with the smallest infrastructure that can prevent 
 ### Implement
 
 1. A minimal stable `security_id` table and validity-dated ticker/ISIN/vendor aliases for the TOP60 scope.
-2. Point-in-time WIG20 + mWIG40 membership from the established 2020-11-27 start, retaining unresolved members and the five benign exits.
-3. A validated adapter over existing GPW daily prices. It may read the current source representation; it does not wait for a general lake publisher.
+2. Point-in-time WIG20 + mWIG40 membership from the complete-PIT 2019-12-23 start, retaining unresolved members, non-trading states, feature-specific eligibility, and benign exits.
+3. A validated GPW daily observation adapter with whole-bar priority `Bossa mstall -> Bossa session-page supplement -> Investing.com -> accepted clean Yahoo WSE history -> explicit missing`. Degraded Yahoo historical symbols are validation evidence only. Stooq remains an independent adjusted reference and never enters this source/native panel as a fallback.
 4. Explicit `event_ts`, `available_ts`, `decision_ts` and next-eligible-session semantics.
 5. A small feature decorator/dataclass containing name, version, frequency, lookback, dependencies and code fingerprint.
 6. Five features: 12–1 momentum, five-session return, 20-session volatility, 20-session relative volume and WIG 200-session trend.
@@ -61,13 +61,28 @@ These are pipeline diagnostics and hypothesis generation. They are not strategy 
 - Coverage and missing-state reports accompany every IC/quantile result.
 - Every cross-sectional calculation retains the official universe denominator and each excluded member's state: if 57 of 60 official TOP60 members have usable prices, the output records and ranks `57/60` rather than silently redefining the universe as 57.
 
+### Price-basis rebuild checkpoint
+
+The 2026-08-25 coverage and split forensics in `GPW_PHASE_A_PRICE_BASIS_READINESS.md` refine this phase without changing the accepted Phase A artifact:
+
+- The final 2026-08-26 targeted audit passes expected-trading price coverage from the earlier complete-PIT boundary: 99,721/99,721 observations, zero unexplained price gaps, and zero additional price histories. The recommended future evaluation start is 2019-12-23 with feature-specific eligibility retained.
+- The other 59 official rows are explicit non-trading states. Strict every-session 252-bar readiness is 98,517/99,780; 1,263 windows remain ineligible because of listing age, no-reference/non-trading dates, or post-exit dates rather than acquisition failures.
+- Full selected-source volume coverage remains incomplete on PLAY 2020-06-03 and CCC 2020-06-10. No fields may be spliced; any Yahoo PLAY substitution must be an explicitly approved whole-bar override.
+- Source/native panel construction may proceed, preserving one complete vendor bar, provenance, and displayed-volume uncertainty.
+- Source-native technical features may not proceed across splits. Bossa is proven mixed: SUNEX is already split-adjusted, while BLOOBER and CASPAR are raw through their tested splits. Investing.com BLOOBER is already split-adjusted.
+- Before a new Phase A run, build a complete authoritative split-event inventory for the warm-up/evaluation universe, classify every selected series/event as adjusted, unadjusted, not applicable, or unknown, and publish a versioned split-adjusted OHLC/volume view. Unknown and double-application states fail closed.
+- Define `raw price return` as the split-neutral price-only return without cash distributions and compute it from split-adjusted close. Do not compute it blindly from source-native close.
+- A price-only Phase A variant is a changed research basis around cash distributions; it cannot be called a reproduction or replacement of the accepted Stooq-based Phase A. Economic momentum and forward investor-return labels require the later ATS total-return layer unless the owner explicitly accepts the changed price-only question.
+
+Checkpoint status: **CONDITIONAL GO for source/native ingestion and split-normalization work; NO-GO for an accepted replacement Phase A run today.**
+
 ## Phase B — Harden canonical data, without building a storage service
 
 Formalize the successful slice into reusable data contracts.
 
 ### Implement
 
-- Arrow schemas for security identity, bars, membership, macro data, corporate actions and manifests.
+- Arrow schemas for security identity, source/native bars, derived split-adjusted bars, separately named price-only returns, membership, macro data, corporate actions and manifests. Total-return facts remain a distinct later derivation.
 - Compact ZSTD Parquet publication, initially one or a few files per `(table, market, frequency)`.
 - Benchmark-derived writer defaults: ZSTD level 3 and 122,880-row groups, kept in configuration.
 - Immutable logical dataset version directories and small manifest/pointer files.

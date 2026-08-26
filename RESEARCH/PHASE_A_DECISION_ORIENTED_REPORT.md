@@ -276,9 +276,13 @@ Calendar and coverage regimes are almost deterministic: partial 2020 and 2021 ar
 
 The Q4-over-Q5 pattern is confined to the incomplete-coverage regimes. This is also the older sample, so the table cannot identify a causal missingness effect. It does show that the apparent hump should not be generalized to the complete-coverage period.
 
-The five unresolved histories—Ciech, Lotos, PGNiG, STS, and TIM—account for 1,964 of 85,800 official rows (2.29%). Missing exposures are 714, 421, 486, 239, and 104 rows respectively, all retained as `unresolved_vendor_alias`; they were never used to redefine the official denominator. Their missing returns cannot be inferred from observed members.
+In this immutable analysis run, the five unresolved histories—Ciech, Lotos, PGNiG, STS, and TIM—account for 1,964 of 85,800 official rows (2.29%). Missing exposures are 714, 421, 486, 239, and 104 rows respectively, all retained as `unresolved_vendor_alias`; they were never used to redefine the official denominator. Their missing returns cannot be inferred from observed members.
 
 **Reconstruction decision:** targeted reconstruction is justified if ATS needs to decide whether pre-2024 momentum behavior or the Q4 hump is genuine, especially for Ciech, PGNiG, and Lotos. It is unlikely to change the descriptive result for the post-February-2024 60/60 subset. Reconstruction should restore issuer/ticker continuity and adjustment provenance, not simply fill prices opportunistically.
+
+**Subsequent 2026-08-25 checkpoint:** Bossa plus the existing Investing.com histories now closes every Stooq-covered official observation gap, but adjustment provenance remains the rebuild gate. Bossa is mixed across tested splits and Investing.com has mixed corporate-action semantics. `GPW_PHASE_A_PRICE_BASIS_READINESS.md` therefore authorizes source/native and split-normalization work, not an accepted replacement Phase A run.
+
+**Subsequent 2026-08-26 targeted checkpoint:** the new ORBIS and PLAY Investing.com histories plus the Yahoo experiment's three clean WSE histories close the earlier complete-PIT acquisition list. Expected-trading price coverage is now 99,721/99,721 from 2019-12-23, with zero unexplained price gaps and zero additional price histories. The recommended start for a future rebuilt experiment is 2019-12-23 with feature-specific eligibility retained. This does not alter any number or conclusion in this immutable report and does not remove the split/corporate-action normalization gate.
 
 ![Coverage groups by year](D:/Stock/data/ATS/decision_oriented_phase_a/analysis_runs/decision-20260820T164218Z/figures/coverage_groups_by_year.png)
 
@@ -287,7 +291,7 @@ The five unresolved histories—Ciech, Lotos, PGNiG, STS, and TIM—account for 
 - The sample contains only about 5.7 years, including a 22-session partial 2020 and a partial 2026. Year results are descriptive.
 - Forward labels overlap, and securities within a session are cross-sectionally dependent. Constituent-row counts are not independent sample sizes; the effective time-series sample is at most the number of sessions shown.
 - HAC and moving-block intervals are secondary robustness summaries, not a cure for short history, regime concentration, or coverage-period confounding.
-- Point-in-time membership is retained, but five unresolved vendor histories remain a survivorship/coverage concern in older periods.
+- Point-in-time membership is retained. The five vendor histories were unresolved in this immutable run; later source coverage resolves observation presence but does not retroactively normalize or change this run.
 - Price adjustment and corporate-action treatment remain inherited from the validated Phase A Stooq inputs. The analysis did not independently reconstruct every corporate action.
 - The proximity feature requires exact 252-session history and uses only prior-session information. It is report-specific and does not alter the canonical Phase A run.
 - All quintile returns are gross equal-weight diagnostics. They omit execution timing, costs, liquidity, tradability, and turnover.

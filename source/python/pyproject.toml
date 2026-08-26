@@ -24,7 +24,14 @@ ats-data = "ats_data.cli:main"
 ats-portfolio = "ats_portfolio.cli:main"
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = [
+  "tests",
+  "../../RESEARCH/prototypes/yahoo_finance_gpw_experiment/tests",
+]
+pythonpath = [
+  "src",
+  "../../RESEARCH/prototypes/yahoo_finance_gpw_experiment",
+]
 addopts = "-ra"
 
 [tool.setuptools.packages.find]

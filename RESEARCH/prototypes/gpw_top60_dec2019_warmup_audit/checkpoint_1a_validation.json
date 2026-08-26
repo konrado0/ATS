@@ -1,0 +1,50 @@
+{
+  "accepted_phase_artifacts": {
+    "phase_a": {
+      "manifest_sha256": "ACA68C02508E567DDF6A6666B78F076354A147A29BD034A1632CA21418AAAC19",
+      "run_id": "phasea-2a2b3898aba37814",
+      "validation": "PASS"
+    },
+    "phase_b": {
+      "manifest_sha256": "A3EF82C6AAD77B99B5FF77F672475A45AD844B446CE1558EFF22B51DF9F29183",
+      "run_id": "phaseb-f88fc2d38e9811ed1573",
+      "validation": "PASS"
+    },
+    "phase_c": {
+      "manifest_sha256": "81B9B301E86A0BDB28304C2F05AF55A1AD0160C352EDC8178651A16CF4B7B21A",
+      "run_id": "phasec-fa439d650410376aae9e",
+      "validation": "PASS"
+    }
+  },
+  "corrected_audit": {
+    "covered_expected_trading_member_sessions": 99721,
+    "expected_trading_member_sessions": 99721,
+    "independently_established_nontrading_member_sessions": 59,
+    "manifest_sha256": "A4B8E943B8B543B0CD04D8F25BB3FC45896C07854F8068FC0E8223A08BE79AAC",
+    "missing_expected_trading_member_sessions": 0,
+    "official_member_sessions": 99780,
+    "reproduction_all_seven_files_byte_identical": true,
+    "run_id": "top60-dec2019-warmup-20260826-v9-corrected",
+    "v8_preserved_and_count_reconciliation": "PASS"
+  },
+  "membership_assertion": {
+    "inclusive_end": "2026-08-18",
+    "inclusive_start": "2019-12-23",
+    "schema_version": "ats.gpw_membership_completeness.v1",
+    "sha256": "3A488DA4598336EFF134AA4DEF08C066D278BF8349C9E1F7D2BBB2C991742BDB",
+    "validation": "PASS"
+  },
+  "normal_python_suite": {
+    "deterministic": true,
+    "network_access_required": false,
+    "result": "97 passed",
+    "total_collected": 97,
+    "yahoo_tests_collected": [
+      "test_yahoo_gpw.py::test_normalization_preserves_identity_dates_and_actions",
+      "test_yahoo_gpw.py::test_validation_accepts_valid_ohlcv",
+      "test_yahoo_gpw.py::test_validation_rejects_duplicate_and_bad_high",
+      "test_yahoo_gpw.py::test_normalization_excludes_empty_calendar_placeholders"
+    ]
+  },
+  "schema_version": "ats.gpw_evidence_freeze.validation.v1"
+}
