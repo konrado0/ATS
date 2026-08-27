@@ -1,0 +1,7 @@
+{
+  "analysis_plan_sha256": "b5cab4fa62a1d48e7cba810cd331b5736191b2c727b021c8d7572e624440a831",
+  "config_sha256": "f083890516fa7e2a62774a09f74863c8102621a08f227c982ddfd2f4fa1d3a94",
+  "frozen_date": "2026-08-27",
+  "results_examined_before_freeze": false,
+  "schema_version": "ats.phase_a_v2_research.plan_freeze.v1"
+}

@@ -1,0 +1,16 @@
+item,classification,evidence
+accepted Phase A/B/C artifacts unchanged,PASS,"accepted manifest hashes unchanged; only scoped Phase A v2 files will be committed"
+accepted historical Phase A controls validated,PASS,all manifest-declared output hashes passed
+both proximity definitions independently reported,PASS,max-high and max-close plus historical mapping
+configured normal suite passes including all four Yahoo tests,PASS,107 configured tests and 4 targeted adapter tests
+coverage effect separated from basis effect,PASS,paired and full-new scopes separated
+decision-aligned label results completed,PASS,open-to-open exact 3/5/10/20 endpoints
+exactly 60 official members retained per evaluation session,PASS,1663 sessions
+expanded-period effect isolated,PASS,added/common/aggregate scopes
+feature and label timing has no leakage,PASS,prior-session features and exact labels
+final recommendation follows the declared gate,PASS,CONTINUE TO A BOUNDED STRATEGY TEST
+immutable run reproduced,PASS,matching main and supplement logical hashes
+mandatory hypothesis diagnostics completed,PASS,core tables plus missing-state supplement
+paired common-period comparison completed,PASS,ISIN/session joint samples
+pinned candidate manifest and hashes validated,PASS,213 total input/artifact checks passed
+price-basis semantics remain explicit,PASS,split-only price return; cash distributions excluded

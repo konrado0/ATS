@@ -1,0 +1,23 @@
+{
+  "configured_normal_suite": {
+    "command": "D:/Stock/ATS/RESEARCH/environment/invoke_ats_python.ps1 -m pytest -q",
+    "collected_and_passed": 107,
+    "failed": 0,
+    "status": "PASS"
+  },
+  "phase_a_v2_targeted_suite": {
+    "collected_and_passed": 4,
+    "failed": 0,
+    "status": "PASS"
+  },
+  "yahoo_tests": {
+    "count": 4,
+    "names": [
+      "test_normalization_preserves_identity_dates_and_actions",
+      "test_validation_accepts_valid_ohlcv",
+      "test_validation_rejects_duplicate_and_bad_high",
+      "test_normalization_excludes_empty_calendar_placeholders"
+    ],
+    "status": "PASS"
+  }
+}

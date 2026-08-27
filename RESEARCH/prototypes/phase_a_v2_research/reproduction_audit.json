@@ -1,0 +1,13 @@
+{
+  "audit_supplement": {
+    "primary_logical_payload_hash": "060e6b3f9cf3b6ff84c9f100ea76c716bfc091ca1074e16c8a932dcc28864fa9",
+    "reproduction_logical_payload_hash": "060e6b3f9cf3b6ff84c9f100ea76c716bfc091ca1074e16c8a932dcc28864fa9",
+    "status": "PASS"
+  },
+  "main_analysis": {
+    "primary_logical_payload_hash": "1332b211b076b93fde56085974f0fa65b53f1a103d47bc2c12866e41d1b8a0b7",
+    "reproduction_logical_payload_hash": "1332b211b076b93fde56085974f0fa65b53f1a103d47bc2c12866e41d1b8a0b7",
+    "status": "PASS"
+  },
+  "schema_version": "ats.phase_a_v2_research.reproduction_audit.v1"
+}
