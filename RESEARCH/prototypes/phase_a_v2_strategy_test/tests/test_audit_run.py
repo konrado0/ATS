@@ -3,7 +3,15 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from audit_run import independent_endpoint_audit, unresolved_diagnostics
+from audit_run import gate_row_matches, independent_endpoint_audit, unresolved_diagnostics
+
+
+def test_gate_match_allows_only_machine_scale_float_aggregation_noise() -> None:
+    recomputed = {"gate": "single_security_not_necessary", "status": "PASS", "observed": 137_884.096199}
+    published = {"gate": "single_security_not_necessary", "status": "PASS", "observed": 137_884.096199 + 2.4e-10}
+    materially_different = {"gate": "single_security_not_necessary", "status": "PASS", "observed": 137_884.096200}
+    assert gate_row_matches(recomputed, published)
+    assert not gate_row_matches(recomputed, materially_different)
 
 
 def test_terminal_unresolved_sleeve_fails_closed() -> None:

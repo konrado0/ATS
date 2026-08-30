@@ -1,31 +1,32 @@
 {
-  "schema_version": "ats.phase_a_v2_strategy_test.validation_commands.v1",
+  "schema_version": "ats.phase_a_v2_strategy_test.validation_commands.v2",
   "working_directory": "D:/Stock/ATS",
+  "implementation_commit": "b9f7afa32b5aad346fc352ba6261035100aa5dda",
   "commands": [
     {
       "name": "focused_strategy_and_audit_tests",
-      "command": "$env:PYTHONPATH='D:\\Stock\\ATS\\RESEARCH\\prototypes\\phase_a_v2_strategy_test;D:\\Stock\\ATS\\source\\python\\src'; & 'RESEARCH\\prototypes\\environment_repair\\invoke_repaired_python.ps1' -PythonArgs @('-m','pytest','RESEARCH/prototypes/phase_a_v2_strategy_test/tests','-q')",
-      "result": "14 passed in 7.10s"
+      "command": "$env:PYTHONPATH='D:\\Stock\\ATS\\RESEARCH\\prototypes\\phase_a_v2_strategy_test;D:\\Stock\\ATS\\source\\python\\src'; & 'D:\\Stock\\ATS\\RESEARCH\\environment\\invoke_ats_python.ps1' -PythonArgs @('-m','pytest','D:/Stock/ATS/RESEARCH/prototypes/phase_a_v2_strategy_test/tests','-q')",
+      "result": "19 passed in 6.19s"
     },
     {
       "name": "accepted_phase_c_dependency_tests",
-      "command": "$env:PYTHONPATH='D:\\Stock\\ATS\\source\\python\\src'; & 'RESEARCH\\prototypes\\environment_repair\\invoke_repaired_python.ps1' -PythonArgs @('-m','pytest','source/python/tests/test_phase_c_contracts.py','source/python/tests/test_phase_c_golden.py','source/python/tests/test_phase_c_state_transitions.py','-q')",
-      "result": "33 passed in 3.61s"
+      "command": "$env:PYTHONPATH='D:\\Stock\\ATS\\source\\python\\src'; & 'D:\\Stock\\ATS\\RESEARCH\\environment\\invoke_ats_python.ps1' -PythonArgs @('-m','pytest','D:/Stock/ATS/source/python/tests/test_phase_c_contracts.py','D:/Stock/ATS/source/python/tests/test_phase_c_golden.py','D:/Stock/ATS/source/python/tests/test_phase_c_state_transitions.py','-q')",
+      "result": "33 passed in 2.98s"
     },
     {
-      "name": "primary_v3_execution",
-      "command": "$env:PYTHONPATH='D:\\Stock\\ATS\\RESEARCH\\prototypes\\phase_a_v2_strategy_test;D:\\Stock\\ATS\\source\\python\\src'; & 'RESEARCH\\prototypes\\environment_repair\\invoke_repaired_python.ps1' -PythonArgs @('RESEARCH/prototypes/phase_a_v2_strategy_test/strategy_test.py','--config','RESEARCH/prototypes/phase_a_v2_strategy_test/config_v3.json','--output-root','D:/Stock/data/ATS/phase_a_v2_strategy_test/runs')",
-      "result": "phase-a-v2-strategy-test-20260829-v3"
+      "name": "primary_v4_execution",
+      "command": "$env:PYTHONPATH='D:\\Stock\\ATS\\RESEARCH\\prototypes\\phase_a_v2_strategy_test;D:\\Stock\\ATS\\source\\python\\src'; & 'D:\\Stock\\ATS\\RESEARCH\\environment\\invoke_ats_python.ps1' -PythonArgs @('D:/Stock/ATS/RESEARCH/prototypes/phase_a_v2_strategy_test/strategy_test.py','--config','D:/Stock/ATS/RESEARCH/prototypes/phase_a_v2_strategy_test/config_v4.json','--output-root','D:/Stock/data/ATS/phase_a_v2_strategy_test/runs')",
+      "result": "phase-a-v2-strategy-test-20260830-v4"
     },
     {
-      "name": "clean_v3_reproduction",
-      "command": "$env:PYTHONPATH='D:\\Stock\\ATS\\RESEARCH\\prototypes\\phase_a_v2_strategy_test;D:\\Stock\\ATS\\source\\python\\src'; & 'RESEARCH\\prototypes\\environment_repair\\invoke_repaired_python.ps1' -PythonArgs @('RESEARCH/prototypes/phase_a_v2_strategy_test/strategy_test.py','--config','RESEARCH/prototypes/phase_a_v2_strategy_test/config_v3.json','--output-root','D:/Stock/data/ATS/phase_a_v2_strategy_test/reproductions')",
-      "result": "logical and all declared physical hashes match aaca0ccea49ce54ac0e62a3c5d1cf7aaaae493e9f6a44a0872eff49b132967f5"
+      "name": "clean_v4_reproduction",
+      "command": "$env:PYTHONPATH='D:\\Stock\\ATS\\RESEARCH\\prototypes\\phase_a_v2_strategy_test;D:\\Stock\\ATS\\source\\python\\src'; & 'D:\\Stock\\ATS\\RESEARCH\\environment\\invoke_ats_python.ps1' -PythonArgs @('D:/Stock/ATS/RESEARCH/prototypes/phase_a_v2_strategy_test/strategy_test.py','--config','D:/Stock/ATS/RESEARCH/prototypes/phase_a_v2_strategy_test/config_v4.json','--output-root','D:/Stock/data/ATS/phase_a_v2_strategy_test/reproductions')",
+      "result": "logical and all declared physical hashes match 7b680c44c18a469648fcb91721530e0d5483568c778249893a19f336f78a5390"
     },
     {
       "name": "independent_final_audit",
-      "command": "$env:PYTHONPATH='D:\\Stock\\ATS\\RESEARCH\\prototypes\\phase_a_v2_strategy_test;D:\\Stock\\ATS\\source\\python\\src'; & 'RESEARCH\\prototypes\\environment_repair\\invoke_repaired_python.ps1' -PythonArgs @('RESEARCH/prototypes/phase_a_v2_strategy_test/audit_run.py','--run','D:/Stock/data/ATS/phase_a_v2_strategy_test/runs/phase-a-v2-strategy-test-20260829-v3','--reproduction','D:/Stock/data/ATS/phase_a_v2_strategy_test/reproductions/phase-a-v2-strategy-test-20260829-v3','--output','D:/Stock/data/ATS/phase_a_v2_strategy_test/audits/phase-a-v2-strategy-test-20260829-v3-audit.json')",
-      "result": "PASS"
+      "command": "$env:PYTHONPATH='D:\\Stock\\ATS\\RESEARCH\\prototypes\\phase_a_v2_strategy_test;D:\\Stock\\ATS\\source\\python\\src'; & 'D:\\Stock\\ATS\\RESEARCH\\environment\\invoke_ats_python.ps1' -PythonArgs @('D:/Stock/ATS/RESEARCH/prototypes/phase_a_v2_strategy_test/audit_run.py','--run','D:/Stock/data/ATS/phase_a_v2_strategy_test/runs/phase-a-v2-strategy-test-20260830-v4','--reproduction','D:/Stock/data/ATS/phase_a_v2_strategy_test/reproductions/phase-a-v2-strategy-test-20260830-v4','--output','D:/Stock/data/ATS/phase_a_v2_strategy_test/audits/phase-a-v2-strategy-test-20260830-v4-audit.json')",
+      "result": "PASS; 120/120 endpoints; 120/120 ledgers; immutable reproduction PASS"
     }
   ]
 }

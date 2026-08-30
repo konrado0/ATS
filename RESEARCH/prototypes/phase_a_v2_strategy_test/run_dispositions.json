@@ -1,21 +1,27 @@
 {
-  "schema_version": "ats.phase_a_v2_strategy_test.run_dispositions.v1",
+  "schema_version": "ats.phase_a_v2_strategy_test.run_dispositions.v2",
   "runs": [
     {
       "run_id": "phase-a-v2-strategy-test-20260829-v1",
-      "disposition": "REJECT EXPANDED ECONOMICS",
-      "reason": "PLAY cash settlement was absent; common-period outputs may be used only as a diagnostic control."
+      "disposition": "SUPERSEDED - DO NOT USE ECONOMICS",
+      "reason": "PLAY cash settlement was absent."
     },
     {
       "run_id": "phase-a-v2-strategy-test-20260829-v2",
-      "disposition": "REJECT EXPANDED ECONOMICS",
-      "reason": "PLAY's 2020-12-22 zero target had no native open; offset 10 remained terminal-unresolved for 1,412 sessions. Common-period outputs may be used only as a diagnostic control."
+      "disposition": "SUPERSEDED - DO NOT USE ECONOMICS",
+      "reason": "PLAY's 2020-12-22 zero target had no native open and offset 10 remained terminal-unresolved."
     },
     {
       "run_id": "phase-a-v2-strategy-test-20260829-v3",
-      "disposition": "ACCEPT FOR BOUNDED DECISION",
-      "reason": "PLAY is non-executable from 2020-12-22 and settles once at PLN 39 on 2020-12-23; all accounting, economic, and reproduction gates pass.",
+      "disposition": "SUPERSEDED - DO NOT USE ECONOMICS",
+      "reason": "The final valid cohort lacked its exact t+20 terminal liquidation in 114/120 sleeves, and CAGR/turnover used resolved-observation rather than shared elapsed-session duration.",
       "logical_payload_hash": "aaca0ccea49ce54ac0e62a3c5d1cf7aaaae493e9f6a44a0872eff49b132967f5"
+    },
+    {
+      "run_id": "phase-a-v2-strategy-test-20260830-v4",
+      "disposition": "ACCEPT FOR BOUNDED DECISION",
+      "reason": "All 120 exact t+20 endpoints, ledgers, terminal cash paths, shared elapsed-session annualization checks, frozen economic gates, and immutable reproduction checks pass.",
+      "logical_payload_hash": "7b680c44c18a469648fcb91721530e0d5483568c778249893a19f336f78a5390"
     }
   ]
 }

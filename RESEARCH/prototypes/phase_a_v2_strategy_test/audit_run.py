@@ -410,17 +410,20 @@ def compare_reproduction(primary: dict[str, Any], reproduction: dict[str, Any]) 
     }
 
 
+def gate_row_matches(left: dict[str, Any], right: dict[str, Any]) -> bool:
+    return bool(
+        left["gate"] == right["gate"]
+        and left["status"] == right["status"]
+        and np.isclose(float(left["observed"]), float(right["observed"]), rtol=1e-12, atol=1e-12)
+    )
+
+
 def audit(run: Path, reproduction: Path | None) -> dict[str, Any]:
     primary = verify_manifest(run)
     tables = load_tables(run)
     independent, concentration = independent_gate(tables)
     published = tables["economic_gate"][["gate", "status", "observed"]].to_dict(orient="records")
-    gate_match = all(
-        left["gate"] == right["gate"]
-        and left["status"] == right["status"]
-        and np.isclose(float(left["observed"]), float(right["observed"]), rtol=0, atol=1e-12)
-        for left, right in zip(independent, published, strict=True)
-    )
+    gate_match = all(gate_row_matches(left, right) for left, right in zip(independent, published, strict=True))
     ledger = tables["ledger"]
     events = tables["event_preflight"]
     unresolved = unresolved_diagnostics(tables["daily_nav"])
