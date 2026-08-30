@@ -1,0 +1,16 @@
+{
+  "schema_version": "ats.pre_phase_d_market_state.plan_freeze.v1",
+  "frozen_before_market_state_calculation": true,
+  "freeze_date": "2026-08-30",
+  "analysis_plan_sha256": "ec7da3e408dfb7e247163146247ead837e8ad2352c6a70e998ae0d63581fd6d3",
+  "config_sha256": "dff1ea399df74d273ed1ec40e9dac56d50b6fd6813db9b26858c2d7f763fbd56",
+  "input_count": 12,
+  "input_hashes_pinned": true,
+  "formulas_frozen": true,
+  "missingness_rules_frozen": true,
+  "correlation_and_leadership_coverage_frozen": true,
+  "episode_selection_frozen": true,
+  "diagnostic_tables_frozen": true,
+  "interpretation_limits_frozen": true,
+  "post_inspection_change_policy": "Only a new version documenting a demonstrated implementation bug may change the plan or configuration."
+}
