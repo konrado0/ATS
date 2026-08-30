@@ -86,9 +86,15 @@ def verify_inputs(config: dict[str, Any]) -> pd.DataFrame:
 
 
 def attach_state_features(config: dict[str, Any], local_wig: pd.DataFrame, candidate: pd.DataFrame, decision_dates: pd.DatetimeIndex) -> tuple[pd.DataFrame, pd.DataFrame]:
-    wig_values = compute_wig_features(local_wig)
+    wig_values = compute_wig_features(local_wig, volatility_ratio_centered=bool(config["volatility_ratio_centered"]))
     calendar = pd.DatetimeIndex(local_wig["session_date"].sort_values().unique())
-    top60, coverage = compute_top60_features(candidate, calendar, decision_dates, config["minimum_usable_members"])
+    top60, coverage = compute_top60_features(
+        candidate,
+        calendar,
+        decision_dates,
+        config["minimum_usable_members"],
+        leadership_positive_name_count=int(config["leadership_positive_name_count"]),
+    )
     positions = {date: i for i, date in enumerate(calendar)}
     mapping = []
     for decision in decision_dates:
@@ -118,6 +124,15 @@ def feature_coverage_gate(config: dict[str, Any], state: pd.DataFrame, top60_cov
         if feature in TOP60_FEATURES:
             cov = top_cov.loc[top_cov["feature"].eq(feature) & top_cov["decision_session"].isin(controlling["decision_session"])]
             denominator_violations = int(cov["official_denominator"].ne(60).sum())
+            proof_invalid = cov["unavailable_members_in_aggregation"].ne(0)
+            if feature == "top60_breadth_change_10":
+                proof_invalid |= cov["aggregation_denominator"].lt(config["minimum_usable_members"])
+                proof_invalid |= cov["lag10_aggregation_denominator"].lt(config["minimum_usable_members"])
+                proof_invalid |= cov["aggregation_denominator"].gt(60)
+                proof_invalid |= cov["lag10_aggregation_denominator"].gt(60)
+            else:
+                proof_invalid |= cov["aggregation_denominator"].ne(cov["usable_count"])
+            unavailable_as_negative_violations = int(proof_invalid.sum())
             valid = controlling[feature].notna()
         valid_fraction = float(valid.mean()) if len(valid) else 0.0
         status = "PASS" if timing_violations == denominator_violations == unavailable_as_negative_violations == 0 and valid_fraction >= config["minimum_valid_session_fraction"] else "NOT PROVEN"
@@ -276,9 +291,10 @@ def prepare_proximity_sessions(config: dict[str, Any], adapted: pd.DataFrame, st
             }
         )
     sessions = pd.DataFrame(rows)
-    valid_session_dates = pd.DatetimeIndex(sessions["session_date"])
+    sessions["outcome_population"] = sessions["joint_eligible_count"].gt(0)
+    valid_session_dates = pd.DatetimeIndex(sessions.loc[sessions["outcome_population"], "session_date"])
     ordinal = {date: i for i, date in enumerate(valid_session_dates)}
-    sessions["offset"] = sessions["session_date"].map(ordinal).astype(int) % 20
+    sessions["offset"] = sessions["session_date"].map(ordinal).astype("Int64") % 20
     sessions["year"] = sessions["session_date"].dt.year
     state_subset = state.rename(columns={"decision_session": "session_date"})[["session_date", *ALL_FEATURES]]
     sessions = sessions.merge(state_subset, on="session_date", how="left", validate="one_to_one")
@@ -318,6 +334,8 @@ def _summary_row(feature: str, tercile: int, session_group: pd.DataFrame, q5_row
 
 
 def conditional_diagnostics(sessions: pd.DataFrame, rows: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    sessions = sessions.loc[sessions["outcome_population"]].copy()
+    rows = rows.loc[rows["session_date"].isin(sessions["session_date"])].copy()
     overall = []
     yearly = []
     offsets = []
@@ -352,7 +370,7 @@ def bootstrap_uncertainty(config: dict[str, Any], sessions: pd.DataFrame, assign
     confidence = config["confidence_level"]
     for feature_index, feature in enumerate(ALL_FEATURES):
         mapping = assignments.loc[assignments["feature"].eq(feature)].set_index("session_date")["state_tercile"]
-        work = sessions[["session_date", "rank_ic", "q5_mean_return", "q5_minus_eligible"]].copy()
+        work = sessions.loc[sessions["session_date"].isin(mapping.index), ["session_date", "rank_ic", "q5_mean_return", "q5_minus_eligible"]].copy()
         work["state_tercile"] = work["session_date"].map(mapping).astype("Int64")
         work = work.sort_values("session_date").reset_index(drop=True)
         indices = moving_block_indices(len(work), config["bootstrap_block_sessions"], config["bootstrap_samples"], config["seed"] + feature_index)
@@ -455,7 +473,7 @@ def build_verdicts(wig_validation: dict[str, Any], coverage_gate: pd.DataFrame, 
         frozen_block = "READY WITH CAVEATS"
     else:
         frozen_block = "NOT READY"
-    safe = wig_status == "PASS" and causality == "PASS" and frozen_block in {"READY", "READY WITH CAVEATS"} and logical_match is not False
+    safe = wig_status == "PASS" and causality == "PASS" and frozen_block in {"READY", "READY WITH CAVEATS"} and logical_match is True
     return {
         "wig_extension_input_validity": wig_status,
         "market_state_feature_causality_and_coverage": causality,
@@ -550,6 +568,10 @@ def main() -> None:
                     "excluded_member_states": "" if valid else "WIG:lookback_unavailable",
                     "feature_valid": bool(valid),
                     "feature_missing_state": "" if valid else "lookback_unavailable",
+                    "aggregation_denominator": int(valid),
+                    "lag10_aggregation_denominator": np.nan,
+                    "unavailable_members_in_aggregation": 0,
+                    "positive_observation_count": np.nan,
                 }
             )
     all_coverage = pd.concat([pd.DataFrame(wig_coverage_rows), top60_coverage], ignore_index=True)
@@ -558,10 +580,16 @@ def main() -> None:
         "schema_version": "ats.pre_phase_d_market_state.feature_definitions.v1",
         "analysis_plan_sha256": sha256_file(HERE / "analysis_plan.md"),
         "config_sha256": sha256_file(args.config),
+        "v2_correction_plan_sha256": sha256_file(HERE / "v2_correction_plan.md"),
+        "plan_freeze_v2_sha256": sha256_file(HERE / "plan_freeze_v2.json"),
         "code_sha256": {"run_diagnostic.py": sha256_file(Path(__file__)), "market_state.py": sha256_file(HERE / "market_state.py")},
         "block_features": BLOCK_FEATURES,
         "optional_features": OPTIONAL_FEATURES,
         "adverse_low_features": sorted(ADVERSE_LOW),
+        "dispersion_definition": config["dispersion_definition"],
+        "leadership_positive_name_count": config["leadership_positive_name_count"],
+        "volatility_ratio_centered": config["volatility_ratio_centered"],
+        "outcome_tercile_population": config["outcome_tercile_population"],
     }
 
     artifacts: dict[str, Any] = {}
@@ -588,14 +616,16 @@ def main() -> None:
     (staging / "feature_definitions.json").write_text(json.dumps(feature_definitions, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     (staging / "environment_git.json").write_text(json.dumps(environment_state(), indent=2, sort_keys=True) + "\n", encoding="utf-8")
     commands = {
-        "primary": "D:/Stock/ATS/RESEARCH/environment/invoke_ats_python.ps1 D:/Stock/ATS/RESEARCH/prototypes/pre_phase_d_market_state/run_diagnostic.py --config D:/Stock/ATS/RESEARCH/prototypes/pre_phase_d_market_state/config.json",
-        "reproduction": "D:/Stock/ATS/RESEARCH/environment/invoke_ats_python.ps1 D:/Stock/ATS/RESEARCH/prototypes/pre_phase_d_market_state/run_diagnostic.py --config D:/Stock/ATS/RESEARCH/prototypes/pre_phase_d_market_state/config.json --reproduction",
+        "primary": f"D:/Stock/ATS/RESEARCH/environment/invoke_ats_python.ps1 D:/Stock/ATS/RESEARCH/prototypes/pre_phase_d_market_state/run_diagnostic.py --config {args.config.resolve().as_posix()}",
+        "reproduction": f"D:/Stock/ATS/RESEARCH/environment/invoke_ats_python.ps1 D:/Stock/ATS/RESEARCH/prototypes/pre_phase_d_market_state/run_diagnostic.py --config {args.config.resolve().as_posix()} --reproduction",
         "tests": "D:/Stock/ATS/RESEARCH/environment/invoke_ats_python.ps1 -m pytest -q D:/Stock/ATS/RESEARCH/prototypes/pre_phase_d_market_state/tests",
+        "tests_working_directory": "D:/Stock/ATS",
     }
     (staging / "commands.json").write_text(json.dumps(commands, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     shutil.copy2(HERE / "analysis_plan.md", staging / "analysis_plan.md")
+    shutil.copy2(HERE / "v2_correction_plan.md", staging / "v2_correction_plan.md")
     shutil.copy2(args.config, staging / "config.json")
-    shutil.copy2(HERE / "plan_freeze.json", staging / "plan_freeze.json")
+    shutil.copy2(HERE / "plan_freeze_v2.json", staging / "plan_freeze_v2.json")
 
     logical_payload = {name: item["logical_hash"] for name, item in sorted(artifacts.items())}
     logical_hash = hashlib.sha256(stable_json(logical_payload).encode("utf-8")).hexdigest()
@@ -607,9 +637,11 @@ def main() -> None:
         "feature_rows": int(len(state)),
         "feature_min_decision_session": state["decision_session"].min().date().isoformat(),
         "feature_max_decision_session": state["decision_session"].max().date().isoformat(),
-        "diagnostic_sessions": int(proximity_sessions["session_date"].nunique()),
-        "diagnostic_min_session": proximity_sessions["session_date"].min().date().isoformat(),
-        "diagnostic_max_session": proximity_sessions.loc[proximity_sessions["q5_count"].gt(0), "session_date"].max().date().isoformat(),
+        "coverage_sessions": int(proximity_sessions["session_date"].nunique()),
+        "outcome_diagnostic_sessions": int(proximity_sessions["outcome_population"].sum()),
+        "right_censored_sessions_excluded_from_outcome_terciles": int((~proximity_sessions["outcome_population"]).sum()),
+        "diagnostic_min_session": proximity_sessions.loc[proximity_sessions["outcome_population"], "session_date"].min().date().isoformat(),
+        "diagnostic_max_session": proximity_sessions.loc[proximity_sessions["outcome_population"], "session_date"].max().date().isoformat(),
         "verdicts": verdicts,
     }
     (staging / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")

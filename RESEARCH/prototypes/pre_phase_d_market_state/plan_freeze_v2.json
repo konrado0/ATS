@@ -1,0 +1,21 @@
+{
+  "schema_version": "ats.pre_phase_d_market_state.plan_freeze.v2",
+  "frozen_before_repaired_v2_calculation": true,
+  "freeze_date": "2026-08-30",
+  "base_analysis_plan_sha256": "ec7da3e408dfb7e247163146247ead837e8ad2352c6a70e998ae0d63581fd6d3",
+  "base_config_sha256": "dff1ea399df74d273ed1ec40e9dac56d50b6fd6813db9b26858c2d7f763fbd56",
+  "v2_correction_plan_sha256": "8916859285dd1301197b52dec10fe140583132c982564093534f2faa26e23ba1",
+  "v2_config_sha256": "9e4eb2a94f78a2ddce33805d322b6be669494f1c843d11b58914579dcb15afd1",
+  "v1_source_commit": "797a433dcd5f7fc0c2ce31baae089b64f9dfa62a",
+  "demonstrated_corrections": [
+    "dispersion_standard_deviation_to_iqr",
+    "leadership_top12_to_top5",
+    "volatility_ratio_to_centered_ratio",
+    "outcome_terciles_to_label_available_sessions",
+    "calculated_unavailable_as_negative_proof",
+    "repository_root_test_invocation"
+  ],
+  "strategy_parameter_changes": 0,
+  "phase_c_changes": 0,
+  "post_inspection_change_policy": "Only a new version documenting another demonstrated implementation bug may change this correction."
+}

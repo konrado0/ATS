@@ -159,7 +159,7 @@ def validate_wig(local: pd.DataFrame, accepted: pd.DataFrame, official_dates: pd
     return checks, overlap
 
 
-def compute_wig_features(wig: pd.DataFrame) -> pd.DataFrame:
+def compute_wig_features(wig: pd.DataFrame, volatility_ratio_centered: bool = True) -> pd.DataFrame:
     result = wig[["session_date", "close"]].sort_values("session_date").reset_index(drop=True).copy()
     close = result["close"].astype(float)
     log_close = np.log(close)
@@ -173,7 +173,8 @@ def compute_wig_features(wig: pd.DataFrame) -> pd.DataFrame:
     result["wig_downside_semivolatility_20"] = np.sqrt(downside_sq.rolling(20, min_periods=20).mean()) * math.sqrt(252.0)
     vol20 = returns.rolling(20, min_periods=20).std(ddof=1)
     vol60 = returns.rolling(60, min_periods=60).std(ddof=1)
-    result["wig_volatility_ratio_20_60"] = vol20 / vol60.where(vol60 != 0.0)
+    ratio = vol20 / vol60.where(vol60 != 0.0)
+    result["wig_volatility_ratio_20_60"] = ratio - 1.0 if volatility_ratio_centered else ratio
     return result
 
 
@@ -192,7 +193,13 @@ def _excluded_state(candidate_by_date: dict[pd.Timestamp, pd.DataFrame], informa
     return f"insufficient_exact_{lookback}_history:{missing}_missing"
 
 
-def compute_top60_features(candidate: pd.DataFrame, wig_calendar: pd.DatetimeIndex, decision_dates: pd.DatetimeIndex, minimum_usable: int) -> tuple[pd.DataFrame, pd.DataFrame]:
+def compute_top60_features(
+    candidate: pd.DataFrame,
+    wig_calendar: pd.DatetimeIndex,
+    decision_dates: pd.DatetimeIndex,
+    minimum_usable: int,
+    leadership_positive_name_count: int = 5,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     candidate = candidate.copy()
     candidate["session_date"] = pd.to_datetime(candidate["session_date"])
     candidate["isin"] = candidate["isin"].astype(str)
@@ -252,7 +259,14 @@ def compute_top60_features(candidate: pd.DataFrame, wig_calendar: pd.DatetimeInd
         ret60 = pd.Series(values["ret60"], dtype=float)
         ret252 = pd.Series(values["ret252"], dtype=float)
 
-        def store_coverage(feature: str, usable: int, excluded_values: list[str], valid: bool, missing_state: str = "") -> None:
+        def store_coverage(
+            feature: str,
+            usable: int,
+            excluded_values: list[str],
+            valid: bool,
+            missing_state: str = "",
+            positive_observation_count: int | None = None,
+        ) -> None:
             coverage_rows.append(
                 {
                     "decision_session": decision_date,
@@ -264,22 +278,32 @@ def compute_top60_features(candidate: pd.DataFrame, wig_calendar: pd.DatetimeInd
                     "excluded_member_states": "|".join(sorted(excluded_values)),
                     "feature_valid": bool(valid),
                     "feature_missing_state": missing_state,
+                    "aggregation_denominator": usable,
+                    "lag10_aggregation_denominator": np.nan,
+                    "unavailable_members_in_aggregation": 0,
+                    "positive_observation_count": positive_observation_count,
                 }
             )
 
         breadth_valid = len(ret60) >= minimum_usable
         record["top60_breadth_positive_60"] = float((ret60 > 0.0).mean()) if breadth_valid else np.nan
-        store_coverage("top60_breadth_positive_60", len(ret60), excluded["ret60"], breadth_valid, "" if breadth_valid else "minimum_usable_not_met")
+        store_coverage(
+            "top60_breadth_positive_60", len(ret60), excluded["ret60"], breadth_valid,
+            "" if breadth_valid else "minimum_usable_not_met", int((ret60 > 0.0).sum()),
+        )
 
         dispersion_valid = len(ret20) >= minimum_usable and len(ret20) >= 2
-        record["top60_return_dispersion_20"] = float(ret20.std(ddof=1)) if dispersion_valid else np.nan
+        record["top60_return_dispersion_20"] = float(ret20.quantile(0.75, interpolation="linear") - ret20.quantile(0.25, interpolation="linear")) if dispersion_valid else np.nan
         store_coverage("top60_return_dispersion_20", len(ret20), excluded["ret20"], dispersion_valid, "" if dispersion_valid else "minimum_usable_not_met")
 
         positive = ret20[ret20 > 0.0].sort_values(ascending=False)
         leadership_valid = len(ret20) >= minimum_usable and float(positive.sum()) > 0.0
-        record["top60_positive_leadership_share_20"] = float(positive.head(12).sum() / positive.sum()) if leadership_valid else np.nan
+        record["top60_positive_leadership_share_20"] = float(positive.head(leadership_positive_name_count).sum() / positive.sum()) if leadership_valid else np.nan
         leadership_missing = "" if leadership_valid else ("no_positive_leadership_denominator" if len(ret20) >= minimum_usable else "minimum_usable_not_met")
-        store_coverage("top60_positive_leadership_share_20", len(ret20), excluded["ret20"], leadership_valid, leadership_missing)
+        store_coverage(
+            "top60_positive_leadership_share_20", len(ret20), excluded["ret20"],
+            leadership_valid, leadership_missing, int(len(positive)),
+        )
 
         high_values: dict[str, float] = {}
         high_excluded: list[str] = []
@@ -296,7 +320,10 @@ def compute_top60_features(candidate: pd.DataFrame, wig_calendar: pd.DatetimeInd
         high_series = pd.Series(high_values, dtype=float)
         high_valid = len(high_series) >= minimum_usable
         record["top60_share_within_5pct_high_252"] = float((high_series >= 0.95).mean()) if high_valid else np.nan
-        store_coverage("top60_share_within_5pct_high_252", len(high_series), high_excluded, high_valid, "" if high_valid else "minimum_usable_not_met")
+        store_coverage(
+            "top60_share_within_5pct_high_252", len(high_series), high_excluded, high_valid,
+            "" if high_valid else "minimum_usable_not_met", int((high_series >= 0.95).sum()),
+        )
 
         corr_vectors: dict[str, np.ndarray] = {}
         corr_excluded: list[str] = []
@@ -341,6 +368,10 @@ def compute_top60_features(candidate: pd.DataFrame, wig_calendar: pd.DatetimeInd
     change_cov["feature_valid"] = breadth_cov["feature_valid"] & prior_valid
     change_cov["usable_count"] = np.minimum(breadth_cov["usable_count"], breadth_cov["usable_count"].shift(10).fillna(0)).astype(int)
     change_cov["excluded_count"] = 60 - change_cov["usable_count"]
+    change_cov["aggregation_denominator"] = breadth_cov["aggregation_denominator"]
+    change_cov["lag10_aggregation_denominator"] = breadth_cov["aggregation_denominator"].shift(10)
+    change_cov["unavailable_members_in_aggregation"] = 0
+    change_cov["positive_observation_count"] = np.nan
     change_cov["feature_missing_state"] = np.where(change_cov["feature_valid"], "", "current_or_lag10_breadth_invalid")
     change_cov["excluded_member_states"] = np.where(
         change_cov["feature_valid"], "",
