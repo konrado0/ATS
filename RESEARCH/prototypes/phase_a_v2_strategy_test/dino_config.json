@@ -1,0 +1,28 @@
+{
+  "schema_version": "ats.phase_a_v2_dino_correction.config.v1",
+  "run_id": "phase-a-v2-dino-correction-20260829-v1",
+  "candidate_run": "D:/Stock/data/ATS/gpw_split_normalization/runs/gpw-split-normalization-20260826-v4",
+  "candidate_manifest_sha256": "e77ce37cb51c3a1e5608b4b2c9b112abe51635bdae1ce64db0b5aa7d4780331a",
+  "candidate_panel_physical_sha256": "c23ffbfc6aaab8bafd466bd980f906ec4476fd051aebcc8c0fa3b7e57a9f8c15",
+  "candidate_panel_native_logical_hash": "e486ae77fe3220d2a43d72398705dbf923aadedf1306f6370ac8541c78bfd8d8",
+  "candidate_panel_adjusted_logical_hash": "447fbadaac4418c04b257bd46bf8daa81b24b2546ac40b0f3ff89763ed9fdd4e",
+  "phase_a_v2_run": "D:/Stock/data/ATS/phase_a_v2_research/runs/phase-a-v2-20260827T150000Z",
+  "phase_a_v2_logical_payload_hash": "1332b211b076b93fde56085974f0fa65b53f1a103d47bc2c12866e41d1b8a0b7",
+  "adapted_panel_physical_sha256": "fa7e9a07457f828074fde708dd3d4d02f375cc21ce070add18cb39548568b633",
+  "common_period": ["2020-11-27", "2026-08-18"],
+  "feature": "proximity_to_max_high_252",
+  "label": "label__open_to_open__20",
+  "horizon_sessions": 20,
+  "quantiles": 5,
+  "dino_isin": "PLDINPL00011",
+  "incorrect_historical_window": ["2024-04-11", "2024-04-18"],
+  "confirmed_last_pre_event_session": "2025-07-30",
+  "confirmed_first_post_event_session": "2025-07-31",
+  "split_ratio": 10.0,
+  "materiality": {
+    "mechanical_return_floor": -0.5,
+    "rank_ic_absolute_shift": 0.01,
+    "q5_minus_q1_absolute_shift": 0.0025,
+    "sign_reversal_is_material": true
+  }
+}

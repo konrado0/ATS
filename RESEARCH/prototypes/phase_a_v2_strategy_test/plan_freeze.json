@@ -1,0 +1,13 @@
+{
+  "schema_version": "ats.phase_a_v2_strategy_test.plan_freeze.v1",
+  "frozen_before_strategy_selection_or_portfolio_results": true,
+  "freeze_date": "2026-08-29",
+  "analysis_plan_sha256": "55e12ad580ea2c321a236f476089d9f47a08f1f59499a44b307f11f9369eaeca",
+  "config_sha256": "83d3df0c5c9fb30bd842612b4233963ce43d9ee292645773d0583d3558b28d2f",
+  "dino_config_sha256": "2b2601aa0c873824c06a40c85ca8f481dcc103f6a549cf3e4e8b81f91c6d7c18",
+  "dino_correction_logical_payload_hash": "fedb6c0ecdf99a647d0492050277c3bfafd57a1b19fe669147ab65a673b2f929",
+  "dino_correction_result": "PASS",
+  "phase_a_v2_logical_payload_hash": "1332b211b076b93fde56085974f0fa65b53f1a103d47bc2c12866e41d1b8a0b7",
+  "candidate_manifest_sha256": "e77ce37cb51c3a1e5608b4b2c9b112abe51635bdae1ce64db0b5aa7d4780331a",
+  "accepted_exit_evidence_sha256": "3b527b2031b7416459db25d90e49a3b1b6493aa4c9c3a456ae6813245c0c0f28"
+}

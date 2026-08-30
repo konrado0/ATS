@@ -1,0 +1,12 @@
+{
+  "schema_version": "ats.phase_a_v2_strategy_test.config_correction.v2",
+  "base_config": "D:/Stock/ATS/RESEARCH/prototypes/phase_a_v2_strategy_test/config.json",
+  "base_config_sha256": "83d3df0c5c9fb30bd842612b4233963ce43d9ee292645773d0583d3558b28d2f",
+  "overrides": {
+    "run_id": "phase-a-v2-strategy-test-20260829-v3",
+    "play_exit_supplement": "D:/Stock/ATS/RESEARCH/prototypes/phase_a_v2_strategy_test/play_exit_supplement_v2.json",
+    "play_exit_supplement_sha256": "a7dd1df9764a32455ddaf49939f606bc650c61267981b3a1ee80961b08ef2d70",
+    "plan_freeze_file": "plan_freeze_v3.json"
+  },
+  "correction_scope": "Use the pinned candidate's actual last PLAY execution session so the frozen zero target cannot create a fabricated 2020-12-22 exit; retain the official 2020-12-23 PLN 39 settlement and every strategy/gate parameter."
+}

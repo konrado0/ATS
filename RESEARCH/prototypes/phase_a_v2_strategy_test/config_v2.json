@@ -1,0 +1,12 @@
+{
+  "schema_version": "ats.phase_a_v2_strategy_test.config_correction.v1",
+  "base_config": "D:/Stock/ATS/RESEARCH/prototypes/phase_a_v2_strategy_test/config.json",
+  "base_config_sha256": "83d3df0c5c9fb30bd842612b4233963ce43d9ee292645773d0583d3558b28d2f",
+  "overrides": {
+    "run_id": "phase-a-v2-strategy-test-20260829-v2",
+    "play_exit_supplement": "D:/Stock/ATS/RESEARCH/prototypes/phase_a_v2_strategy_test/play_exit_supplement.json",
+    "play_exit_supplement_sha256": "4405e22431416aaff84bab82d842db699482bc472d03825dcd441130ee852028",
+    "plan_freeze_file": "plan_freeze_v2.json"
+  },
+  "correction_scope": "Add the frozen expanded-period PLAY cash settlement required by actual held-position preflight; all strategy and gate parameters remain byte-identical to the base config."
+}

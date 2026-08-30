@@ -1,0 +1,38 @@
+{
+  "schema_version": "ats.phase_a_v2_strategy_test.event_supplement.v2",
+  "security_id": "isin:LU1642887738",
+  "isin": "LU1642887738",
+  "company": "Play Communications S.A.",
+  "event_type": "cash_takeover",
+  "announcement_date": "2020-12-21",
+  "availability_timestamp": "2020-12-21T00:00:00+01:00",
+  "last_observed_trading_session": "2020-12-21",
+  "execution_unavailable_from": "2020-12-22",
+  "effective_session": "2020-12-23",
+  "payment_date": "2020-12-23",
+  "cash_amount_per_share": "39.00",
+  "currency": "PLN",
+  "evidence": [
+    {
+      "role": "official_acquirer_press_release",
+      "url": "https://www.iliad.fr/media/CP_211220_Eng_bc232d35ea.pdf",
+      "finding": "Iliad announced on 2020-12-21 that the squeeze-out would launch on 2020-12-23 at PLN 39 per share."
+    },
+    {
+      "role": "official_squeeze_out_notice",
+      "url": "https://iliad-strapi.s3.fr-par.scw.cloud/Play_Squeeze_out_notice_Eng_PL_a3e26f4977.pdf",
+      "finding": "The notice identifies ISIN LU1642887738, acquisition effective 2020-12-23, and payment of PLN 39 per remaining share on that date."
+    },
+    {
+      "role": "pinned_candidate_execution_control",
+      "path": "D:/Stock/data/ATS/gpw_split_normalization/runs/gpw-split-normalization-20260826-v4/candidate_panel.parquet",
+      "finding": "The last source-native execution open/close is 2020-12-21; both are absent from 2020-12-22, so a frozen 2020-12-22 zero target cannot manufacture an exit fill."
+    },
+    {
+      "role": "official_acquirer_financial_statements_control",
+      "url": "https://www.iliad.fr/media/ILIAD_DEU_2020_Eng_d1e283f4ae.pdf",
+      "finding": "Iliad reports that the remaining 3.3 percent was squeezed out at the same PLN 39 offer price and that it held all Play capital by 2020-12-31."
+    }
+  ],
+  "scope": "Only the frozen expanded-period PLAY holding; no broader event inventory or total-return construction."
+}

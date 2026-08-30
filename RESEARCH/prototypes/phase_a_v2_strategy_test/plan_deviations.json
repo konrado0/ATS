@@ -1,0 +1,25 @@
+{
+  "schema_version": "ats.phase_a_v2_strategy_test.plan_deviations.v1",
+  "deviations": [
+    {
+      "id": "play-expanded-terminal-settlement-v1",
+      "classification": "narrow material accounting correction",
+      "discovered_after_primary_v1": true,
+      "problem": "Frozen expanded-period Q5 and benchmark holdings crossed PLAY's December 2020 terminal event, which was absent from the five-row accepted exit audit and left expanded NAV unresolved.",
+      "correction": "Apply one PLN 39.00 cash takeover on 2020-12-23 using official Iliad announcement and squeeze-out notice; do not change signal, schedules, weighting, costs, periods, or gates.",
+      "effect_on_v1": "Expanded-period economics in v1 are invalid and must not be used. Common-period results and all frozen strategy semantics are unchanged.",
+      "new_config": "config_v2.json",
+      "event_supplement": "play_exit_supplement.json"
+    },
+    {
+      "id": "play-last-executable-session-v2",
+      "classification": "narrow material accounting correction",
+      "discovered_after_primary_v2": true,
+      "problem": "The v2 preflight treated 2020-12-22 as an executable PLAY session. The pinned candidate has no source-native open or close that day, so expanded offset 10 could not execute its frozen zero target and remained unresolved even though the cash action was known.",
+      "correction": "Record 2020-12-21 as the last observed native-price session, block fabricated fills from 2020-12-22, and apply the unchanged official PLN 39.00 cash action on 2020-12-23. Do not change signal, schedules, weighting, costs, periods, or gates.",
+      "effect_on_v2": "Expanded-period economics in v2 are invalid and must not be used. Common-period results and all frozen strategy semantics are unchanged.",
+      "new_config": "config_v3.json",
+      "event_supplement": "play_exit_supplement_v2.json"
+    }
+  ]
+}

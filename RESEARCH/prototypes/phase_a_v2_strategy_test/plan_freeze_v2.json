@@ -1,0 +1,14 @@
+{
+  "schema_version": "ats.phase_a_v2_strategy_test.plan_freeze.v2",
+  "frozen_before_corrected_portfolio_execution": true,
+  "freeze_date": "2026-08-29",
+  "supersedes_for_execution": "plan_freeze.json",
+  "analysis_plan_sha256": "55e12ad580ea2c321a236f476089d9f47a08f1f59499a44b307f11f9369eaeca",
+  "base_config_sha256": "83d3df0c5c9fb30bd842612b4233963ce43d9ee292645773d0583d3558b28d2f",
+  "corrected_config_overlay_sha256": "9dd9ea21383a4c278ca7460d0cc7e90e53a3235f396e625cd9ded5f749048220",
+  "plan_deviations_sha256": "2cf106b3832a67a9e683c112106953eb3954c095263a7c62953904e099c95dd2",
+  "play_exit_supplement_sha256": "4405e22431416aaff84bab82d842db699482bc472d03825dcd441130ee852028",
+  "strategy_parameter_changes": 0,
+  "accounting_correction": "One PLAY cash takeover at PLN 39.00 per share effective and paid 2020-12-23.",
+  "prohibited_use_of_v1": "Do not use v1 expanded-period economics; common-period v1 remains a diagnostic control only."
+}

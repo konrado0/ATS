@@ -1,0 +1,8 @@
+dimension,verdict,evidence
+Dino correction,PASS,"phase-a-v2-dino-correction-20260829-v1: normalized transition and event-aware exclusion preserve sign and interpretation"
+Signal and PIT reconciliation,PASS,"99,780/99,780 rows; denominator 60; zero feature, eligibility, percentile, or quintile mismatches"
+Portfolio accounting,PASS,"120/120 ledgers; zero terminal-unresolved sleeves; 48/48 required Dino applications; maximum bounded unresolved run 11 sessions"
+Q5 absolute economics,PASS,"common equal-sleeve composite price-only after-cost CAGR 15.4341%"
+Q5 benchmark-relative economics,PASS,"common excess CAGR +2.6302 pp; higher return/volatility; drawdown disadvantage 2.7408 pp; relative wealth 1.144590"
+Stability/concentration,PASS,"16/20 positive-excess offsets; 3/5 positive full years; strongest-year and every single-group deletion retain positive direction; expanded direction positive"
+Overall decision,CONTINUE TO ONE BOUNDED VALIDATION STEP,"all 11 frozen economic hurdles and every data/accounting/reproduction gate pass"

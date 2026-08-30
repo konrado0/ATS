@@ -1,0 +1,14 @@
+{
+  "schema_version": "ats.phase_a_v2_strategy_test.plan_freeze.v3",
+  "frozen_before_corrected_portfolio_execution": true,
+  "freeze_date": "2026-08-29",
+  "supersedes_for_execution": "plan_freeze_v2.json",
+  "analysis_plan_sha256": "55e12ad580ea2c321a236f476089d9f47a08f1f59499a44b307f11f9369eaeca",
+  "base_config_sha256": "83d3df0c5c9fb30bd842612b4233963ce43d9ee292645773d0583d3558b28d2f",
+  "corrected_config_overlay_sha256": "c1b39cf736056dc0f2130366165339a481d99cfd2a084fad3ff9fbd863c7de4e",
+  "plan_deviations_sha256": "8d9e52fad6609b38459b660a56e3a5ec68e5e0e64cef72c76686d9271b28497e",
+  "play_exit_supplement_sha256": "a7dd1df9764a32455ddaf49939f606bc650c61267981b3a1ee80961b08ef2d70",
+  "strategy_parameter_changes": 0,
+  "accounting_correction": "PLAY source-native fills stop after 2020-12-21; unavailable 2020-12-22 zero-target execution remains a held position; one PLN 39.00 cash takeover applies on 2020-12-23.",
+  "prohibited_use_of_prior_runs": "Do not use v1 or v2 expanded-period economics. Common-period values remain diagnostic controls only."
+}
