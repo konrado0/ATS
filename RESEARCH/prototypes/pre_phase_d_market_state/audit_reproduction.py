@@ -44,7 +44,9 @@ def main() -> None:
             }
         )
     logical_payload_match = primary["logical_payload_hash"] == reproduction["logical_payload_hash"]
-    status = "PASS" if names_equal and logical_payload_match and all(row["logical_match"] for row in comparisons) else "FAIL"
+    all_logical_match = all(row["logical_match"] for row in comparisons)
+    all_physical_match = all(row["physical_match"] for row in comparisons)
+    status = "PASS" if names_equal and logical_payload_match and all_logical_match and all_physical_match else "FAIL"
     audit = {
         "schema_version": "ats.pre_phase_d_market_state.reproduction_audit.v1",
         "status": status,
@@ -54,8 +56,8 @@ def main() -> None:
         "primary_logical_payload_hash": primary["logical_payload_hash"],
         "reproduction_logical_payload_hash": reproduction["logical_payload_hash"],
         "logical_payload_match": logical_payload_match,
-        "all_artifact_logical_hashes_match": all(row["logical_match"] for row in comparisons),
-        "all_artifact_physical_hashes_match": all(row["physical_match"] for row in comparisons),
+        "all_artifact_logical_hashes_match": all_logical_match,
+        "all_artifact_physical_hashes_match": all_physical_match,
         "artifact_comparisons": comparisons,
         "final_safe_to_proceed_phase_d0_d1": "YES" if status == "PASS" else "NO",
     }

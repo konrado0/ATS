@@ -103,11 +103,39 @@ def test_top60_iqr_top5_timing_and_missing_member_denominator() -> None:
     assert breadth_proof["positive_observation_count"] == int((ret60 > 0).sum())
 
 
+def test_top60_correlation_uses_exact_history_and_excludes_missing_member() -> None:
+    candidate, calendar, decisions = _top60_fixture(missing_members=1)
+    features, coverage = compute_top60_features(
+        candidate,
+        calendar,
+        decisions,
+        minimum_usable=45,
+        leadership_positive_name_count=5,
+    )
+    pivot = candidate.pivot(index="session_date", columns="isin", values="split_adjusted_close").reindex(calendar)
+    exact_returns = np.log(pivot).diff().iloc[-61:-1]
+    usable = exact_returns.columns[exact_returns.notna().all(axis=0)]
+    correlation = np.corrcoef(exact_returns[usable].to_numpy(dtype=float), rowvar=False)
+    upper_triangle = correlation[np.triu_indices_from(correlation, k=1)]
+    expected = float(upper_triangle.mean())
+
+    row = features.iloc[0]
+    proof = coverage.loc[coverage["feature"].eq("top60_average_pairwise_correlation_60")].iloc[0]
+    assert len(usable) == 59
+    assert np.isclose(row["top60_average_pairwise_correlation_60"], expected)
+    assert proof["usable_count"] == proof["aggregation_denominator"] == 59
+    assert proof["excluded_count"] == 1
+    assert proof["unavailable_members_in_aggregation"] == 0
+    assert bool(proof["feature_valid"])
+
+
 def test_top60_fails_closed_below_45_and_rejects_wrong_official_denominator() -> None:
     candidate, calendar, decisions = _top60_fixture(missing_members=16)
     features, coverage = compute_top60_features(candidate, calendar, decisions, minimum_usable=45, leadership_positive_name_count=5)
     assert pd.isna(features.iloc[0]["top60_return_dispersion_20"])
     assert not bool(coverage.loc[coverage["feature"].eq("top60_return_dispersion_20"), "feature_valid"].iloc[0])
+    assert pd.isna(features.iloc[0]["top60_average_pairwise_correlation_60"])
+    assert not bool(coverage.loc[coverage["feature"].eq("top60_average_pairwise_correlation_60"), "feature_valid"].iloc[0])
     wrong = candidate.loc[~candidate["isin"].eq("TEST00000059")].copy()
     with pytest.raises(ValueError, match="Official denominator is 59"):
         compute_top60_features(wrong, calendar, decisions, minimum_usable=45, leadership_positive_name_count=5)

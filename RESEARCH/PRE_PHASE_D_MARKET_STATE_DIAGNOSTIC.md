@@ -259,11 +259,15 @@ The exact repository-root command is:
 & 'D:\Stock\ATS\RESEARCH\environment\invoke_ats_python.ps1' -m pytest -q 'D:\Stock\ATS\RESEARCH\prototypes\pre_phase_d_market_state\tests'
 ```
 
-It reports **9 passed**. The focused fixtures now cover centered volatility
-ratio, IQR dispersion, top-five leadership, preceding-information-session lag,
-official denominator 60, missing members not counted as negatives, the 45/60
-boundary, wrong-denominator rejection, calculated missing-state violations and
-right-censored outcome exclusion.
+The v2 acceptance run reported **9 passed**. The post-review baseline adds the
+previously missing exact-history/coverage regression for TOP60 pairwise
+correlation, so the current command reports **10 passed**. The focused fixtures
+cover centered volatility ratio, IQR dispersion, top-five leadership,
+preceding-information-session lag, official denominator 60, missing members not
+counted as negatives, the 45/60 boundary, wrong-denominator rejection,
+calculated missing-state violations, pairwise-correlation coverage and
+right-censored outcome exclusion. This test-only hardening does not change or
+require rerunning the immutable v2 research result.
 
 The v1 evidence commit and bounded v2 source commit contain only this diagnostic
 scope. Pre-existing roadmap, Phase D charter and environment-repair work remain

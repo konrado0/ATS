@@ -143,24 +143,172 @@ Signal calculation stays outside `ats_portfolio`. For realistic integration fixt
 
 Zipline-reloaded is the first optional challenger only after this ledger is stable. PyBroker requires a clean isolated environment before retry. LEAN and NautilusTrader remain future interface adapters.
 
-## Phase D — Chronological ML workbench
+## Phase D — Pooled chronological ML research
 
-### Implement
+Phase D is a research-led test, not a general ML-platform buildout. Its bounded
+question is whether compact, identity-blind numerical descriptions of stock path,
+market-relative behavior, cross-sectional context and market state add material,
+stable predictive information beyond the conventional GPW factors already
+studied and can identify selective, bounded swing opportunities. The detailed
+contract is in `PHASE_D_POOLED_ML_RESEARCH_CHARTER.md`.
 
-- date-grouped expanding/rolling splits;
-- validation splitting based on information intervals: training feature/label intervals must not overlap information unavailable at the validation decision boundary; for simple forward-return labels the default purge is at least the maximum label horizon, but overlapping events, holding-period targets or other sampling structures may require a larger or structurally different exclusion;
-- fold-local preprocessing;
-- SGD/linear baseline, LightGBM primary and XGBoost CPU/GPU challenger;
-- bounded Optuna studies only after one deterministic baseline;
-- stored prediction lineage: model/run version, features, data manifest, horizon and `as_of_ts`.
+The repaired bounded proximity-to-high result remains a frozen conventional
+benchmark, not deployment-ready alpha. Do not tune its lookback, threshold,
+horizon, regime filter or combinations. Phase D may use its exact signal
+definition as a feature and may diagnose ranking within its Q5 population, but it
+is not an active optimization track.
 
-### Acceptance
+The first experiment remains within the exact-PIT TOP60 panel. Expansion to all
+GPW securities would reopen historical-universe, identity, delisting and source
+coverage work and is conditional on successful evidence from the bounded panel.
+The input remains the pinned research-grade split-normalized candidate panel with
+its source, volume-quality, missing-state and corporate-action caveats; Phase D
+does not silently promote it to a canonical Phase B publication.
 
-- No session is divided across train and validation.
-- All transformers fit only on training dates.
-- The untouched recent holdout is not used for tuning.
-- CPU/GPU runs record package build, driver, device, dtype and transfer behavior.
-- Predictions can be regenerated from a run directory without MLflow.
+Pooled learning does not imply continuous allocation. Every eligible
+security-session may contribute a learning example, but the intended action is an
+abstaining opportunity detector: cash/no position is the default and no trade is
+generated when a frozen absolute or calibrated opportunity gate is not met. A
+cross-sectional tail rule alone is insufficient because it would force a trade on
+nearly every session. Rank IC remains an information diagnostic; signal frequency,
+tail-conditioned outcomes, future path/excursion behavior, concentration and
+eventual trade-level economics govern actionability. The initial action hypothesis
+is long-only; negative-tail outcomes are diagnostics, not authorization for a
+short-selling branch.
+
+### Phase D0 — Freeze the scientific contract
+
+Before inspecting any Phase D prediction result:
+
+- pin the candidate-panel manifest and exact member-session universe;
+- retain the accepted stored `label__open_to_open__20` definition on the
+  `split_adjusted_price_return` basis and exact Phase A v2
+  decision/next-open/20-session endpoint semantics as the sole primary horizon;
+  evaluate it cross-sectionally without rewriting the stored label as a
+  relative-return fact;
+- retain 5- and 10-session outcomes, if used, as named secondary diagnostics
+  that cannot select the winning model;
+- define and fingerprint a compact feature set in five explicit blocks:
+  conventional stock state, stock path/evolution, market-relative behavior,
+  cross-sectional context, and market state/regime;
+- make the market-state block numerical and compact: multi-horizon WIG trend,
+  market drawdown, short/long realized-volatility state, TOP60 breadth,
+  cross-sectional dispersion, and correlation/co-movement or leadership
+  concentration where it is cheap and PIT-safe;
+- freeze a market-state ablation comparing rich stock-state features without
+  that block against the same representation with it;
+- freeze the minimum 2x2 comparison: conventional versus rich representation,
+  each under a regularized linear model and fixed LightGBM model;
+- define date-grouped chronological development folds, information-interval
+  purge/embargo rules and one later locked historical test segment;
+- call that segment a locked historical test, not genuinely untouched evidence,
+  because outcomes through 2026-08-18 have influenced the research program;
+- freeze fold-local preprocessing, missing-value behavior, seeds, evaluation
+  metrics, concentration checks, material-improvement thresholds and the exact
+  stop/continue rule; and
+- freeze an abstaining score-to-opportunity rule using development-training
+  information only, including an absolute or calibrated hurdle, signal-expiry and
+  duplicate/overlap semantics; do not require a fixed number of selections per
+  session or silently lower the hurdle when no opportunity qualifies;
+- define prospective maximum-favourable excursion, maximum-adverse excursion and
+  time/path diagnostics as future-only evaluation labels that are inaccessible to
+  feature and model-fitting code; and
+- hash the plan and configuration before any real predictive metric is emitted.
+
+The primary model comparison is rich representation versus the strongest
+conventional model, not rich LightGBM versus a deliberately weak linear baseline.
+A richer model that approximately ties the strongest conventional model fails the
+incremental-value objective.
+
+### Phase D1 — Build only the minimum workbench
+
+Add a small `ats_ml` boundary for:
+
+- a manifest-pinned security-session dataset builder that reuses `ats_research`
+  PIT, feature, timing and label contracts;
+- date-grouped chronological split generation from explicit feature/label
+  information intervals;
+- fold-local numeric preprocessing with no security identifier, ticker, nominal
+  price, raw volume or other direct identity input;
+- adapters for one regularized linear estimator and LightGBM;
+- session-level prediction evaluation, paired model comparison, block-aware
+  uncertainty, selective opportunity-tail evaluation, signal frequency and idle
+  state, prospective excursion/path diagnostics, overlap, temporal and security
+  concentration, feature-block ablation, and the predefined within-proximity-Q5
+  diagnostic; and
+- portable run manifests containing data, universe, feature, split, model,
+  environment, seed, Git and artifact fingerprints.
+
+D1 validates this machinery with hand-calculated, synthetic and mechanically
+bounded fixtures. It may inspect real data schemas, counts, date ranges,
+missingness and eligibility, but it must not publish or inspect real predictive
+performance. No locked historical test data are opened by a model in D1.
+
+### Phase D0/D1 acceptance checkpoint
+
+- The owner-approved plan is frozen and hashed before any real model result.
+- The primary label is unchanged and inaccessible to feature computation.
+- No session is divided across train, validation or test.
+- Training feature/label information intervals do not cross a validation or test
+  decision boundary; purge is derived from those intervals rather than hard-coded
+  merely as a horizon number.
+- Every fitted transformation uses training dates only; same-session
+  cross-sectional transforms are explicit and deterministic.
+- Official denominator 60, eligible count and every excluded-member state remain
+  present in datasets and evaluation outputs.
+- Identity-blind columns are enforced by schema allowlist and negative tests.
+- The four representation/model cells use identical folds and comparable rows.
+- Opportunity gates are trained/calibrated inside each training fold, can emit no
+  candidates, and are never relaxed using validation or test outcomes.
+- No evaluation path converts a rank into a compulsory daily holding or silently
+  allocates capital across the highest-ranked available names.
+- Future excursion/path labels are inaccessible to features, preprocessing,
+  fitting and opportunity calibration.
+- Synthetic known-signal, no-signal, leakage and shuffled-label controls behave
+  as expected.
+- Dataset, split and prediction fixtures reproduce from a portable run directory
+  without MLflow or notebook state.
+- A requirement-by-requirement audit is `PASS`, `FAIL` or `NOT PROVEN`; owner
+  approval is required before Phase D2 may inspect real predictive results.
+
+### Phase D2 — Execute the frozen historical study
+
+Only after D0/D1 acceptance, run the four frozen cells and predefined feature
+block ablations. Cross-sectional rank IC, paired incremental IC and quantile
+monotonicity remain diagnostics of general information content. The primary
+actionability evidence is the frozen opportunity tail: conditional forward
+outcomes, hurdle hit rate, signal frequency and idle periods, maximum favourable
+and adverse excursion, time/path behavior, overlap, chronological and market-state
+stability, concentration, coverage and missingness sensitivity. Compare rich and
+conventional models under their frozen opportunity rules and at predefined
+frequency-matched operating points so additional selectivity is not mistaken for
+better prediction. The within-proximity-Q5 ranking check is diagnostic only and
+cannot become an alternative optimization target.
+
+The locked historical test is opened once after representation, preprocessing,
+model parameters and selection logic are frozen. True forward evidence begins
+after 2026-08-18.
+
+### Phase D3 — Stop or continue
+
+Continue only if the rich representation delivers material and stable incremental
+information over the strongest conventional model across chronological
+development validation and the locked historical test, with an economically
+credible selective opportunity tail, sufficient non-overlapping evidence for the
+claim being made, a meaningful cash/no-position state, and no dependence on a
+small number of sessions, years, regimes or securities. Positive standalone rank
+IC without superior opportunity-tail evidence is insufficient. Data, causality
+and reproducibility gates must also pass.
+
+If it does not, retain the negative result and stop expanding ML research and
+infrastructure. Do not search additional indicators, horizons, objectives or
+models until one works. A clean pass authorizes only one frozen Phase C portfolio
+translation and later forward observation—not deployment.
+
+Deferred unless a successful bounded experiment demonstrates a concrete need:
+all-GPW expansion, new sector history, ESPI/event ingestion, sequence/deep models,
+ranking objectives, hyperparameter-search infrastructure, XGBoost challengers,
+GPU/distributed execution, MLflow and feature-store work.
 
 ## Phase E — Optimize only measured pain (ongoing, trigger-driven)
 
