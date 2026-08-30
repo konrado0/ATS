@@ -50,11 +50,14 @@ def load_tables(run: Path) -> dict[str, pd.DataFrame]:
         "composite_yearly": pd.read_csv(tables / "composite_yearly_metrics.csv"),
         "contributions": pd.read_parquet(tables / "contributions.parquet"),
         "daily_nav": pd.read_parquet(tables / "daily_nav.parquet"),
+        "decision_sessions": pd.read_parquet(tables / "decision_sessions.parquet"),
         "economic_gate": pd.read_csv(tables / "economic_gate.csv"),
         "event_preflight": pd.read_csv(tables / "event_preflight.csv"),
+        "fills": pd.read_parquet(tables / "fills.parquet"),
         "ledger": pd.read_csv(tables / "ledger_reconciliation.csv"),
         "offset_relative": pd.read_csv(tables / "offset_relative_metrics.csv"),
         "portfolio_metrics": pd.read_csv(tables / "portfolio_metrics.csv"),
+        "target_weights": pd.read_parquet(tables / "target_weights.parquet"),
         "yearly": pd.read_csv(tables / "yearly_metrics.csv"),
     }
 
@@ -65,8 +68,9 @@ def recompute_composite_metrics(composite_nav: pd.DataFrame) -> pd.DataFrame:
     for (period, portfolio), nav in composite_nav.groupby(["period", "portfolio"], sort=True):
         clean = nav.dropna(subset=["nav"]).copy()
         returns = clean["daily_return"].dropna()
-        sessions = len(clean)
-        terminal = float(clean.iloc[-1]["nav"])
+        sessions = len(nav)
+        resolved_sessions = len(clean)
+        terminal = float(nav.sort_values("session_date").iloc[-1]["nav"])
         cumulative = terminal / initial_cash - 1.0
         cagr = (terminal / initial_cash) ** (252.0 / sessions) - 1.0
         volatility = float(returns.std(ddof=1) * math.sqrt(252))
@@ -76,6 +80,7 @@ def recompute_composite_metrics(composite_nav: pd.DataFrame) -> pd.DataFrame:
                 "period": period,
                 "portfolio": portfolio,
                 "sessions": sessions,
+                "resolved_sessions": resolved_sessions,
                 "terminal_nav": terminal,
                 "cumulative_return": cumulative,
                 "cagr": cagr,
@@ -85,6 +90,106 @@ def recompute_composite_metrics(composite_nav: pd.DataFrame) -> pd.DataFrame:
             }
         )
     return pd.DataFrame(rows)
+
+
+def independent_endpoint_audit(tables: dict[str, pd.DataFrame]) -> dict[str, Any]:
+    daily = tables["daily_nav"].copy()
+    decisions = tables["decision_sessions"].copy()
+    targets = tables["target_weights"].copy()
+    fills = tables["fills"].copy()
+    daily["session_date"] = pd.to_datetime(daily["session_date"])
+    decisions["decision_date"] = pd.to_datetime(decisions["decision_date"])
+    targets["decision_date"] = pd.to_datetime(targets["decision_date"])
+    fills["timestamp"] = pd.to_datetime(fills["timestamp"])
+    rows = []
+    for period in sorted(daily["period"].unique()):
+        calendar = pd.DatetimeIndex(sorted(daily.loc[daily["period"].eq(period), "session_date"].unique()))
+        for offset in range(20):
+            entry_indices = [index for index in range(offset, len(calendar), 20) if index + 20 < len(calendar)]
+            if not entry_indices:
+                continue
+            expected_entries = [calendar[index] for index in entry_indices]
+            expected_terminal = calendar[entry_indices[-1] + 20]
+            for portfolio in PORTFOLIOS:
+                sleeve_decisions = decisions.loc[
+                    decisions["period"].eq(period)
+                    & decisions["offset"].eq(offset)
+                    & decisions["portfolio"].eq(portfolio)
+                ]
+                actual_entries = sorted(
+                    sleeve_decisions.loc[
+                        sleeve_decisions["decision_type"].eq("entry_rebalance"), "decision_date"
+                    ].tolist()
+                )
+                terminal_rows = sleeve_decisions.loc[
+                    sleeve_decisions["decision_type"].eq("terminal_liquidation")
+                ]
+                terminal_date_match = len(terminal_rows) == 1 and terminal_rows.iloc[0]["decision_date"] == expected_terminal
+                endpoint_column_match = bool(
+                    sleeve_decisions.loc[sleeve_decisions["decision_type"].eq("entry_rebalance")]
+                    .sort_values("decision_date")["scheduled_endpoint_date"]
+                    .pipe(pd.to_datetime)
+                    .reset_index(drop=True)
+                    .eq(pd.Series([calendar[index + 20] for index in entry_indices]))
+                    .all()
+                )
+                sleeve_targets = targets.loc[
+                    targets["period"].eq(period)
+                    & targets["offset"].eq(offset)
+                    & targets["portfolio"].eq(portfolio)
+                ]
+                positive_names = set(
+                    sleeve_targets.loc[sleeve_targets["target_weight"].astype(str).ne("0"), "security_id"]
+                )
+                terminal_targets = sleeve_targets.loc[sleeve_targets["decision_date"].eq(expected_terminal)]
+                terminal_names = set(terminal_targets["security_id"])
+                terminal_targets_complete = bool(positive_names) and terminal_names == positive_names
+                terminal_targets_zero = bool(len(terminal_targets)) and terminal_targets["target_weight"].astype(str).eq("0").all()
+                after = daily.loc[
+                    daily["period"].eq(period)
+                    & daily["offset"].eq(offset)
+                    & daily["portfolio"].eq(portfolio)
+                    & daily["session_date"].ge(expected_terminal)
+                ].sort_values("session_date")
+                cash_after = bool(
+                    len(after)
+                    and after["nav"].notna().all()
+                    and after["holdings_count"].eq(0).all()
+                    and np.allclose(after["cash_weight"].astype(float), 1.0, rtol=0, atol=1e-12)
+                )
+                fills_after = fills.loc[
+                    fills["period"].eq(period)
+                    & fills["offset"].eq(offset)
+                    & fills["portfolio"].eq(portfolio)
+                    & fills["timestamp"].dt.tz_localize(None).dt.normalize().gt(expected_terminal)
+                ]
+                checks = {
+                    "entry_schedule_match": actual_entries == expected_entries,
+                    "entry_endpoint_column_match": endpoint_column_match,
+                    "one_exact_terminal_liquidation": terminal_date_match,
+                    "terminal_targets_complete": terminal_targets_complete,
+                    "terminal_targets_all_zero": bool(terminal_targets_zero),
+                    "cash_and_zero_holdings_from_terminal_through_period_end": cash_after,
+                    "no_fills_after_terminal": fills_after.empty,
+                }
+                rows.append(
+                    {
+                        "period": period,
+                        "offset": offset,
+                        "portfolio": portfolio,
+                        "expected_entry_decisions": len(expected_entries),
+                        "expected_terminal_date": expected_terminal.date().isoformat(),
+                        "terminal_zero_targets": len(terminal_targets),
+                        **checks,
+                        "status": "PASS" if all(checks.values()) else "FAIL",
+                    }
+                )
+    return {
+        "status": "PASS" if rows and all(row["status"] == "PASS" for row in rows) else "FAIL",
+        "groups": len(rows),
+        "passes": sum(row["status"] == "PASS" for row in rows),
+        "rows": rows,
+    }
 
 
 def independent_gate(tables: dict[str, pd.DataFrame]) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -319,12 +424,14 @@ def audit(run: Path, reproduction: Path | None) -> dict[str, Any]:
     ledger = tables["ledger"]
     events = tables["event_preflight"]
     unresolved = unresolved_diagnostics(tables["daily_nav"])
+    endpoints = independent_endpoint_audit(tables)
     dino_required = int(events.loc[events["isin"].eq("PLDINPL00011"), "action_required"].sum())
     dino_applied = int(ledger["dino_applications"].sum())
     accounting_pass = (
         bool(ledger["status"].eq("PASS").all())
         and unresolved["all_terminal_navs_resolved"]
         and dino_required == dino_applied
+        and endpoints["status"] == "PASS"
     )
     gate_status = {row["gate"]: row["status"] for row in independent}
     absolute_pass = gate_status["q5_positive_after_cost_price_only_cagr"] == "PASS"
@@ -361,7 +468,7 @@ def audit(run: Path, reproduction: Path | None) -> dict[str, Any]:
     portfolio_metrics = tables["portfolio_metrics"]
     recomputed_metrics = recompute_composite_metrics(tables["composite_nav"])
     metric_columns = [
-        "sessions", "terminal_nav", "cumulative_return", "cagr", "annualized_volatility",
+        "sessions", "resolved_sessions", "terminal_nav", "cumulative_return", "cagr", "annualized_volatility",
         "return_volatility_ratio", "maximum_drawdown",
     ]
     metric_comparison = tables["composite_metrics"].merge(
@@ -384,6 +491,17 @@ def audit(run: Path, reproduction: Path | None) -> dict[str, Any]:
         "composite_metrics_recomputed_from_daily_nav": "PASS" if composite_metrics_match else "FAIL",
         "official_denominator_exactly_60": "PASS" if signal["official_denominator_min"] == signal["official_denominator_max"] == 60 else "FAIL",
         "all_20_offsets_for_every_period_and_portfolio": "PASS" if bool(offset_counts.eq(20).all()) else "FAIL",
+        "exact_t_plus_20_terminal_liquidation_and_cash_after": endpoints["status"],
+        "common_elapsed_sessions_identical_across_portfolios": "PASS" if bool(
+            portfolio_metrics.loc[portfolio_metrics["period"].eq("common"), "sessions"].eq(
+                portfolio_metrics.loc[portfolio_metrics["period"].eq("common"), "sessions"].iloc[0]
+            ).all()
+        ) else "FAIL",
+        "expanded_elapsed_sessions_identical_across_portfolios": "PASS" if bool(
+            portfolio_metrics.loc[portfolio_metrics["period"].eq("expanded"), "sessions"].eq(
+                portfolio_metrics.loc[portfolio_metrics["period"].eq("expanded"), "sessions"].iloc[0]
+            ).all()
+        ) else "FAIL",
         "identical_rebalance_schedule_across_q5_benchmark_q1": "PASS" if bool(rebalance_pivot.nunique(axis=1).eq(1).all()) else "FAIL",
         "fills_use_source_native_open": "PASS" if bool(ledger["fill_source_native_open"].all()) else "FAIL",
         "commission_exact": "PASS" if bool(ledger["commission_exact"].all()) else "FAIL",
@@ -410,7 +528,7 @@ def audit(run: Path, reproduction: Path | None) -> dict[str, Any]:
         {"dimension": "Overall decision", "verdict": overall},
     ]
     result: dict[str, Any] = {
-        "schema_version": "ats.phase_a_v2_strategy_test.audit.v1",
+        "schema_version": "ats.phase_a_v2_strategy_test.audit.v2",
         "audit_code_sha256": sha256_file(Path(__file__).resolve()),
         "run": run.resolve().as_posix(),
         "manifest_integrity": {key: value for key, value in primary.items() if key != "manifest"},
@@ -428,6 +546,7 @@ def audit(run: Path, reproduction: Path | None) -> dict[str, Any]:
             "all_ledgers_pass": bool(ledger["status"].eq("PASS").all()),
             "status": "PASS" if accounting_pass else "NOT PROVEN",
             "unresolved_valuation_diagnostics": unresolved,
+            "terminal_endpoint_audit": endpoints,
             "required_event_rows": int(events["action_required"].sum()),
             "required_event_rows_by_isin": {
                 str(key): int(value)

@@ -223,8 +223,13 @@ def build_decisions(config: dict[str, Any], official: pd.DataFrame) -> tuple[pd.
         start, end = pd.Timestamp(start_text), pd.Timestamp(end_text)
         sessions = pd.DatetimeIndex(sorted(official.loc[official["session_date"].between(start, end), "session_date"].unique()))
         for offset in range(20):
-            chosen = [sessions[index] for index in range(offset, len(sessions), 20) if index + 20 < len(sessions)]
+            chosen_indices = [index for index in range(offset, len(sessions), 20) if index + 20 < len(sessions)]
+            chosen = [sessions[index] for index in chosen_indices]
+            ever_selected: dict[str, set[str]] = {name: set() for name in ("q5", "eligible_universe_benchmark", "q1")}
+            isin_by_security: dict[str, str] = {}
             for decision_date in chosen:
+                decision_index = sessions.get_loc(decision_date)
+                scheduled_endpoint = sessions[decision_index + 20]
                 group = official.loc[official["session_date"].eq(decision_date)].copy()
                 if len(group) != 60:
                     raise RuntimeError(f"official denominator is not 60 on {decision_date.date()}")
@@ -252,6 +257,8 @@ def build_decisions(config: dict[str, Any], official: pd.DataFrame) -> tuple[pd.
                             "offset": offset,
                             "portfolio": portfolio,
                             "decision_date": decision_date,
+                            "decision_type": "entry_rebalance",
+                            "scheduled_endpoint_date": scheduled_endpoint,
                             "official_expected_members": 60,
                             "feature_eligible_members": len(eligible),
                             "selected_count": count,
@@ -265,12 +272,15 @@ def build_decisions(config: dict[str, Any], official: pd.DataFrame) -> tuple[pd.
                         }
                     )
                     for row in selected.itertuples(index=False):
+                        ever_selected[portfolio].add(str(row.security_id))
+                        isin_by_security[str(row.security_id)] = str(row.isin)
                         targets.append(
                             {
                                 "period": period,
                                 "offset": offset,
                                 "portfolio": portfolio,
                                 "decision_date": decision_date,
+                                "target_role": "selected_entry",
                                 "security_id": row.security_id,
                                 "isin": row.isin,
                                 "target_weight": str(intended_weight),
@@ -281,12 +291,67 @@ def build_decisions(config: dict[str, Any], official: pd.DataFrame) -> tuple[pd.
                                 "execution_open_available": pd.notna(row.native_open),
                             }
                         )
+            if chosen_indices:
+                terminal_date = sessions[chosen_indices[-1] + 20]
+                terminal_group = official.loc[official["session_date"].eq(terminal_date)].copy()
+                if len(terminal_group) != 60:
+                    raise RuntimeError(f"official denominator is not 60 on terminal endpoint {terminal_date.date()}")
+                terminal_eligible = terminal_group.loc[terminal_group["feature_eligible"]]
+                terminal_excluded = [
+                    exclusion_state(row).model_dump(mode="json")
+                    for _, row in terminal_group.loc[~terminal_group["feature_eligible"]].iterrows()
+                ]
+                terminal_missing = int(terminal_group["native_open"].isna().sum())
+                terminal_nontrading = int((~terminal_group["expected_trading"].fillna(False)).sum())
+                for portfolio in ("q5", "eligible_universe_benchmark", "q1"):
+                    decisions.append(
+                        {
+                            "period": period,
+                            "offset": offset,
+                            "portfolio": portfolio,
+                            "decision_date": terminal_date,
+                            "decision_type": "terminal_liquidation",
+                            "scheduled_endpoint_date": terminal_date,
+                            "official_expected_members": 60,
+                            "feature_eligible_members": len(terminal_eligible),
+                            "selected_count": 0,
+                            "missing_states": terminal_missing,
+                            "nontrading_states": terminal_nontrading,
+                            "unavailable_selected_targets": 0,
+                            "rejected_or_deferred_target_weight_preflight": "0",
+                            "intended_invested_weight": "0",
+                            "intended_cash_weight": "1",
+                            "excluded_member_states_json": json.dumps(
+                                terminal_excluded, sort_keys=True, separators=(",", ":")
+                            ),
+                        }
+                    )
+                    for security_id in sorted(ever_selected[portfolio]):
+                        targets.append(
+                            {
+                                "period": period,
+                                "offset": offset,
+                                "portfolio": portfolio,
+                                "decision_date": terminal_date,
+                                "target_role": "terminal_liquidation",
+                                "security_id": security_id,
+                                "isin": isin_by_security[security_id],
+                                "target_weight": "0",
+                                "feature_value": np.nan,
+                                "rank": np.nan,
+                                "percentile": np.nan,
+                                "quantile": pd.NA,
+                                "execution_open_available": pd.NA,
+                            }
+                        )
     decision_frame = pd.DataFrame(decisions).sort_values(["period", "offset", "portfolio", "decision_date"]).reset_index(drop=True)
     target_frame = pd.DataFrame(targets).sort_values(["period", "offset", "portfolio", "decision_date", "security_id"]).reset_index(drop=True)
     return decision_frame, target_frame
 
 
-def build_event_preflight(config: dict[str, Any], targets: pd.DataFrame, candidate: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+def build_event_preflight(
+    config: dict[str, Any], decisions: pd.DataFrame, targets: pd.DataFrame, candidate: pd.DataFrame
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     exits = pd.read_csv(config["accepted_exit_evidence"])
     events = exits.loc[exits["isin"].isin(EXIT_ACTIONS)].copy()
     if config.get("play_exit_supplement"):
@@ -312,12 +377,53 @@ def build_event_preflight(config: dict[str, Any], targets: pd.DataFrame, candida
         )
     rows: list[dict[str, Any]] = []
     path_rows: list[dict[str, Any]] = []
-    grouped = targets.groupby(["period", "offset", "portfolio"], sort=True)
-    for (period, offset, portfolio), sleeve in grouped:
-        decision_dates = pd.DatetimeIndex(sorted(sleeve["decision_date"].unique()))
+    grouped = decisions.groupby(["period", "offset", "portfolio"], sort=True)
+    for (period, offset, portfolio), sleeve_decisions in grouped:
+        sleeve = targets.loc[
+            targets["period"].eq(period) & targets["offset"].eq(offset) & targets["portfolio"].eq(portfolio)
+        ]
+        decision_dates = pd.DatetimeIndex(sorted(sleeve_decisions["decision_date"].unique()))
+        entry_dates = pd.DatetimeIndex(
+            sorted(sleeve_decisions.loc[sleeve_decisions["decision_type"].eq("entry_rebalance"), "decision_date"].unique())
+        )
+        terminal_dates = pd.DatetimeIndex(
+            sorted(sleeve_decisions.loc[sleeve_decisions["decision_type"].eq("terminal_liquidation"), "decision_date"].unique())
+        )
+        if len(terminal_dates) != 1:
+            raise RuntimeError(f"expected one terminal liquidation for {period}/{offset}/{portfolio}")
+        terminal_date = terminal_dates[0]
+        final_entry_date = entry_dates[-1]
+        final_names = set(
+            sleeve.loc[
+                sleeve["decision_date"].eq(final_entry_date)
+                & sleeve["target_role"].eq("selected_entry")
+                & sleeve["target_weight"].astype(str).ne("0"),
+                "security_id",
+            ]
+        )
+        terminal_open = candidate.loc[
+            candidate["session_date"].eq(terminal_date) & candidate["security_id"].isin(final_names),
+            ["security_id", "native_open"],
+        ]
+        available_terminal_names = set(terminal_open.loc[terminal_open["native_open"].notna(), "security_id"])
+        unavailable_terminal_names = sorted(final_names - available_terminal_names)
+        if unavailable_terminal_names:
+            raise RuntimeError(
+                f"terminal liquidation lacks native open for {period}/{offset}/{portfolio} on "
+                f"{terminal_date.date()}: {unavailable_terminal_names}"
+            )
         for event in events.itertuples(index=False):
             security = f"isin:{event.isin}"
-            selected_dates = pd.DatetimeIndex(sorted(sleeve.loc[sleeve["security_id"].eq(security), "decision_date"].unique()))
+            selected_dates = pd.DatetimeIndex(
+                sorted(
+                    sleeve.loc[
+                        sleeve["security_id"].eq(security)
+                        & sleeve["target_role"].eq("selected_entry")
+                        & sleeve["target_weight"].astype(str).ne("0"),
+                        "decision_date",
+                    ].unique()
+                )
+            )
             suspension = pd.Timestamp(event.trading_suspension_from)
             crossing_dates = []
             for selected_date in selected_dates:
@@ -344,7 +450,16 @@ def build_event_preflight(config: dict[str, Any], targets: pd.DataFrame, candida
                     "action_required": bool(crossing_dates),
                 }
             )
-        dino_dates = pd.DatetimeIndex(sorted(sleeve.loc[sleeve["isin"].eq("PLDINPL00011"), "decision_date"].unique()))
+        dino_dates = pd.DatetimeIndex(
+            sorted(
+                sleeve.loc[
+                    sleeve["isin"].eq("PLDINPL00011")
+                    & sleeve["target_role"].eq("selected_entry")
+                    & sleeve["target_weight"].astype(str).ne("0"),
+                    "decision_date",
+                ].unique()
+            )
+        )
         event_date = pd.Timestamp("2025-07-31")
         dino_cross = []
         for selected_date in dino_dates:
@@ -372,9 +487,10 @@ def build_event_preflight(config: dict[str, Any], targets: pd.DataFrame, candida
             }
         )
 
+        entry_targets = sleeve.loc[sleeve["target_role"].eq("selected_entry") & sleeve["target_weight"].astype(str).ne("0")]
         selection_by_date = {
             decision_date: set(group["security_id"])
-            for decision_date, group in sleeve.groupby("decision_date", sort=True)
+            for decision_date, group in entry_targets.groupby("decision_date", sort=True)
         }
         period_start, period_end = [pd.Timestamp(value) for value in config["periods"][period]]
         missing_candidates = candidate.loc[
@@ -382,9 +498,9 @@ def build_event_preflight(config: dict[str, Any], targets: pd.DataFrame, candida
             & (candidate["native_open"].isna() | candidate["native_close"].isna())
         ]
         for missing in missing_candidates.itertuples(index=False):
-            insertion = decision_dates.searchsorted(missing.session_date, side="right") - 1
+            insertion = entry_dates.searchsorted(missing.session_date, side="right") - 1
             if insertion >= 0:
-                holding_decision = decision_dates[insertion]
+                holding_decision = entry_dates[insertion]
             else:
                 continue
             if missing.security_id in selection_by_date[holding_decision]:
@@ -652,16 +768,20 @@ def daily_nav_frame(result: EngineResult, period: str, offset: int, portfolio: s
 def performance_metrics(nav: pd.DataFrame, initial_cash: float, fills: int, rebalances: int, turnover: float, commission: float, slippage: float) -> dict[str, Any]:
     clean = nav.dropna(subset=["nav"]).copy()
     returns = clean["daily_return"].dropna()
-    sessions = len(clean)
-    terminal = float(clean.iloc[-1]["nav"]) if sessions else np.nan
-    cumulative = terminal / initial_cash - 1.0 if sessions else np.nan
-    years = sessions / 252.0
-    cagr = (terminal / initial_cash) ** (1.0 / years) - 1.0 if sessions and terminal > 0 else np.nan
+    elapsed_sessions = len(nav)
+    resolved_sessions = len(clean)
+    terminal = float(nav.iloc[-1]["nav"]) if elapsed_sessions and pd.notna(nav.iloc[-1]["nav"]) else np.nan
+    if elapsed_sessions and not np.isfinite(terminal):
+        raise RuntimeError("terminal NAV must be resolved before performance metrics")
+    cumulative = terminal / initial_cash - 1.0 if elapsed_sessions else np.nan
+    years = elapsed_sessions / 252.0
+    cagr = (terminal / initial_cash) ** (1.0 / years) - 1.0 if elapsed_sessions and terminal > 0 else np.nan
     volatility = returns.std(ddof=1) * math.sqrt(252) if len(returns) > 1 else np.nan
     ratio = cagr / volatility if volatility and np.isfinite(volatility) else np.nan
     drawdown = clean["nav"] / clean["nav"].cummax() - 1.0
     return {
-        "sessions": sessions, "terminal_nav": terminal, "cumulative_return": cumulative, "cagr": cagr,
+        "sessions": elapsed_sessions, "resolved_sessions": resolved_sessions,
+        "terminal_nav": terminal, "cumulative_return": cumulative, "cagr": cagr,
         "annualized_volatility": volatility, "return_volatility_ratio": ratio,
         "maximum_drawdown": float(drawdown.min()), "turnover_cumulative": turnover,
         "turnover_annualized": turnover / years if years else np.nan,
@@ -733,7 +853,13 @@ def yearly_metrics(nav: pd.DataFrame) -> pd.DataFrame:
     for keys, group in nav.groupby(["period", "offset", "portfolio"], sort=True):
         for year, annual in group.groupby(group["session_date"].dt.year, sort=True):
             valid = annual["daily_return"].dropna()
-            rows.append({"period": keys[0], "offset": keys[1], "portfolio": keys[2], "year": year, "return": (1.0 + valid).prod() - 1.0, "sessions": len(valid)})
+            rows.append(
+                {
+                    "period": keys[0], "offset": keys[1], "portfolio": keys[2], "year": year,
+                    "return": (1.0 + valid).prod() - 1.0,
+                    "sessions": len(annual), "resolved_sessions": len(valid),
+                }
+            )
     return pd.DataFrame(rows)
 
 
@@ -907,6 +1033,8 @@ def provenance(config_path: Path, config: dict[str, Any]) -> dict[str, Any]:
              repo / "source/python/src/ats_portfolio/engine.py", repo / "source/python/src/ats_contracts/portfolio.py"]
     if config.get("play_exit_supplement"):
         files.append(Path(config["play_exit_supplement"]))
+    if config.get("repair_plan_file"):
+        files.append(ROOT / config["repair_plan_file"])
     return {
         "git_commit": subprocess.run(["git", "rev-parse", "HEAD"], cwd=repo, capture_output=True, text=True, check=True).stdout.strip(),
         "source_hashes": {path.relative_to(repo).as_posix(): sha256_file(path) for path in files},
@@ -933,7 +1061,7 @@ def publish(config_path: Path, output_root: Path) -> Path:
         if signal_reconciliation["status"] != "PASS":
             raise RuntimeError(f"signal reconciliation failed: {signal_reconciliation}")
         decisions, targets = build_decisions(config, official)
-        event_preflight, holding_path = build_event_preflight(config, targets, candidate)
+        event_preflight, holding_path = build_event_preflight(config, decisions, targets, candidate)
         accepted_terms = {"established_accepted_evidence", "established_official_event_supplement", "confirmed_split_evidence"}
         if not set(event_preflight.loc[event_preflight["action_required"], "terms_status"]).issubset(accepted_terms):
             raise RuntimeError("a required corporate exit lacks established terms")
@@ -954,7 +1082,10 @@ def publish(config_path: Path, output_root: Path) -> Path:
         )
         shutil.copyfile(config_path, stage / "config.json")
         freeze_name = config.get("plan_freeze_file", "plan_freeze.json")
-        for name in ("analysis_plan.md", freeze_name, "plan_deviations.json"):
+        frozen_files = ["analysis_plan.md", freeze_name, "plan_deviations.json"]
+        if config.get("repair_plan_file"):
+            frozen_files.append(config["repair_plan_file"])
+        for name in frozen_files:
             shutil.copyfile(ROOT / name, stage / name)
         (stage / "environment_lock.json").write_text(json.dumps(environment_lock(), indent=2, sort_keys=True) + "\n", encoding="utf-8")
         (stage / "provenance.json").write_text(json.dumps(provenance(config_path, config), indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -971,10 +1102,13 @@ def publish(config_path: Path, output_root: Path) -> Path:
             suffix = ".parquet" if name in {"daily_nav", "fills", "contributions"} else ".csv"
             write_frame(frame, tables / f"{name}{suffix}")
         write_frame(gate, tables / "economic_gate.csv")
+        positive_targets = targets.loc[targets["target_weight"].astype(str).ne("0")]
         checksums = {
             "decision_sessions_logical_sha256": stable_frame_hash(decisions),
             "target_weights_logical_sha256": stable_frame_hash(targets),
-            "selected_names_logical_sha256": stable_frame_hash(targets[["period", "offset", "portfolio", "decision_date", "security_id"]]),
+            "selected_names_logical_sha256": stable_frame_hash(
+                positive_targets[["period", "offset", "portfolio", "decision_date", "security_id"]]
+            ),
         }
         (stage / "selection_checksums.json").write_text(json.dumps(checksums, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         files = {}

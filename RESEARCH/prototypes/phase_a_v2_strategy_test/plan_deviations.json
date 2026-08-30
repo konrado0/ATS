@@ -20,6 +20,16 @@
       "effect_on_v2": "Expanded-period economics in v2 are invalid and must not be used. Common-period results and all frozen strategy semantics are unchanged.",
       "new_config": "config_v3.json",
       "event_supplement": "play_exit_supplement_v2.json"
+    },
+    {
+      "id": "exact-terminal-horizon-and-common-annualization-v3",
+      "classification": "material implementation and measurement correction",
+      "discovered_after_primary_v3": true,
+      "problem": "The v3 final cohort had no explicit zero target at its valid exact t+20 endpoint, so 114 of 120 sleeves could retain holdings for as many as 19 additional sessions. CAGR and turnover were annualized over resolved NAV observations rather than the shared declared elapsed-session span.",
+      "correction": "Add one explicit terminal liquidation at the final valid cohort's exact t+20 source-native open, set every previously targeted security to zero, remain fully in cash through period end, and annualize CAGR and turnover over all declared elapsed sessions while retaining resolved-session counts as diagnostics.",
+      "effect_on_v3": "All v3 economic metrics and the v3 final verdict are superseded. Signal, periods, offsets, costs, weighting, event terms, and economic hurdles remain unchanged.",
+      "new_config": "config_v4.json",
+      "repair_plan": "v4_repair_plan.md"
     }
   ]
 }
