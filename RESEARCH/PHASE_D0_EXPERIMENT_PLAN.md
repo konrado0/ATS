@@ -1,8 +1,10 @@
 # Phase D0 pooled-ML experimental contract
 
-**Status:** frozen D0 baseline; ready for owner review; Phase D1 and all real predictive execution remain unauthorized
+**Status:** frozen D0 v2 amendment; ready for renewed owner review; Phase D1 and all real predictive execution remain unauthorized
 
-**Contract version:** `phase-d0-20260831-v1`
+**Contract version:** `phase-d0-20260831-v2`
+
+**Amendment boundary:** v2 preserves every v1 input, feature, model, fold, threshold, and phase boundary. It changes only two contract defects identified in owner review: every decisive incremental rank/stability gate now compares the selected rich challenger separately with both fixed conventional cells, and same-session frequency matching uses identity-neutral fractional boundary-tie weights. No predictive result was inspected and no D1 work began.
 
 **Research classification:** decision-grade experimental design. This document is not deployment validation, a model result, a strategy result, or evidence that an opportunity exists.
 
@@ -199,7 +201,7 @@ All use the same primary label, folds, sessions, decision-time common score mask
 
 Ridge uses training-fold median imputation without missing indicators, `StandardScaler`, and `Ridge(alpha=1.0, solver="lsqr", tol=1e-6, max_iter=10000)`. LightGBM uses native NaNs and fixed `LGBMRegressor(objective="regression_l2", n_estimators=300, learning_rate=0.03, num_leaves=15, max_depth=4, min_child_samples=100, reg_alpha=0.1, reg_lambda=1.0, subsample=1.0, colsample_bytree=1.0, n_jobs=1, deterministic=true, force_col_wise=true)`. Both estimate the conditional mean under squared loss, so the 2×2 capacity comparison and absolute score hurdle have the same estimand. No early stopping or search is allowed.
 
-The conventional reference and rich challenger are selected using `MODEL_SELECTION_2022` only by higher equal-session-weighted mean rank IC; an absolute difference at or below `0.002` chooses Ridge. This period selects model families and supplies no confirmation threshold or confidence interval. The pair is recorded before `DEV_2023`, `DEV_2024`, or locked outcomes are opened. Nonselected cells stay reported but cannot replace the pair. Every decisive rich tail and severe-outcome gate must additionally pass against same-session frequency-matched `C_LINEAR` and `C_LIGHTGBM` separately, so rank-IC selection cannot hide a stronger conventional tail.
+The conventional reporting reference and rich challenger are selected using `MODEL_SELECTION_2022` only by higher equal-session-weighted mean rank IC; an absolute difference at or below `0.002` chooses Ridge. This period selects model families and supplies no confirmation threshold or confidence interval. The pair is recorded before `DEV_2023`, `DEV_2024`, or locked outcomes are opened. Nonselected cells stay reported and cannot replace the selected rich challenger. Conventional selection is naming/reporting only: every decisive incremental rank-IC, chronological-stability, leave-security-out rank, tail, and severe-outcome gate for the selected rich challenger must pass separately against both `C_LINEAR` and `C_LIGHTGBM`. Selection therefore cannot hide a stronger conventional model on either rank or tail evidence.
 
 The single secondary market-state ablation uses the fixed LightGBM configuration and common rows:
 
@@ -249,14 +251,14 @@ Calibration uses scores only, not calibration labels. A row qualifies only when 
 
 Every qualifying security-session is retained for raw frequency. For decisive outcomes, a same-security episode begins at the first qualifying session and absorbs later signals until more than 20 official sessions have elapsed since the preceding signal; only that first observation is the episode anchor. Tail metrics use outcome-evaluable anchors, equal-weight session aggregates, and paired 20-session block inference. Raw overlapping rows cannot pass an economic gate. No observation is called an independent trade.
 
-For each session with `k` outcome-evaluable rich anchors, each conventional cell is ranked by score descending and `security_id` ascending on the same common outcome rows, and exactly its first `k` rows are selected. Rich must beat both C cells separately. This same-session comparison changes no model's own hurdle and has zero count mismatch. It is not a portfolio, allocation, or compulsory top-N rule.
+For each session with `k` outcome-evaluable rich anchors and `n` common outcome rows, frequency matching is performed separately for each conventional cell using score only. If `0 < k < n`, let the boundary be the kth-largest conventional score, `a` the number strictly above it, and `m` the number equal to it. Rows above receive weight 1, rows below weight 0, and every boundary-tied row receives the same fractional weight `(k-a)/m`. If `k=0`, all weights are zero; if `k>=n`, all are one. The weights sum to `k` exactly and are used for all matched conventional means, hit rates, severe rates, distribution summaries, and paired tail contrasts. Weighted quantiles combine equal outcome values and return the smallest outcome whose cumulative weight reaches the requested fraction of total weight. They are invariant to `security_id`, ticker, vendor identity, input row order, and identity reassignment. Rich must beat both C cells separately. This changes no model's own hurdle and is not a portfolio, allocation, or compulsory top-N rule.
 
 ## Evaluation hierarchy and inference
 
 Validity precedes economics. The primary hierarchy is:
 
 1. causality, denominator, identity, split, and reproduction gates;
-2. paired rich-minus-strongest-conventional session rank IC;
+2. paired selected-rich-minus-each-fixed-conventional session rank IC;
 3. rich opportunity-tail outcomes and frequency-matched conventional separation;
 4. chronological stability and session/security/period concentration; and
 5. opportunity count, frequency, abstention, and overlap.
@@ -273,12 +275,14 @@ All dimensions are conjunctive.
 
 ### Incremental rank information
 
-- mean paired rich-minus-reference session IC at least `+0.010` in pooled `DEV_2023`+`DEV_2024` confirmation and locked test; `MODEL_SELECTION_2022` is excluded;
+Every following condition is applied separately to selected-rich-minus-`C_LINEAR` and selected-rich-minus-`C_LIGHTGBM`; passing against only the 2022-selected conventional reporting reference is insufficient:
+
+- mean paired delta session IC at least `+0.010` in pooled `DEV_2023`+`DEV_2024` confirmation and locked test; `MODEL_SELECTION_2022` is excluded;
 - paired 95% moving-block interval lower bound strictly above zero in both;
-- when conventional mean IC is positive, relative mean improvement at least 15%;
+- when the named conventional mean IC is positive, relative mean improvement at least 15%;
 - each of the two confirmation folds has delta at least `+0.005` and each leave-one-confirmation-fold result is at least `+0.005`;
 - positive delta in at least 75% of calendar years with at least 120 outcome-evaluable sessions, excluding 2022 selection, and no eligible year below `-0.020`; and
-- both deterministic contiguous locked-test halves have nonnegative delta IC and positive rich-minus-each-C tail separation.
+- both deterministic contiguous locked-test halves have nonnegative delta IC and positive rich-minus-named-C tail separation.
 
 ### Selective tail
 
@@ -313,11 +317,11 @@ The four frequency/abstention thresholds pass separately in `DEV_2023`, `DEV_202
 - top-five security share at most 35%;
 - security episode HHI at most 0.05;
 - largest contiguous chronological-quartile anchor share at most 40%; and
-- after removing each of the top five securities ranked by absolute summed anchor excess over the same-session eligible mean, delta IC remains at least `+0.005` and rich-minus-each-C tail separation remains strictly positive.
+- compute absolute summed anchor excess over the same-session eligible mean, take the fifth-largest value as the top-five boundary, and include every security tied at or above it; after removing each boundary-set security separately, selected-rich-minus-each-C delta IC remains at least `+0.005` and rich-minus-each-C tail separation remains strictly positive. No identity field breaks a boundary tie.
 
 These concentration gates pass separately in pooled confirmation and locked populations. Quartiles use contiguous `array_split` session bins and episodes belong to their anchor bin. Leave-security calculations remove that security from every rank, eligible, episode, and same-session comparator population without refitting or recalibrating.
 
-Positive standalone IC, beating only linear C, an approximate tie, one-fold success, extreme rarity, excessive overlap/concentration, or a post-result threshold change is failure. Secondary diagnostics cannot rescue failure.
+Positive standalone IC, beating only one conventional cell, an approximate tie, one-fold success, extreme rarity, excessive overlap/concentration, identity-dependent tie resolution, or a post-result threshold change is failure. Secondary diagnostics cannot rescue failure.
 
 ## Phase boundary and owner review
 

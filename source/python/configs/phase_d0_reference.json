@@ -1,6 +1,6 @@
 {
   "schema_version": "ats.phase_d0.reference.v1",
-  "contract_version": "phase-d0-20260831-v1",
+  "contract_version": "phase-d0-20260831-v2",
   "frozen_on": "2026-08-31",
   "classification": "decision-grade experimental design; not deployment validation and not strategy evidence",
   "authorization": {
@@ -271,9 +271,10 @@
     "same_primary_label": true,
     "same_folds": true,
     "same_evaluation_sessions": true,
-    "reference_selection": "Using MODEL_SELECTION_2022 only, choose the conventional cell with higher equal-session-weighted mean rank IC; if the absolute difference is <=0.002 choose C_LINEAR.",
+    "reference_selection": "Using MODEL_SELECTION_2022 only, choose the conventional cell with higher equal-session-weighted mean rank IC; if the absolute difference is <=0.002 choose C_LINEAR. This selected reference is the named reporting reference only and does not exempt the other fixed conventional cell from any decisive incremental-rank gate.",
     "challenger_selection": "Using MODEL_SELECTION_2022 only, choose the rich cell with higher equal-session-weighted mean rank IC; if the absolute difference is <=0.002 choose RICH_LINEAR.",
     "selection_period_role": "MODEL_SELECTION_2022 selects model families only and is excluded from every development-confirmation threshold and confidence interval.",
+    "decisive_rank_ic_protection": "Every mandatory incremental rank-IC, chronological-stability, and leave-security-out rank gate for the MODEL_SELECTION_2022-selected rich challenger must pass separately against C_LINEAR and C_LIGHTGBM. The selected conventional reporting reference cannot hide a stronger nonselected conventional model.",
     "strongest_conventional_tail_protection": "Every mandatory rich tail and severe-outcome comparison must pass separately against same-session frequency-matched C_LINEAR and C_LIGHTGBM; selecting the reference by rank IC cannot hide a stronger conventional tail.",
     "locked_test_selection_freeze": "Record the selected reference and challenger after MODEL_SELECTION_2022 and before opening DEV_2023, DEV_2024, or locked-test predictions or labels. Nonselected cells remain reported but cannot replace the frozen pair.",
     "market_state_ablation": {
@@ -476,14 +477,25 @@
     "prediction_validity_window": "the associated decision session only; it expires immediately after that session's modeled open and is never carried forward",
     "repeated_signal_treatment": "Retain every qualifying security-session for raw frequency. For decisive tail outcomes and effective counts, a same-security episode starts at the first qualifying session and absorbs later qualifying sessions until more than 20 official sessions have elapsed since the preceding qualifying session; only the first qualifying observation is the episode anchor.",
     "overlapping_label_inference": "Primary tail outcome statistics use episode anchors, aggregate anchor outcomes to equal-weight session statistics, and use the frozen paired 20-session moving-block bootstrap. Raw overlapping rows cannot determine a tail gate.",
-    "frequency_matching": "On each session with k outcome-evaluable rich episode anchors, rank the common outcome-evaluable rows for each conventional cell by score descending and security_id ascending, and select exactly the first k. Compare rich separately with C_LINEAR and C_LIGHTGBM. This same-session diagnostic cannot change any model's own threshold and has zero count mismatch by construction.",
+    "frequency_matching": {
+      "population": "the common outcome-evaluable scored rows on the session",
+      "target_weight": "k, the integer count of outcome-evaluable rich episode anchors on that session",
+      "boundary_score": "the kth largest named-conventional score when 0 < k < n; score only, with no identity or row-order tie break",
+      "row_weights": "weight 1 for score strictly above the boundary, weight 0 below, and equal fractional weight (k - n_above) / n_equal for every row tied at the boundary; if k=0 all weights are 0 and if k>=n all weights are 1",
+      "identity_neutrality": "Weights are invariant to security_id, ticker, vendor identity, input row order, and any reassignment of identity labels.",
+      "weighted_statistics": "Use these weights for every frequency-matched conventional mean, hit rate, severe-outcome rate, distribution summary, and paired session tail contrast; the weight sum equals k exactly.",
+      "weighted_distribution_convention": "For a weighted empirical quantile q, sort by outcome value only, combine equal outcome values by summed weight, and return the smallest outcome whose cumulative weight is at least q times total weight; no identity or row order resolves an outcome tie.",
+      "comparators": ["C_LINEAR", "C_LIGHTGBM"],
+      "model_threshold_unchanged": true,
+      "not_a_portfolio_or_compulsory_selection_rule": true
+    },
     "outcome_unavailable_treatment": "Label-unavailable and boundary-withheld candidates remain in scored, candidate-frequency, and abstention denominators but cannot enter outcome metrics. Their counts and reasons are reported and must pass the explicit outcome-evaluability gate.",
     "not_trade_construction": true
   },
   "evaluation": {
     "primary_hierarchy": [
       "validity and reproducibility gates",
-      "rich versus strongest-conventional paired incremental session rank IC",
+      "selected rich versus each fixed conventional cell paired incremental session rank IC",
       "rich opportunity-tail separation and frequency-matched conventional comparison",
       "chronological stability and concentration",
       "frequency, abstention, overlap, and effective evidence count"
@@ -516,16 +528,17 @@
     },
     "metric_definitions": {
       "mean_session_rank_ic": "Arithmetic mean with equal weight over defined session Spearman correlations on the common outcome mask.",
+      "rich_minus_each_conventional_rank_ic": "For the MODEL_SELECTION_2022-selected rich challenger, subtract the named C_LINEAR or C_LIGHTGBM session IC on the identical common outcome rows; aggregate with equal session weight and apply every decisive rank and stability gate separately to both named contrasts.",
       "rich_minus_eligible_tail": "For each session with at least one outcome-evaluable rich episode anchor, mean anchor label minus the mean label of all common outcome-evaluable scored rows on that session; aggregate with equal session weight.",
-      "rich_minus_conventional_tail": "For each session with k outcome-evaluable rich episode anchors, mean rich-anchor label minus mean label of the same-session top-k rows from the named conventional cell; aggregate with equal session weight and test separately against both C cells.",
+      "rich_minus_conventional_tail": "For each session with k outcome-evaluable rich episode anchors, mean rich-anchor label minus the fractional-boundary-weighted mean label of the named conventional cell on the same common outcome rows; aggregate with equal session weight and test separately against both C cells.",
       "rich_episode_median": "Median of all outcome-evaluable rich episode-anchor labels in the named population; block bootstrap resamples whole sessions.",
-      "severe_rate_difference": "Rich episode-anchor share with label <= -0.10 minus the same-session frequency-matched named conventional share; compute separately against both C cells.",
+      "severe_rate_difference": "Rich episode-anchor share with label <= -0.10 minus the fractional-boundary-weighted same-session named-conventional share; compute separately against both C cells.",
       "candidate_frequency": "All strict-threshold qualifying scored rows divided by all scored rows; label availability is irrelevant.",
       "opportunity_session_fraction": "Decision sessions with at least one strict-threshold qualifying scored row divided by all scored decision sessions.",
       "session_candidate_count_p95": "numpy quantile(method=linear, q=0.95) over candidate counts for every scored session including zeros.",
       "chronological_halves": "numpy array_split of ordered unique sessions into two contiguous bins, earlier bin receiving any remainder.",
       "chronological_quartiles": "numpy array_split of ordered unique sessions into four contiguous bins, earlier bins receiving any remainder; assign an episode by its anchor session.",
-      "top_security_contributors": "Rank securities by descending absolute sum of rich episode-anchor label minus same-session eligible-universe mean, tie by security_id ascending.",
+      "top_security_contributors": "Compute each security's absolute summed rich episode-anchor label minus same-session eligible-universe mean. Define the top-five boundary as the fifth-largest value and include every security at or above it; exact boundary ties may produce more than five securities and are never broken by identity.",
       "leave_security_out": "Remove the named security from every model, eligible-universe, episode, and same-session matching population; then recompute paired IC and both conventional tail comparisons without refitting or recalibrating.",
       "eligible_year": "Calendar year with at least 120 outcome-evaluable scored decision sessions; MODEL_SELECTION_2022 is excluded."
     },
@@ -544,12 +557,14 @@
       "paired_ic_defined_session_fraction_min": 0.9
     },
     "incremental_rank_information": {
-      "development_confirmation_mean_delta_ic_min": 0.01,
-      "locked_test_mean_delta_ic_min": 0.01,
-      "development_confirmation_paired_95pct_lower_bound_min_exclusive": 0.0,
-      "locked_test_paired_95pct_lower_bound_min_exclusive": 0.0,
-      "relative_improvement_formula": "(rich_mean_ic - reference_mean_ic) / abs(reference_mean_ic)",
-      "relative_improvement_min_when_reference_ic_positive": 0.15,
+      "challenger": "MODEL_SELECTION_2022-selected rich cell",
+      "comparators_required_separately": ["C_LINEAR", "C_LIGHTGBM"],
+      "development_confirmation_mean_delta_ic_min_against_each_conventional": 0.01,
+      "locked_test_mean_delta_ic_min_against_each_conventional": 0.01,
+      "development_confirmation_paired_95pct_lower_bound_min_exclusive_against_each_conventional": 0.0,
+      "locked_test_paired_95pct_lower_bound_min_exclusive_against_each_conventional": 0.0,
+      "relative_improvement_formula_each_conventional": "(rich_mean_ic - named_conventional_mean_ic) / abs(named_conventional_mean_ic)",
+      "relative_improvement_min_when_named_conventional_ic_positive": 0.15,
       "selection_period_excluded": "MODEL_SELECTION_2022"
     },
     "tail_outcome_separation": {
@@ -567,13 +582,14 @@
       ]
     },
     "chronological_stability": {
-      "positive_confirmation_fold_delta_ic_min_count": 2,
+      "comparators_required_separately": ["C_LINEAR", "C_LIGHTGBM"],
+      "positive_confirmation_fold_delta_ic_min_count_against_each_conventional": 2,
       "confirmation_fold_count": 2,
-      "each_confirmation_fold_delta_ic_min": 0.005,
-      "leave_one_confirmation_fold_out_delta_ic_min": 0.005,
-      "positive_eligible_year_fraction_min": 0.75,
-      "any_year_delta_ic_floor": -0.02,
-      "locked_chronological_half_delta_ic_floor": 0.0,
+      "each_confirmation_fold_delta_ic_min_against_each_conventional": 0.005,
+      "leave_one_confirmation_fold_out_delta_ic_min_against_each_conventional": 0.005,
+      "positive_eligible_year_fraction_min_against_each_conventional": 0.75,
+      "any_year_delta_ic_floor_against_each_conventional": -0.02,
+      "locked_chronological_half_delta_ic_floor_against_each_conventional": 0.0,
       "locked_chronological_half_rich_minus_each_conventional_tail_floor": 0.0
     },
     "opportunity_evidence": {
@@ -599,7 +615,8 @@
       "top5_security_episode_share_max": 0.35,
       "security_episode_hhi_max": 0.05,
       "largest_chronological_quartile_share_max": 0.4,
-      "leave_each_top5_security_out_delta_ic_min": 0.005,
+      "top5_boundary_tie_policy": "include every security at or above the fifth-largest absolute contribution; never break the boundary tie by identity",
+      "leave_each_top5_boundary_set_security_out_delta_ic_min_against_each_conventional": 0.005,
       "leave_each_top5_security_out_rich_minus_each_conventional_tail_min_exclusive": 0.0,
       "required_separately_in": ["pooled development confirmation", "locked historical test"]
     },

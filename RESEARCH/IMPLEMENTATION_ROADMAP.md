@@ -184,8 +184,10 @@ and `source/python/configs/phase_d0_feature_registry.json`. They define four
 disjoint C/P/X/M blocks, the fixed 2x2 model comparison, exact chronological
 folds and endpoint-derived purge, an abstaining score gate, numerical
 continuation thresholds, deterministic D1 structural resolutions, and a
-requirement audit. D0 is ready for owner review; it does not authorize D1 or any
-real predictive execution.
+requirement audit. The v2 amendment requires every decisive rank/stability gate
+to pass against both fixed conventional cells and uses fractional score-boundary
+weights instead of identity to resolve frequency-matching ties. D0 is ready for
+renewed owner review; it does not authorize D1 or any real predictive execution.
 
 Before inspecting any Phase D prediction result:
 
@@ -224,10 +226,10 @@ Before inspecting any Phase D prediction result:
   feature and model-fitting code; and
 - hash the plan and configuration before any real predictive metric is emitted.
 
-The primary model comparison is rich representation versus the strongest
-conventional model, not rich LightGBM versus a deliberately weak linear baseline.
-A richer model that approximately ties the strongest conventional model fails the
-incremental-value objective.
+The primary model comparison requires the selected rich representation to pass
+decisive rank, stability and tail gates separately against both fixed conventional
+cells, not merely the conventional family selected in 2022. A richer model that
+approximately ties either conventional model fails the incremental-value objective.
 
 ### Phase D1 — Build only the minimum workbench
 

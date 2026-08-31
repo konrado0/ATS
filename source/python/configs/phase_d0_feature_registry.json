@@ -1,6 +1,6 @@
 {
   "schema_version": "ats.phase_d0.feature_registry.v1",
-  "contract_version": "phase-d0-20260831-v1",
+  "contract_version": "phase-d0-20260831-v2",
   "price_basis": "split_adjusted_price_return",
   "notation": {
     "d": "decision session",

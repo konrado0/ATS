@@ -1,11 +1,31 @@
 {
   "schema_version": "ats.phase_d0.manifest.v1",
-  "contract_version": "phase-d0-20260831-v1",
+  "contract_version": "phase-d0-20260831-v2",
   "created_date": "2026-08-31",
-  "purpose": "Freeze the Phase D0 experimental design and its exact provenance without authorizing or executing Phase D1 or real predictive work.",
+  "purpose": "Freeze the narrow Phase D0 v2 scientific-contract amendment and its exact provenance without authorizing or executing Phase D1 or real predictive work.",
+  "amendment": {
+    "parent_contract_version": "phase-d0-20260831-v1",
+    "parent_commit": "e3c9f7cecd47fb07e37edb246af0848d16944a9a",
+    "scope": [
+      "apply every decisive incremental rank-IC and stability gate separately against C_LINEAR and C_LIGHTGBM",
+      "replace identity-based frequency-matching tie breaks with equal fractional boundary-tie weights",
+      "make the decisive top-contributor boundary identity-neutral by including all fifth-boundary ties"
+    ],
+    "unchanged": "inputs, candidate facts, feature formulas, model families and parameters, folds, numerical thresholds, opportunity hurdle, phase authorization, and all prior accepted evidence",
+    "predictive_result_inspection": false,
+    "phase_d1_started": false,
+    "parent_artifact_sha256": {
+      "RESEARCH/PHASE_D0_EXPERIMENT_PLAN.md": "30e4a3fa519eee0f926c84ca0d652f021e1462f91555610afe2faa8beef66e2a",
+      "source/python/configs/phase_d0_reference.json": "d6700bad791eef9e7248e7139d7c8bd23ada52cc14e34f64291d7555968dd303",
+      "source/python/configs/phase_d0_feature_registry.json": "137ba795cfee2510b969967642016f442f361b80d7741b8e0cda4d30a173b1fa",
+      "RESEARCH/PHASE_D0_REQUIREMENT_AUDIT.json": "5e11f7ace6d99cb3a7ec9763b1a8a71323a45def89f0c2fcef297d2f2a3ff909",
+      "RESEARCH/PHASE_D0_MANIFEST.json": "f0e3cf9720c8daa7af677fd4a5c7136605abc12ad1aab376bcbd95d6d29f5021",
+      "RESEARCH/prototypes/phase_d0/validate_phase_d0.py": "07ddb46897c843b5fe4a3b6f3e228f32fca7d2c2ee9f1dbd3ac59132cf1e6a19"
+    }
+  },
   "repository_state": {
-    "starting_git_head": "dbba908e7760df22b1a0ed422f5ef0c790482eda",
-    "expected_starting_git_head": "dbba908e7760df22b1a0ed422f5ef0c790482eda",
+    "starting_git_head": "e3c9f7cecd47fb07e37edb246af0848d16944a9a",
+    "expected_starting_git_head": "e3c9f7cecd47fb07e37edb246af0848d16944a9a",
     "head_match": true,
     "starting_unrelated_untracked_paths": [
       "RESEARCH/environments/",
@@ -18,9 +38,9 @@
   "starting_review": {
     "user_request_sha256": "eecb4818679f911019b7867dc20846b03586b2cd04939018aabc4b95247b89db",
     "starting_controlling_document_hashes": {
-      "README.md": "c540ebf06753279fa5330846246b4eccbe5cc3e829c051688ff645705b6dde3e",
-      "RESEARCH/IMPLEMENTATION_ROADMAP.md": "35ef27d067d77232f3667d9bb71e75a60209e72c4c005c605336a94d2605dfcf",
-      "RESEARCH/PHASE_D_POOLED_ML_RESEARCH_CHARTER.md": "41390ab1b7765095e2ed5850318f6b4e6607bfc95ad4d8b328d93fb236121de9"
+      "README.md": "b726fd06cc5563021996b99ab15285418be780ed89d02c128c39dff7528b6a80",
+      "RESEARCH/IMPLEMENTATION_ROADMAP.md": "e09cd8b2f93ae3f853b4bd2f2cf5752a46c7d25ac08e46600cb883e80a808a5c",
+      "RESEARCH/PHASE_D_POOLED_ML_RESEARCH_CHARTER.md": "af4ee84c4ee6b5d1175743377eb9c6024a5d82a9c1efe7d1a261e439685d5f36"
     },
     "structural_candidate_facts": {
       "candidate_rows_including_warmup": 130204,
@@ -189,52 +209,52 @@
     {
       "role": "phase_d0_plan",
       "path": "RESEARCH/PHASE_D0_EXPERIMENT_PLAN.md",
-      "bytes": 28337,
-      "sha256": "30e4a3fa519eee0f926c84ca0d652f021e1462f91555610afe2faa8beef66e2a"
+      "bytes": 30055,
+      "sha256": "67f0aec5014a6581abbc78be9e302e6728e17805526b7a97a88b11959ac49ebe"
     },
     {
       "role": "phase_d0_reference_config",
       "path": "source/python/configs/phase_d0_reference.json",
-      "bytes": 37592,
-      "sha256": "d6700bad791eef9e7248e7139d7c8bd23ada52cc14e34f64291d7555968dd303"
+      "bytes": 40316,
+      "sha256": "ef5a7f0fa76a104ff86cae7c2ad520867a0720e1c6e508558ef31316e7e153ae"
     },
     {
       "role": "phase_d0_feature_registry",
       "path": "source/python/configs/phase_d0_feature_registry.json",
       "bytes": 29614,
-      "sha256": "137ba795cfee2510b969967642016f442f361b80d7741b8e0cda4d30a173b1fa"
+      "sha256": "733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6"
     },
     {
       "role": "phase_d0_requirement_audit",
       "path": "RESEARCH/PHASE_D0_REQUIREMENT_AUDIT.json",
-      "bytes": 11450,
-      "sha256": "5e11f7ace6d99cb3a7ec9763b1a8a71323a45def89f0c2fcef297d2f2a3ff909"
+      "bytes": 12484,
+      "sha256": "c06817f81eaf66ce51703aab840900ba88db3531f1ddf5332610e8818ed2b8ad"
     },
     {
       "role": "updated_repository_entrypoint",
       "path": "README.md",
-      "bytes": 13041,
-      "sha256": "b726fd06cc5563021996b99ab15285418be780ed89d02c128c39dff7528b6a80"
+      "bytes": 13164,
+      "sha256": "4568a6661d90f2b3435aeb3f3d6f53226bec49c07eec7f8a79d5f51e7913f4b1"
     },
     {
       "role": "updated_phase_d_roadmap",
       "path": "RESEARCH/IMPLEMENTATION_ROADMAP.md",
-      "bytes": 25359,
-      "sha256": "e09cd8b2f93ae3f853b4bd2f2cf5752a46c7d25ac08e46600cb883e80a808a5c"
+      "bytes": 25633,
+      "sha256": "2b3a5eadc1605daf21b2b825d18b0952cd70840172c610b0155b573b6666f67b"
     },
     {
       "role": "updated_phase_d_charter",
       "path": "RESEARCH/PHASE_D_POOLED_ML_RESEARCH_CHARTER.md",
-      "bytes": 15049,
-      "sha256": "af4ee84c4ee6b5d1175743377eb9c6024a5d82a9c1efe7d1a261e439685d5f36"
+      "bytes": 15321,
+      "sha256": "86c276b0e9ed870b9059a5fa8f35861b8b33ac297552c0d8bad2ab66ab35b764"
     }
   ],
   "code": [
     {
       "role": "phase_d0_contract_validator",
       "path": "RESEARCH/prototypes/phase_d0/validate_phase_d0.py",
-      "bytes": 14585,
-      "sha256": "07ddb46897c843b5fe4a3b6f3e228f32fca7d2c2ee9f1dbd3ac59132cf1e6a19"
+      "bytes": 17930,
+      "sha256": "3b3d644aff01034a30fbacbb8adad79a15d6a1d133909418fdb9dc71efb17e72"
     }
   ],
   "prohibited_outputs_confirmed_absent": [

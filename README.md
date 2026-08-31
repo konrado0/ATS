@@ -37,7 +37,7 @@ Status as of 2026-08-31:
   descriptive heterogeneity flag, and no market ON/OFF rule is authorized.
 - The Phase D charter and roadmap are the frozen planning baseline. No Phase D
   model has been trained and no real predictive result has been inspected.
-- Phase D0 is frozen in an owner-reviewable plan, machine-readable reference
+- Phase D0 v2 is frozen in an owner-reviewable plan, machine-readable reference
   configuration, 30-feature C/P/X/M registry, provenance manifest and
   requirement audit. It authorizes neither D1 nor real predictive execution.
 
@@ -188,7 +188,7 @@ Reference run/validation commands and accepted manifest conventions are kept in:
 | Phase C | Implemented and repaired | Deterministic daily portfolio accounting and independent ledger reconstruction. |
 | Phase A v2 / proximity | Bounded test passed its frozen hurdles | Retained conventional benchmark only; one later bounded validation remains, with no parameter optimization. |
 | Pre-Phase D market state | Complete | Carry the compact numerical block as context; do not turn it into a timing strategy. |
-| Phase D0 | Frozen; owner review pending | Exact C/P/X/M features, folds, purge, models, opportunity gate, evaluation thresholds and stop rule are machine-readable and hashed. |
+| Phase D0 | v2 frozen; renewed owner review pending | Exact C/P/X/M features, folds, purge, models, opportunity gate, evaluation thresholds and stop rule are machine-readable and hashed; decisive rank/stability gates compare rich with both conventional cells and score ties are identity-neutral. |
 | Phase D1 | Not authorized | If separately approved, build `ats_ml` minimally and validate it on synthetic/hand-calculated fixtures without inspecting real predictive performance. |
 | Phase D2/D3 | Not authorized | Execute the locked study once, then stop or authorize only one bounded portfolio translation. |
 | Phase E/F | Trigger-driven / later | Optimize measured pain and add richer reporting only when the completed vertical slice demonstrates a need. |

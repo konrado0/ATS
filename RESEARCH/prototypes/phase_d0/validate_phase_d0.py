@@ -107,6 +107,25 @@ def main() -> int:
     check("registry_schema", registry.get("schema_version") == "ats.phase_d0.feature_registry.v1", str(registry.get("schema_version")))
     check("audit_schema", audit.get("schema_version") == "ats.phase_d0.requirement_audit.v1", str(audit.get("schema_version")))
     check("manifest_schema", manifest.get("schema_version") == "ats.phase_d0.manifest.v1", str(manifest.get("schema_version")))
+    expected_contract_version = "phase-d0-20260831-v2"
+    contract_versions = {
+        "config": config.get("contract_version"),
+        "registry": registry.get("contract_version"),
+        "audit": audit.get("contract_version"),
+        "manifest": manifest.get("contract_version"),
+    }
+    check("contract_version_v2_consistent", set(contract_versions.values()) == {expected_contract_version}, repr(contract_versions))
+    amendment = manifest.get("amendment", {})
+    parent_commit = "e3c9f7cecd47fb07e37edb246af0848d16944a9a"
+    amendment_ok = (
+        amendment.get("parent_contract_version") == "phase-d0-20260831-v1"
+        and amendment.get("parent_commit") == parent_commit
+        and manifest["repository_state"]["starting_git_head"] == parent_commit
+        and amendment.get("predictive_result_inspection") is False
+        and amendment.get("phase_d1_started") is False
+        and len(amendment.get("parent_artifact_sha256", {})) >= 6
+    )
+    check("v2_amendment_parent_and_boundary", amendment_ok, repr(amendment))
 
     names = [item["canonical_name"] for item in features]
     formulas = [item["formula"] for item in features]
@@ -168,6 +187,8 @@ def main() -> int:
     check("estimands_match_squared_loss", config["models"]["RIDGE"]["objective"] == "squared_error regression" and config["models"]["LIGHTGBM"]["parameters"]["objective"] == "regression_l2", repr(config["models"]))
     selection_text = " ".join(config["comparison"][key] for key in ["reference_selection", "challenger_selection", "selection_period_role", "locked_test_selection_freeze"])
     check("selection_is_separate_from_confirmation", "MODEL_SELECTION_2022" in selection_text and "excluded" in selection_text and "before opening DEV_2023" in selection_text, selection_text)
+    rank_protection = config["comparison"]["decisive_rank_ic_protection"]
+    check("comparison_claim_requires_both_conventional_cells", all(name in rank_protection for name in ["C_LINEAR", "C_LIGHTGBM"]) and "every mandatory" in rank_protection.lower(), rank_protection)
 
     derivations = config["structural_derivations"]
     derivation_fields_ok = all(REQUIRED_DERIVATION_FIELDS <= set(item) for item in derivations)
@@ -183,12 +204,40 @@ def main() -> int:
     open_policy = config["chronology"]["locked_test_open_policy"]
     check("d1_structural_resolution_precedes_first_fit", "registered predictor values through 2024-12-30" in open_policy and "before any D2 model fit or prediction" in open_policy and open_policy.index("phase_d1_structural_resolution.json") < open_policy.index("MODEL_SELECTION_2022"), open_policy)
     check("opportunity_is_not_portfolio", config["opportunity_contract"]["not_trade_construction"] is True and config["opportunity_contract"]["quota"] is None, repr(config["opportunity_contract"]))
+    matching = config["opportunity_contract"]["frequency_matching"]
+    matching_text = json.dumps(matching, sort_keys=True).lower()
+    matching_ok = (
+        matching["comparators"] == ["C_LINEAR", "C_LIGHTGBM"]
+        and "(k - n_above) / n_equal" in matching["row_weights"]
+        and "weight sum equals k exactly" in matching["weighted_statistics"]
+        and "combine equal outcome values by summed weight" in matching["weighted_distribution_convention"]
+        and "security_id" in matching["identity_neutrality"]
+        and "no identity or row-order tie break" in matching["boundary_score"]
+        and "security_id ascending" not in matching_text
+    )
+    check("frequency_matching_is_identity_neutral", matching_ok, repr(matching))
     check("gate_is_conjunctive", config["decision_gate"]["all_dimensions_required"] is True and "cannot" in config["decision_gate"]["failure_rule"], config["decision_gate"]["failure_rule"])
     gate = config["decision_gate"]
     tail = gate["tail_outcome_separation"]
     stability = gate["chronological_stability"]
     check("tail_gate_has_both_conventional_and_ci_controls", tail["rich_minus_each_frequency_matched_conventional_mean_return_min"] == 0.005 and tail["rich_minus_each_conventional_95pct_lower_bound_min_exclusive"] == 0.0 and tail["severe_rate_difference_95pct_upper_bound_max"] == 0.02, repr(tail))
-    check("confirmation_gate_exact", stability["confirmation_fold_count"] == 2 and stability["positive_confirmation_fold_delta_ic_min_count"] == 2 and stability["positive_eligible_year_fraction_min"] == 0.75, repr(stability))
+    rank = gate["incremental_rank_information"]
+    both_c = ["C_LINEAR", "C_LIGHTGBM"]
+    rank_gate_ok = (
+        rank["comparators_required_separately"] == both_c
+        and rank["development_confirmation_mean_delta_ic_min_against_each_conventional"] == 0.01
+        and rank["locked_test_mean_delta_ic_min_against_each_conventional"] == 0.01
+        and rank["development_confirmation_paired_95pct_lower_bound_min_exclusive_against_each_conventional"] == 0.0
+        and rank["locked_test_paired_95pct_lower_bound_min_exclusive_against_each_conventional"] == 0.0
+        and stability["comparators_required_separately"] == both_c
+        and stability["confirmation_fold_count"] == 2
+        and stability["positive_confirmation_fold_delta_ic_min_count_against_each_conventional"] == 2
+        and stability["positive_eligible_year_fraction_min_against_each_conventional"] == 0.75
+    )
+    check("decisive_rank_gates_use_both_conventional_cells", rank_gate_ok, f"rank={rank!r} stability={stability!r}")
+    contributor_rule = config["evaluation"]["metric_definitions"]["top_security_contributors"].lower()
+    identity_ties_ok = "security_id ascending" not in json.dumps(config["opportunity_contract"], sort_keys=True).lower() and "include every security at or above" in contributor_rule and "never broken by identity" in contributor_rule
+    check("identity_neutral_decisive_ties", identity_ties_ok, contributor_rule)
 
     statuses = [item["status"] for item in audit["requirements"]]
     check("audit_status_vocabulary", set(statuses) <= ALLOWED_AUDIT_STATUSES, repr(sorted(set(statuses))))
@@ -224,7 +273,8 @@ def main() -> int:
         'objective="regression_l2"',
         "`MODEL_SELECTION_2022` only",
         "at least 75% of calendar years",
-        "against same-session frequency-matched `C_LINEAR` and `C_LIGHTGBM` separately",
+        "applied separately to selected-rich-minus-`C_LINEAR` and selected-rich-minus-`C_LIGHTGBM`",
+        "every boundary-tied row receives the same fractional weight",
         "before any D2 model fit or prediction",
     ]
     docs_ok = all(marker in plan for marker in plan_markers) and "four disjoint blocks" in charter and "registered predictor" in charter and "through 2024-12-30" in charter and "Phase D0 experiment plan" in roadmap and "registered predictor values through 2024-12-30" in roadmap

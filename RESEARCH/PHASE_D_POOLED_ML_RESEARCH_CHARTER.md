@@ -180,9 +180,11 @@ rows:
 | Rich state | required | required |
 
 This separates representation value from nonlinear model capacity. The primary
-challenger is the best rich-state model and the primary reference is the strongest
-conventional model. Rich LightGBM beating only conventional linear is
-insufficient if conventional LightGBM performs equally well.
+challenger is the best rich-state model. The 2022-selected conventional model is
+the named reporting reference, but every decisive rank, stability and tail gate
+must pass separately against both fixed conventional cells. Rich LightGBM beating
+only conventional linear is insufficient if conventional LightGBM performs
+equally well.
 
 Hyperparameters must be fixed or selected through a small, predefined process
 inside development folds. No Optuna service or broad search is allowed. A richer
@@ -216,12 +218,14 @@ must predefine exact estimators, uncertainty method and numerical materiality
 thresholds before model execution. At minimum report:
 
 - mean, median and distribution of session-level rank IC;
-- paired incremental IC versus the strongest conventional model;
+- paired incremental IC of the selected rich challenger versus each fixed
+  conventional cell separately;
 - tail-conditioned forward outcomes under a frozen abstaining opportunity gate;
 - signal frequency, idle sessions, overlap clusters and effective independent
   opportunity count;
 - hit rate against the predefined economic hurdle and comparison with the same
-  frequency-matched conventional operating point;
+  frequency-matched conventional operating point, using equal fractional weights
+  for every score tied at the selection boundary and no identity-based tie break;
 - future maximum-favourable excursion, maximum-adverse excursion, time to
   excursion and relevant path shape, all implemented as inaccessible future-only
   evaluation labels;

@@ -1,7 +1,7 @@
 {
   "schema_version": "ats.phase_d0.requirement_audit.v1",
-  "contract_version": "phase-d0-20260831-v1",
-  "audit_scope": "Phase D0 experimental design and contract freeze only",
+  "contract_version": "phase-d0-20260831-v2",
+  "audit_scope": "Phase D0 v2 narrow scientific-contract amendment and freeze only",
   "overall_status": "PASS",
   "requirements": [
     {
@@ -156,9 +156,9 @@
     },
     {
       "id": "D0-026",
-      "requirement": "Define score meaning, calibration population, absolute/training-tail hurdle, valid zero-candidate sessions, no quota relaxation, expiry, repeated signals, and overlap inference.",
+      "requirement": "Define score meaning, calibration population, absolute/training-tail hurdle, valid zero-candidate sessions, no quota relaxation, expiry, repeated signals, overlap inference, and identity-neutral same-session frequency matching.",
       "status": "PASS",
-      "evidence": "phase_d0_reference.json opportunity_contract"
+      "evidence": "phase_d0_reference.json opportunity_contract including fractional boundary-tie frequency_matching; validator frequency_matching_is_identity_neutral"
     },
     {
       "id": "D0-027",
@@ -180,9 +180,9 @@
     },
     {
       "id": "D0-030",
-      "requirement": "Require the rich design to beat the strongest conventional design, not only linear C, and make ties fail.",
+      "requirement": "Require the selected rich design to pass every decisive rank, stability, and tail gate separately against both fixed conventional cells, and make ties fail.",
       "status": "PASS",
-      "evidence": "phase_d0_reference.json comparison selection and decision_gate.failure_rule"
+      "evidence": "phase_d0_reference.json comparison.decisive_rank_ic_protection, decision_gate incremental_rank_information and chronological_stability; validator decisive_rank_gates_use_both_conventional_cells"
     },
     {
       "id": "D0-031",
@@ -219,10 +219,22 @@
       "requirement": "Establish whether the rich representation actually works.",
       "status": "DEFERRED BY CONTRACT",
       "evidence": "D0 is design only; real predictive evidence is prohibited until separately authorized D2"
+    },
+    {
+      "id": "D0-037",
+      "requirement": "Version the owner-review corrections without changing inputs, features, models, folds, thresholds, or authorization boundaries.",
+      "status": "PASS",
+      "evidence": "PHASE_D0_EXPERIMENT_PLAN.md Amendment boundary; PHASE_D0_MANIFEST.json amendment metadata and parent commit"
+    },
+    {
+      "id": "D0-038",
+      "requirement": "Ensure every decisive identity-tied economic boundary is invariant to identity reassignment.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json opportunity_contract.frequency_matching and evaluation.metric_definitions.top_security_contributors; validator identity_neutral_decisive_ties"
     }
   ],
   "summary_counts": {
-    "PASS": 32,
+    "PASS": 34,
     "FAIL": 0,
     "NOT PROVEN": 0,
     "DEFERRED BY CONTRACT": 4
