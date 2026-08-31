@@ -178,6 +178,15 @@ short-selling branch.
 
 ### Phase D0 — Freeze the scientific contract
 
+The Phase D0 experiment plan and machine-readable contracts are frozen at
+`PHASE_D0_EXPERIMENT_PLAN.md`, `source/python/configs/phase_d0_reference.json`,
+and `source/python/configs/phase_d0_feature_registry.json`. They define four
+disjoint C/P/X/M blocks, the fixed 2x2 model comparison, exact chronological
+folds and endpoint-derived purge, an abstaining score gate, numerical
+continuation thresholds, deterministic D1 structural resolutions, and a
+requirement audit. D0 is ready for owner review; it does not authorize D1 or any
+real predictive execution.
+
 Before inspecting any Phase D prediction result:
 
 - pin the candidate-panel manifest and exact member-session universe;
@@ -188,9 +197,9 @@ Before inspecting any Phase D prediction result:
   relative-return fact;
 - retain 5- and 10-session outcomes, if used, as named secondary diagnostics
   that cannot select the winning model;
-- define and fingerprint a compact feature set in five explicit blocks:
-  conventional stock state, stock path/evolution, market-relative behavior,
-  cross-sectional context, and market state/regime;
+- define and fingerprint a compact feature set in four explicit, disjoint
+  blocks: conventional stock state (C), stock path/evolution (P), stock-relative
+  cross-sectional context (X), and frozen market state (M);
 - make the market-state block numerical and compact: multi-horizon WIG trend,
   market drawdown, short/long realized-volatility state, TOP60 breadth,
   cross-sectional dispersion, and correlation/co-movement or leadership
@@ -240,9 +249,14 @@ Add a small `ats_ml` boundary for:
   environment, seed, Git and artifact fingerprints.
 
 D1 validates this machinery with hand-calculated, synthetic and mechanically
-bounded fixtures. It may inspect real data schemas, counts, date ranges,
-missingness and eligibility, but it must not publish or inspect real predictive
-performance. No locked historical test data are opened by a model in D1.
+bounded fixtures. After separate owner authorization it may inspect real data
+schemas, counts, date ranges, missingness and eligibility, and may compute the
+registered predictor values through 2024-12-30 solely to apply the frozen
+label-blind P duplicate rule. It must freeze and return the owner-reviewed
+`phase_d1_structural_resolution.json` before any real model fit or prediction.
+D1 may not load or derive realized forward labels, emit validation scores, or
+publish or inspect real predictive performance. No locked historical test data
+are opened by a model in D1.
 
 ### Phase D0/D1 acceptance checkpoint
 

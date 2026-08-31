@@ -3,10 +3,12 @@
 ## Status and purpose
 
 This charter defines the owner-approved direction for Phase D. It does not
-authorize execution of the ML experiment. Phase D0 must turn the charter into a
-fully specified, owner-reviewed and hashed experimental plan; Phase D1 must prove
-the minimum machinery without inspecting real predictive performance. Phase D2
-requires a separate owner decision.
+authorize execution of the ML experiment. Phase D0 is now frozen in
+`PHASE_D0_EXPERIMENT_PLAN.md` and its machine-readable contracts; that baseline
+is ready for owner review but does not itself authorize Phase D1. Phase D1 must
+prove the minimum machinery and freeze the bounded label-inaccessible structural
+resolutions without fitting a real model or inspecting predictive performance.
+Phase D2 requires a separate later owner decision.
 
 Phase D asks one bounded question:
 
@@ -105,49 +107,54 @@ must allow unused capital to remain cash.
 
 ## Frozen feature representations
 
-Phase D0 must freeze exact feature names, definitions, versions, lookbacks,
-availability semantics and code fingerprints. The representation must remain
+The Phase D0 registry uses four disjoint blocks and 30 predictors: C conventional
+stock state, P stock path/evolution, X stock-relative cross-sectional context,
+and M frozen market state. Exact names, formulas, lookbacks, availability,
+missingness and implementation-source obligations are in
+`source/python/configs/phase_d0_feature_registry.json`. The representation is
 compact and economically interpretable; it is not a technical-indicator library.
 
-### A. Conventional stock state
+### C. Conventional stock state
 
-Use the exact established definitions where available, including frozen
-proximity to the strict trailing high, medium-term momentum, short realized
-volatility, relative volume and the existing basic WIG context. Do not generate
-lookback or threshold variants.
+Use the exact established stock-level definitions where available: both frozen
+proximity forms, medium-term momentum, five-session return, short realized
+volatility and relative volume. C contains no WIG or other global market field,
+including renamed, rescaled or lag-shifted M variables. The earlier phrase
+"basic WIG context" is superseded for the D0 comparison so the M ablation remains
+interpretable.
 
-### B. Stock path and evolution
+### P. Stock path and evolution
 
-Describe how the current state developed using a small set of predefined
-multi-horizon changes: return and momentum evolution, drawdown/recovery shape,
-volatility expansion or compression, volume evolution, range asymmetry and
-persistence. Avoid families of near-duplicate windows.
+Describe how the current state developed with no more than eight predefined,
+economically distinct path features. Phase D0 freezes two directional horizons,
+path efficiency, positive-return persistence, drawdown depth, recovery from a
+recent low, volatility evolution and close location in the recent high-low
+envelope. If separately authorized, D1 may compute the registered predictor
+values through 2024-12-30 only to apply the frozen label-blind duplicate rule;
+realized forward labels and target evidence remain inaccessible. The resolved
+P set is owner-frozen before the first real model fit, and D1 cannot replace a
+removed feature using target evidence.
 
-### C. Market-relative behavior
+### X. Stock-relative cross-sectional context
 
-Describe stock performance relative to the contemporaneously available WIG
-series using PIT-safe excess or residual behavior, relative-strength evolution,
-and behavior on broad weak versus strong sessions. Any fitted residual model must
-be trained within each fold.
+Describe a stock's same-session position using four deterministic ranks of
+registered stock features. Every calculation uses only already available inputs,
+records the official denominator, eligible count and excluded states, and is
+invariant to ticker, vendor and row order. X contains no WIG or direct market
+aggregate and cannot reconstruct an M variable with C and P.
 
-### D. Cross-sectional context
+### M. Frozen market state
 
-Describe a stock's position within the same-session official universe: feature
-ranks, changes in rank and its relationship to contemporaneous leadership. Every
-calculation records the official denominator, usable count and excluded states.
+Market state is an explicit numerical feature block, not a hidden binary filter.
+Carry the complete corrected pre-Phase-D v2 block of 12 WIG trend, drawdown,
+volatility, TOP60 breadth, dispersion, correlation and leadership variables.
+Select or remove none using historical Q5 association and add no optional state
+variable.
 
-### E. Market state and regime
-
-Market state is an explicit feature block, not a hidden binary filter. Freeze a
-compact numerical representation drawn from multi-horizon WIG trend, market
-drawdown, short/long realized volatility, TOP60 breadth, cross-sectional
-dispersion, and correlation/co-movement or leadership concentration when it is
-PIT-safe and inexpensive.
-
-The predefined market-state ablation compares the rich stock representation
-without block E against the same representation with block E. Its question is
-whether the expected value of a stock state depends on its surrounding market
-state—not which hand-selected regime filter makes returns look best.
+The predefined market-state ablation compares C+P+X against C+P+X+M with the
+fixed LightGBM family. Its question is whether explicit market state adds
+information beyond stock state, stock path and cross-sectional context—not which
+hand-selected regime filter makes returns look best.
 
 ## Identity-blind primary model
 
@@ -246,8 +253,9 @@ cash/no-position behavior, sufficient non-overlapping evidence, and no dependenc
 on a small number of dates, years, regimes or securities. Positive standalone
 rank IC is insufficient.
 
-Phase D0 must propose exact numerical thresholds for owner approval. It may not
-calibrate those thresholds after seeing real model results.
+Phase D0 freezes exact numerical thresholds in `PHASE_D0_EXPERIMENT_PLAN.md` and
+`source/python/configs/phase_d0_reference.json`. They remain proposals for owner
+approval and may not be calibrated after seeing real model results.
 
 If the rich representation ties, inconsistently beats, or loses to the strongest
 conventional model, the verdict is to stop or descope the ML line. Do not respond
@@ -278,7 +286,10 @@ Deferred until a successful bounded result creates a concrete need:
 
 ## Phase boundaries
 
-Phase D0 freezes the research contract. Phase D1 proves the minimal machinery on
-fixtures without publishing real predictive performance. Phase D2 executes the
-frozen historical study only after owner approval. Phase D3 issues the final
-`STOP`, `CONTINUE TO ONE BOUNDED PORTFOLIO TEST`, or `NOT PROVEN` verdict.
+Phase D0 freezes the research contract and stops for owner review. Phase D1 is
+not yet authorized; if separately approved, it proves the minimal machinery on
+fixtures and computes only the registered, label-inaccessible feature values
+needed to freeze `phase_d1_structural_resolution.json`. It stops before any real
+model fit, prediction, validation score, or performance calculation. Phase D2
+executes the frozen historical study only after another owner approval. Phase D3 issues the
+final `STOP`, `CONTINUE TO ONE BOUNDED PORTFOLIO TEST`, or `NOT PROVEN` verdict.

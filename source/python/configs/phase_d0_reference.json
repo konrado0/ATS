@@ -1,0 +1,630 @@
+{
+  "schema_version": "ats.phase_d0.reference.v1",
+  "contract_version": "phase-d0-20260831-v1",
+  "frozen_on": "2026-08-31",
+  "classification": "decision-grade experimental design; not deployment validation and not strategy evidence",
+  "authorization": {
+    "phase_d0_contract_design": true,
+    "phase_d1_fixture_and_structural_implementation": false,
+    "phase_d1_label_inaccessible_structural_feature_execution": false,
+    "real_feature_execution": false,
+    "real_model_fit": false,
+    "real_prediction": false,
+    "locked_historical_test_access": false,
+    "phase_d2": false
+  },
+  "decision": "Continue the pooled-ML research line only if a compact identity-blind rich representation materially, stably, and economically improves on the strongest conventional OHLCV model; otherwise stop or descope the ML line.",
+  "input": {
+    "candidate_run_id": "gpw-split-normalization-20260826-v4",
+    "candidate_manifest": "D:/Stock/data/ATS/gpw_split_normalization/runs/gpw-split-normalization-20260826-v4/manifest.json",
+    "candidate_manifest_sha256": "e77ce37cb51c3a1e5608b4b2c9b112abe51635bdae1ce64db0b5aa7d4780331a",
+    "candidate_panel": "D:/Stock/data/ATS/gpw_split_normalization/runs/gpw-split-normalization-20260826-v4/candidate_panel.parquet",
+    "candidate_panel_sha256": "c23ffbfc6aaab8bafd466bd980f906ec4476fd051aebcc8c0fa3b7e57a9f8c15",
+    "candidate_logical_hash": "447fbadaac4418c04b257bd46bf8daa81b24b2546ac40b0f3ff89763ed9fdd4e",
+    "candidate_data_basis_version": "gpw_split_adjusted_price_candidate.v1",
+    "phase_a_v2_run_id": "phase-a-v2-20260827T150000Z",
+    "phase_a_v2_manifest": "D:/Stock/data/ATS/phase_a_v2_research/runs/phase-a-v2-20260827T150000Z/manifest.json",
+    "phase_a_v2_manifest_sha256": "6868a4a1ccc230877500efae97686a505489725b78448d8463a7836a8d315fb8",
+    "phase_a_v2_logical_hash": "1332b211b076b93fde56085974f0fa65b53f1a103d47bc2c12866e41d1b8a0b7",
+    "market_state_run_id": "pre-phase-d-market-state-20260830-v2",
+    "market_state_manifest": "D:/Stock/data/ATS/pre_phase_d_market_state/runs/pre-phase-d-market-state-20260830-v2/manifest.json",
+    "market_state_manifest_sha256": "82a1f3108e7eb23a38bb16ac37111c53f9b11291f2a16b0aeecef24543a86553",
+    "market_state_logical_hash": "b21793076e76f945b72fa1f37bb5a6bab85e40f7e31603ad4ca6d0d7d79a57eb",
+    "market_state_feature_artifact": "D:/Stock/data/ATS/pre_phase_d_market_state/runs/pre-phase-d-market-state-20260830-v2/tables/market_state_features.parquet",
+    "market_state_feature_artifact_sha256": "582f6e4731ec8e9816b5f4148e38ee33ec8b2bf11439aef5942653463457273c",
+    "mutable_pointer_policy": "forbidden; only the explicit paths and hashes above may be used"
+  },
+  "return_semantics": {
+    "name": "split_adjusted_price_return",
+    "cash_distributions_included": false,
+    "cash_dividend_price_gaps_preserved": true,
+    "total_return_interpretation": false,
+    "source_native_observations_immutable": true,
+    "authoritative_exhaustive_split_discovery": "NOT PROVEN"
+  },
+  "observation_contract": {
+    "row_identity": [
+      "security_id",
+      "decision_session",
+      "candidate_run_id",
+      "contract_version"
+    ],
+    "universe_id": "GPW_TOP60_WIG20_MWIG40",
+    "pit_membership_rule": "Include the security only when the pinned candidate panel marks official_membership=true for the decision_session; use no later membership knowledge and require exactly 60 unique official security_id values for every decision session.",
+    "evaluation_start": "2019-12-23",
+    "evaluation_end": "2026-08-18",
+    "warmup_before_evaluation_only": true,
+    "official_expected_denominator": 60,
+    "market_timezone": "Europe/Warsaw",
+    "decision_time": "08:45:00",
+    "decision_timestamp_rule": "decision_session at 08:45:00 Europe/Warsaw",
+    "feature_information_session_rule": "the immediately preceding official WIG market session",
+    "feature_information_cutoff": "17:05:00 Europe/Warsaw on the information session, after the modeled 17:00 close and before the decision timestamp",
+    "daily_vendor_latency_caveat": "availability before the next pre-open decision is a conservative modeled assumption, not independently verified vendor delivery latency",
+    "market_state_membership_rule": "For frozen TOP60 aggregate M features, use the 60 official members on the preceding information session exactly as in the accepted pre-Phase-D v2 implementation.",
+    "source_switch_treatment": "Do not reset a price feature solely because selected_source changes. Permit a window across whole-bar source switches only when every required observation is price-usable, split-adjusted under the pinned factor version, and has no unresolved source-treatment state. Volume features additionally require every volume in the window to be explicitly comparable and volume_usable_for_relative_volume=true. Retain source-switch audit masks but never expose them to a model.",
+    "missing_price_treatment": "No synthetic bar, zero fill, forward fill, endpoint substitution, or silent window shortening. A missing or unusable price invalidates only features whose exact required window contains it, plus any label whose exact start or endpoint is absent.",
+    "missing_volume_treatment": "A missing, nonpositive, imprecise, or non-comparable volume invalidates only volume-dependent features and their X transforms. It does not remove an otherwise valid price-feature row.",
+    "feature_specific_eligibility": true,
+    "complete_feature_matrix_required": false,
+    "cross_section_minimum_eligible_members": 45,
+    "model_score_base_eligibility": [
+      "official_membership=true on decision_session",
+      "proximity_to_max_high_252 eligible",
+      "momentum_12_1 eligible",
+      "realized_volatility_20 eligible",
+      "return_5 eligible"
+    ],
+    "fit_outcome_eligibility": "model_score_base_eligibility plus an exact primary-label start and endpoint permitted by the fold boundary; future label availability is never part of score or calibration eligibility",
+    "scoring_and_frequency_population": "all model_score_base_eligibility rows, including later label-unavailable and right-censored rows",
+    "outcome_evaluation_population": "the scored-row subset with an exact primary label whose endpoint is permitted by the frozen boundary rule",
+    "optional_predictor_missingness": "Other registered predictors may be null and use the model-family-specific frozen missing-value policy. Audit masks remain outside the predictor allowlist.",
+    "denominator_fields_required": [
+      "official_expected_count",
+      "feature_eligible_count",
+      "model_eligible_count",
+      "scored_count",
+      "outcome_evaluable_count",
+      "outcome_unavailable_count",
+      "excluded_count",
+      "exclusion_reason_counts"
+    ],
+    "denominator_rendering_example": "57/60, never 57/57",
+    "exclusion_reason_codes": [
+      "PRELISTING",
+      "DOCUMENTED_NON_TRADING",
+      "UNRESOLVED_IDENTITY",
+      "MISSING_PRICE",
+      "INVALID_PRICE_BASIS",
+      "SOURCE_TREATMENT_UNRESOLVED",
+      "INSUFFICIENT_EXACT_LOOKBACK",
+      "MISSING_VOLUME",
+      "VOLUME_NOT_COMPARABLE",
+      "LABEL_START_MISSING",
+      "LABEL_ENDPOINT_MISSING",
+      "LABEL_RIGHT_CENSORED",
+      "MARKET_FEATURE_UNAVAILABLE",
+      "CROSS_SECTION_BELOW_45",
+      "PREDICTOR_COVERAGE_BELOW_MINIMUM",
+      "MODEL_INPUT_ALL_MISSING"
+    ],
+    "structural_minimums": {
+      "fit_decision_sessions": 230,
+      "fit_model_rows": 10000,
+      "calibration_decision_sessions": 200,
+      "calibration_scored_rows": 10000,
+      "development_validation_decision_sessions": 200,
+      "development_validation_scored_rows": 10000,
+      "locked_test_label_available_sessions": 350,
+      "per_predictor_valid_fraction_within_each_fit_interval": 0.9,
+      "per_session_cross_section_for_rank_ic": 45,
+      "failure_behavior": "Fail the affected cell and the D1 readiness audit; do not move a boundary, remove a feature, reduce a denominator, or relax a threshold after outcomes are available."
+    }
+  },
+  "target_contract": {
+    "primary": "label__open_to_open__20",
+    "type": "continuous absolute price return",
+    "formula": "split_adjusted_open[t+20] / split_adjusted_open[t] - 1",
+    "decision_alignment": "t is the decision_session; its 09:00 modeled open is after the 08:45 decision",
+    "start": "exact decision-session open",
+    "endpoint": "exact open 20 official WIG market sessions after the decision session; decision session is session 0",
+    "intermediate_missing_sessions": "do not alter calendar counting and do not forward fill",
+    "relative_interpretation": "supplied only by cross-sectional evaluation; no relative-return stored label",
+    "secondary_robustness_labels": [
+      "label__open_to_open__5",
+      "label__open_to_open__10"
+    ],
+    "secondary_cannot_select_or_reverse": true,
+    "evaluation_only_future_labels": [
+      "maximum_favourable_excursion_20",
+      "maximum_adverse_excursion_20",
+      "time_to_maximum_favourable_excursion_20",
+      "time_to_maximum_adverse_excursion_20",
+      "forward_path_shape_20"
+    ],
+    "evaluation_only_access_policy": "physically and logically excluded from feature computation, preprocessing, fitting, model selection, and opportunity calibration"
+  },
+  "feature_registry": "D:/Stock/ATS/source/python/configs/phase_d0_feature_registry.json",
+  "feature_blocks": {
+    "C": [
+      "proximity_to_max_high_252",
+      "proximity_to_max_close_252",
+      "momentum_12_1",
+      "return_5",
+      "realized_volatility_20",
+      "relative_volume_20"
+    ],
+    "P": [
+      "stock_log_return_20",
+      "stock_log_return_60",
+      "stock_path_efficiency_20",
+      "stock_positive_return_share_20",
+      "stock_drawdown_depth_60",
+      "stock_recovery_from_low_60",
+      "stock_volatility_ratio_20_60",
+      "stock_close_location_value_20"
+    ],
+    "X": [
+      "xrank_momentum_12_1",
+      "xrank_proximity_to_max_high_252",
+      "xrank_realized_volatility_20",
+      "xrank_relative_volume_20"
+    ],
+    "M": [
+      "wig_log_return_20",
+      "wig_log_return_60",
+      "wig_trend_200",
+      "wig_trend_acceleration_20_60",
+      "wig_drawdown_252",
+      "wig_downside_semivolatility_20",
+      "wig_volatility_ratio_20_60",
+      "top60_breadth_positive_60",
+      "top60_breadth_change_10",
+      "top60_return_dispersion_20",
+      "top60_average_pairwise_correlation_60",
+      "top60_positive_leadership_share_20"
+    ]
+  },
+  "feature_caps": {
+    "C": 8,
+    "P": 8,
+    "X": 4,
+    "M": 12,
+    "total": 32
+  },
+  "duplication_rule": {
+    "population": "label-blind development rows dated no later than 2024-12-30, using predictor values only",
+    "exact_duplicate": "Two features are exact duplicates if normalized formulas are identical or all common finite values match with rtol=1e-12 and atol=1e-12.",
+    "algebraic_duplicate": "A deterministic symbolic affine identity among registered formulas, or numerical affine residual max absolute error <=1e-12 on all common finite rows, is an algebraic duplicate.",
+    "near_duplicate": "Within P only, absolute Spearman correlation >=0.995 on pooled common finite rows and median per-session absolute percentile-rank difference <=0.01, with at least 200 qualifying sessions and 10000 paired rows.",
+    "preference_order": [
+      "higher valid-row fraction",
+      "shorter maximum lookback",
+      "fewer raw dependencies",
+      "earlier order in feature_blocks.P"
+    ],
+    "frozen_block_exception": "All 12 M features are retained because D0 is required to carry the complete accepted v2 block; an exact or algebraic collision between M and another block is a contract FAIL, not permission to delete M.",
+    "failure_behavior": "Remove the lower-preference P near-duplicate before real execution and record the result in the D1 structural-resolution artifact. Any exact/algebraic duplicate outside that permitted P reduction, or fewer than five surviving P features, fails closed for owner review. No replacement feature may be added without a versioned D0 amendment.",
+    "target_information_forbidden": true
+  },
+  "identity_blindness": {
+    "positive_allowlist_source": "the union of feature_blocks.C, P, X, and M after only the frozen P duplication rule",
+    "prohibited_inputs": [
+      "ticker",
+      "isin",
+      "security_id",
+      "company_name",
+      "nominal_price",
+      "raw_unscaled_volume",
+      "selected_source",
+      "vendor_identity",
+      "source_lineage",
+      "source_hash",
+      "file_path",
+      "source_row_order",
+      "sector",
+      "classification",
+      "missingness_indicator",
+      "exclusion_reason",
+      "volume_precision_state"
+    ],
+    "audit_only_fields_allowed": true,
+    "positive_tests": [
+      "Model matrix columns equal the frozen positive allowlist exactly and in registry order.",
+      "Shuffling every identity, lineage, source, and source-row-order field leaves the model matrix byte-identical.",
+      "After frozen eligibility and X ranks are materialized, replacing inert lineage, source, and exclusion-description metadata leaves model inputs and predictions byte-identical; causal feature-valid masks are not classified as inert metadata.",
+      "Every X rank is unchanged by ticker/source sort order and uses average ties over eligible official members only."
+    ],
+    "negative_tests": [
+      "Inject each prohibited field singly and require schema rejection.",
+      "Inject renamed, hashed, categorical, ordinal, one-hot, frequency-encoded, and target-encoded identity fields and require rejection.",
+      "Inject nominal close or raw volume and require rejection.",
+      "Inject a missingness-indicator column and require rejection.",
+      "Change source row order and require identical features, folds, and predictions."
+    ]
+  },
+  "comparison": {
+    "common_primary_score_mask": "model_score_base_eligibility applied identically to all four cells without consulting future-label availability; optional predictor nulls remain null until the frozen model-specific missing policy",
+    "common_primary_outcome_mask": "intersection of the common primary score mask and exact boundary-permitted primary-label availability, used only for fitting and outcome metrics",
+    "cells": [
+      {
+        "cell_id": "C_LINEAR",
+        "features": "C",
+        "model": "RIDGE"
+      },
+      {
+        "cell_id": "C_LIGHTGBM",
+        "features": "C",
+        "model": "LIGHTGBM"
+      },
+      {
+        "cell_id": "RICH_LINEAR",
+        "features": "C+P+X+M",
+        "model": "RIDGE"
+      },
+      {
+        "cell_id": "RICH_LIGHTGBM",
+        "features": "C+P+X+M",
+        "model": "LIGHTGBM"
+      }
+    ],
+    "same_primary_label": true,
+    "same_folds": true,
+    "same_evaluation_sessions": true,
+    "reference_selection": "Using MODEL_SELECTION_2022 only, choose the conventional cell with higher equal-session-weighted mean rank IC; if the absolute difference is <=0.002 choose C_LINEAR.",
+    "challenger_selection": "Using MODEL_SELECTION_2022 only, choose the rich cell with higher equal-session-weighted mean rank IC; if the absolute difference is <=0.002 choose RICH_LINEAR.",
+    "selection_period_role": "MODEL_SELECTION_2022 selects model families only and is excluded from every development-confirmation threshold and confidence interval.",
+    "strongest_conventional_tail_protection": "Every mandatory rich tail and severe-outcome comparison must pass separately against same-session frequency-matched C_LINEAR and C_LIGHTGBM; selecting the reference by rank IC cannot hide a stronger conventional tail.",
+    "locked_test_selection_freeze": "Record the selected reference and challenger after MODEL_SELECTION_2022 and before opening DEV_2023, DEV_2024, or locked-test predictions or labels. Nonselected cells remain reported but cannot replace the frozen pair.",
+    "market_state_ablation": {
+      "model": "LIGHTGBM",
+      "without_market_state": "C+P+X",
+      "with_market_state": "C+P+X+M",
+      "role": "secondary attribution diagnostic only",
+      "feature_overlap_between_added_block_and_base": false,
+      "cannot_rescue_primary_gate": true
+    }
+  },
+  "models": {
+    "RIDGE": {
+      "estimator": "sklearn.linear_model.Ridge",
+      "objective": "squared_error regression",
+      "score_meaning": "predicted absolute label__open_to_open__20 price return",
+      "preprocessing": [
+        "sklearn.impute.SimpleImputer(strategy=median, add_indicator=false, keep_empty_features=false)",
+        "sklearn.preprocessing.StandardScaler(with_mean=true, with_std=true)"
+      ],
+      "parameters": {
+        "alpha": 1.0,
+        "fit_intercept": true,
+        "solver": "lsqr",
+        "tol": 1e-06,
+        "max_iter": 10000
+      },
+      "missing_value_behavior": "training-fold median imputation without missing indicators; fail if a registered feature has no finite fit value",
+      "seed": 20260831
+    },
+    "LIGHTGBM": {
+      "estimator": "lightgbm.LGBMRegressor",
+      "objective": "regression_l2 squared-error regression",
+      "score_meaning": "predicted absolute label__open_to_open__20 price return",
+      "preprocessing": [
+        "no learned scaling",
+        "native IEEE NaN missing-value routing"
+      ],
+      "parameters": {
+        "boosting_type": "gbdt",
+        "objective": "regression_l2",
+        "n_estimators": 300,
+        "learning_rate": 0.03,
+        "num_leaves": 15,
+        "max_depth": 4,
+        "min_child_samples": 100,
+        "subsample": 1.0,
+        "colsample_bytree": 1.0,
+        "reg_alpha": 0.1,
+        "reg_lambda": 1.0,
+        "random_state": 20260831,
+        "n_jobs": 1,
+        "deterministic": true,
+        "force_col_wise": true,
+        "verbosity": -1
+      },
+      "missing_value_behavior": "native NaN routing; fail if a registered feature has no finite fit value",
+      "seed": 20260831,
+      "early_stopping": false
+    },
+    "hyperparameter_search": "forbidden",
+    "early_stopping_or_validation_tuning": "forbidden"
+  },
+  "chronology": {
+    "split_unit": "whole decision_session",
+    "random_split": false,
+    "folds": [
+      {
+        "fold_id": "MODEL_SELECTION_2022",
+        "fit_start": "2019-12-23",
+        "fit_end": "2020-12-30",
+        "calibration_start": "2021-01-04",
+        "calibration_end": "2021-12-30",
+        "validation_start": "2022-01-03",
+        "validation_end": "2022-12-30",
+        "role": "model-family selection only; excluded from confirmation evidence"
+      },
+      {
+        "fold_id": "DEV_2023",
+        "fit_start": "2019-12-23",
+        "fit_end": "2021-12-30",
+        "calibration_start": "2022-01-03",
+        "calibration_end": "2022-12-30",
+        "validation_start": "2023-01-02",
+        "validation_end": "2023-12-29",
+        "role": "development confirmation"
+      },
+      {
+        "fold_id": "DEV_2024",
+        "fit_start": "2019-12-23",
+        "fit_end": "2022-12-30",
+        "calibration_start": "2023-01-02",
+        "calibration_end": "2023-12-29",
+        "validation_start": "2024-01-02",
+        "validation_end": "2024-12-30",
+        "role": "development confirmation"
+      },
+      {
+        "fold_id": "LOCKED_2025_2026",
+        "fit_start": "2019-12-23",
+        "fit_end": "2023-12-29",
+        "calibration_start": "2024-01-02",
+        "calibration_end": "2024-12-30",
+        "validation_start": "2025-01-02",
+        "validation_end": "2026-08-18",
+        "role": "locked historical test; not untouched validation"
+      }
+    ],
+    "information_interval": "For a row, the interval starts at the earliest raw feature observation required by any feature in that cell and ends at the exact primary-label endpoint open.",
+    "purge_rule": "Within fit and calibration partitions, retain a row only when its exact label endpoint timestamp is strictly earlier than the next partition's first decision timestamp. The implementation must derive this from stored endpoint timestamps, not subtract a hard-coded number of rows.",
+    "validation_boundary_rule": "For MODEL_SELECTION_2022, DEV_2023, and DEV_2024 outcome metrics, retain a row only when its exact label endpoint timestamp is strictly earlier than the next fold's validation_start decision timestamp. Locked-test outcome rows require an exact endpoint no later than the pinned data end. All boundary-excluded and right-censored rows remain scored and remain in frequency/abstention denominators.",
+    "embargo_rule": "No additional embargo is required because every fit is strictly earlier than calibration and validation and the endpoint-based purge removes forward information overlap. Any future design with post-validation training would require a new contract.",
+    "fold_local_fit": "Every imputer, scaler, estimator, and score calibration is fit only on its declared fit or calibration population. Same-session X ranks are deterministic transforms, not fitted transforms.",
+    "locked_test_open_policy": "Only after separate owner authorization, D1 may inspect schemas, label-blind structural counts, and registered predictor values through 2024-12-30 solely to apply the frozen P duplicate rule. D1 must not load or derive realized forward labels, fit a model, emit a prediction, score a validation row, or calculate association or economics. D1 freezes and returns owner-reviewed phase_d1_structural_resolution.json before any D2 model fit or prediction. In D2, MODEL_SELECTION_2022 is opened first only after that artifact, code fingerprints, purge resolution, and all thresholds are frozen and owner-approved; the reference/challenger pair is then frozen before DEV_2023 and DEV_2024 confirmation, and the locked segment is opened once only after a further owner approval.",
+    "genuine_forward_evidence_after": "2026-08-18"
+  },
+  "structural_derivations": [
+    {
+      "name": "resolved_purge_boundaries",
+      "permitted_inputs": [
+        "ordered official WIG decision-session calendar",
+        "stored feature information-session timestamps",
+        "stored exact primary-label endpoint session and timestamp"
+      ],
+      "formula": "For each partition boundary B, exclude each earlier-partition row with label_endpoint_ts >= B.decision_ts; record the last retained and first purged decision sessions.",
+      "rounding": "none",
+      "lower_bound": "at least 20 decision sessions are expected to be purged at an immediately adjacent boundary; fewer is permitted only when exact endpoint timestamps prove it",
+      "upper_bound": "all rows may be purged and then the fold fails structural minimums",
+      "fallback": "fail closed; do not infer endpoints or substitute a fixed row count",
+      "artifact": "phase_d1_structural_resolution.json",
+      "freeze_before_predictive_execution": true,
+      "freeze_before_first_real_model_fit_or_prediction": true
+    },
+    {
+      "name": "P_near_duplicate_resolution",
+      "permitted_inputs": [
+        "registered P predictor values through 2024-12-30",
+        "feature-valid masks",
+        "decision sessions"
+      ],
+      "formula": "Apply duplication_rule exactly, then retain the higher-preference feature for every connected near-duplicate component.",
+      "rounding": "correlations and percentile ranks are compared as float64 without display rounding",
+      "lower_bound": 5,
+      "upper_bound": 8,
+      "fallback": "fail closed when fewer than five P features survive or a tie remains after the preference order",
+      "artifact": "phase_d1_structural_resolution.json",
+      "freeze_before_predictive_execution": true,
+      "freeze_before_first_real_model_fit_or_prediction": true
+    },
+    {
+      "name": "chronological_concentration_quartiles",
+      "permitted_inputs": [
+        "ordered retained evaluation decision sessions for the relevant development or locked population"
+      ],
+      "formula": "Split the ordered unique sessions into four contiguous bins using array_split semantics: bin sizes differ by at most one and earlier bins receive any remainder.",
+      "rounding": "integer sessions only",
+      "lower_bound": 4,
+      "upper_bound": 4,
+      "fallback": "fail structural minimums if four nonempty bins cannot be formed",
+      "artifact": "phase_d1_structural_resolution.json",
+      "freeze_before_predictive_execution": true,
+      "freeze_before_first_real_model_fit_or_prediction": true
+    },
+    {
+      "name": "implementation_fingerprints_and_versions",
+      "permitted_inputs": [
+        "D1 implementation bytes",
+        "installed package metadata",
+        "frozen registry bytes"
+      ],
+      "formula": "SHA-256 each implementation file and canonical environment lock; record sklearn and LightGBM estimator parameter signatures and require exact equality to this config.",
+      "rounding": "none",
+      "lower_bound": "one SHA-256 per feature, splitter, model, evaluator, and artifact implementation file",
+      "upper_bound": "only files in the minimal D1 implementation boundary",
+      "fallback": "fail closed on missing or mismatched fingerprints",
+      "artifact": "phase_d1_structural_resolution.json",
+      "freeze_before_predictive_execution": true,
+      "freeze_before_first_real_model_fit_or_prediction": true
+    }
+  ],
+  "forbidden_derivation_inputs": [
+    "realized forward returns",
+    "feature-label association",
+    "model scores on validation or locked test",
+    "rank IC",
+    "tail outcomes",
+    "economic performance"
+  ],
+  "opportunity_contract": {
+    "score_meaning": "the model's predicted absolute 20-session split-adjusted open-to-open price return",
+    "calibration_population": "all common-primary-score-mask rows in the declared calibration interval scored by the model fit only on the purged fit interval; primary-label availability and values are not consulted",
+    "threshold": "max(0.010000, empirical 90th percentile of finite calibration scores using numpy linear quantile)",
+    "absolute_hurdle": 0.01,
+    "calibrated_score_quantile": 0.9,
+    "qualification_comparator": "score > threshold (strict); equality does not qualify",
+    "label_use_in_calibration": false,
+    "quota": null,
+    "zero_candidate_session_valid": true,
+    "threshold_relaxation": "forbidden",
+    "prediction_validity_window": "the associated decision session only; it expires immediately after that session's modeled open and is never carried forward",
+    "repeated_signal_treatment": "Retain every qualifying security-session for raw frequency. For decisive tail outcomes and effective counts, a same-security episode starts at the first qualifying session and absorbs later qualifying sessions until more than 20 official sessions have elapsed since the preceding qualifying session; only the first qualifying observation is the episode anchor.",
+    "overlapping_label_inference": "Primary tail outcome statistics use episode anchors, aggregate anchor outcomes to equal-weight session statistics, and use the frozen paired 20-session moving-block bootstrap. Raw overlapping rows cannot determine a tail gate.",
+    "frequency_matching": "On each session with k outcome-evaluable rich episode anchors, rank the common outcome-evaluable rows for each conventional cell by score descending and security_id ascending, and select exactly the first k. Compare rich separately with C_LINEAR and C_LIGHTGBM. This same-session diagnostic cannot change any model's own threshold and has zero count mismatch by construction.",
+    "outcome_unavailable_treatment": "Label-unavailable and boundary-withheld candidates remain in scored, candidate-frequency, and abstention denominators but cannot enter outcome metrics. Their counts and reasons are reported and must pass the explicit outcome-evaluability gate.",
+    "not_trade_construction": true
+  },
+  "evaluation": {
+    "primary_hierarchy": [
+      "validity and reproducibility gates",
+      "rich versus strongest-conventional paired incremental session rank IC",
+      "rich opportunity-tail separation and frequency-matched conventional comparison",
+      "chronological stability and concentration",
+      "frequency, abstention, overlap, and effective evidence count"
+    ],
+    "required_metrics": [
+      "session_level_spearman_rank_ic",
+      "fold_and_year_stability",
+      "tail_conditioned_forward_outcomes",
+      "opportunity_frequency",
+      "abstention_rate",
+      "top_tail_minus_eligible_universe",
+      "severe_adverse_outcome_frequency_at_minus_10pct",
+      "concentration_by_session_security_and_chronological_quartile",
+      "rich_minus_conventional_incremental_information",
+      "C+P+X_versus_C+P+X+M_ablation",
+      "ranking_within_frozen_proximity_Q5"
+    ],
+    "uncertainty": {
+      "method": "deterministic circular moving-block bootstrap over ordered decision sessions",
+      "block_sessions": 20,
+      "samples": 5000,
+      "confidence_level": 0.95,
+      "seed": 20260831,
+      "rng": "numpy.random.Generator(numpy.random.PCG64(20260831))",
+      "resample_algorithm": "For N ordered sessions, draw ceil(N/20) start indices uniformly from [0,N), append each circular 20-session block, and truncate to the first N indices. Use identical indices for every paired cell/comparator.",
+      "interval": "two-sided percentile interval using numpy quantile method=linear at 0.025 and 0.975; one-sided gate bounds use the corresponding endpoint",
+      "undefined_replicate_behavior": "A replicate with no qualifying observations or an undefined statistic is excluded; at least 99% of 5000 replicates must be defined or the metric fails.",
+      "undefined_session_ic_behavior": "Session IC is null when fewer than 45 paired rows exist or scores or labels are constant. Null sessions remain in coverage denominators and at least 90% of outcome-evaluable sessions must have defined paired IC.",
+      "paired_resampling": true
+    },
+    "metric_definitions": {
+      "mean_session_rank_ic": "Arithmetic mean with equal weight over defined session Spearman correlations on the common outcome mask.",
+      "rich_minus_eligible_tail": "For each session with at least one outcome-evaluable rich episode anchor, mean anchor label minus the mean label of all common outcome-evaluable scored rows on that session; aggregate with equal session weight.",
+      "rich_minus_conventional_tail": "For each session with k outcome-evaluable rich episode anchors, mean rich-anchor label minus mean label of the same-session top-k rows from the named conventional cell; aggregate with equal session weight and test separately against both C cells.",
+      "rich_episode_median": "Median of all outcome-evaluable rich episode-anchor labels in the named population; block bootstrap resamples whole sessions.",
+      "severe_rate_difference": "Rich episode-anchor share with label <= -0.10 minus the same-session frequency-matched named conventional share; compute separately against both C cells.",
+      "candidate_frequency": "All strict-threshold qualifying scored rows divided by all scored rows; label availability is irrelevant.",
+      "opportunity_session_fraction": "Decision sessions with at least one strict-threshold qualifying scored row divided by all scored decision sessions.",
+      "session_candidate_count_p95": "numpy quantile(method=linear, q=0.95) over candidate counts for every scored session including zeros.",
+      "chronological_halves": "numpy array_split of ordered unique sessions into two contiguous bins, earlier bin receiving any remainder.",
+      "chronological_quartiles": "numpy array_split of ordered unique sessions into four contiguous bins, earlier bins receiving any remainder; assign an episode by its anchor session.",
+      "top_security_contributors": "Rank securities by descending absolute sum of rich episode-anchor label minus same-session eligible-universe mean, tie by security_id ascending.",
+      "leave_security_out": "Remove the named security from every model, eligible-universe, episode, and same-session matching population; then recompute paired IC and both conventional tail comparisons without refitting or recalibrating.",
+      "eligible_year": "Calendar year with at least 120 outcome-evaluable scored decision sessions; MODEL_SELECTION_2022 is excluded."
+    },
+    "within_Q5_role": "diagnostic only; cannot select a target, model, feature, threshold, or proximity variant",
+    "secondary_labels_role": "robustness only; cannot select or reverse the primary verdict",
+    "market_state_ablation_role": "attribution only; cannot rescue the primary gate"
+  },
+  "decision_gate": {
+    "all_dimensions_required": true,
+    "validity": {
+      "rule": "All PIT, timing, label isolation, denominator, identity-blindness, fold, outcome-evaluability, artifact, and reproduction requirements PASS before economic metrics are interpreted.",
+      "outcome_evaluability_required_in": ["pooled development confirmation", "locked historical test"],
+      "scored_row_outcome_evaluable_fraction_min": 0.9,
+      "rich_episode_anchor_outcome_evaluable_fraction_min": 0.9,
+      "absolute_episode_vs_scored_evaluable_fraction_gap_max": 0.05,
+      "paired_ic_defined_session_fraction_min": 0.9
+    },
+    "incremental_rank_information": {
+      "development_confirmation_mean_delta_ic_min": 0.01,
+      "locked_test_mean_delta_ic_min": 0.01,
+      "development_confirmation_paired_95pct_lower_bound_min_exclusive": 0.0,
+      "locked_test_paired_95pct_lower_bound_min_exclusive": 0.0,
+      "relative_improvement_formula": "(rich_mean_ic - reference_mean_ic) / abs(reference_mean_ic)",
+      "relative_improvement_min_when_reference_ic_positive": 0.15,
+      "selection_period_excluded": "MODEL_SELECTION_2022"
+    },
+    "tail_outcome_separation": {
+      "rich_opportunity_minus_eligible_mean_return_min": 0.01,
+      "rich_minus_each_frequency_matched_conventional_mean_return_min": 0.005,
+      "rich_opportunity_median_return_min_exclusive": 0.0,
+      "rich_severe_adverse_rate_minus_each_frequency_matched_conventional_max": 0.02,
+      "rich_minus_eligible_95pct_lower_bound_min_exclusive": 0.0,
+      "rich_minus_each_conventional_95pct_lower_bound_min_exclusive": 0.0,
+      "rich_episode_median_95pct_lower_bound_min_exclusive": 0.0,
+      "severe_rate_difference_95pct_upper_bound_max": 0.02,
+      "required_in": [
+        "pooled development confirmation",
+        "locked historical test"
+      ]
+    },
+    "chronological_stability": {
+      "positive_confirmation_fold_delta_ic_min_count": 2,
+      "confirmation_fold_count": 2,
+      "each_confirmation_fold_delta_ic_min": 0.005,
+      "leave_one_confirmation_fold_out_delta_ic_min": 0.005,
+      "positive_eligible_year_fraction_min": 0.75,
+      "any_year_delta_ic_floor": -0.02,
+      "locked_chronological_half_delta_ic_floor": 0.0,
+      "locked_chronological_half_rich_minus_each_conventional_tail_floor": 0.0
+    },
+    "opportunity_evidence": {
+      "development_confirmation_effective_security_episodes_min": 100,
+      "locked_effective_security_episodes_min": 50,
+      "distinct_securities_min_in_each_required_population": 20,
+      "distinct_opportunity_sessions_development_confirmation_min": 50,
+      "distinct_opportunity_sessions_locked_min": 30,
+      "raw_candidate_rows_per_episode_max": 5.0,
+      "required_populations": ["pooled development confirmation", "locked historical test"],
+      "resolution_basis": "The fixed episode floors prevent an extremely rare tail from passing; dependence-aware confidence bounds on every decisive tail contrast supply the statistical-resolution gate."
+    },
+    "frequency_and_abstention": {
+      "candidate_row_fraction_max": 0.1,
+      "opportunity_session_fraction_min": 0.1,
+      "opportunity_session_fraction_max": 0.8,
+      "idle_session_fraction_min": 0.2,
+      "session_candidate_count_p95_max": 12,
+      "required_separately_in": ["DEV_2023", "DEV_2024", "locked historical test"]
+    },
+    "concentration": {
+      "largest_security_episode_share_max": 0.1,
+      "top5_security_episode_share_max": 0.35,
+      "security_episode_hhi_max": 0.05,
+      "largest_chronological_quartile_share_max": 0.4,
+      "leave_each_top5_security_out_delta_ic_min": 0.005,
+      "leave_each_top5_security_out_rich_minus_each_conventional_tail_min_exclusive": 0.0,
+      "required_separately_in": ["pooled development confirmation", "locked historical test"]
+    },
+    "failure_rule": "Any failed required dimension yields STOP OR DESCOPE POOLED ML. A tie, isolated-fold win, positive standalone IC, statistical significance without materiality, materiality without stability, or secondary diagnostic cannot pass the gate.",
+    "post_result_changes": "No feature, model, fold, threshold, frequency rule, concentration rule, or decision threshold may change after real predictive results are viewed. A demonstrated implementation bug requires a versioned correction frozen before recalculation."
+  },
+  "deferred": [
+    "Phase D1 implementation until separate owner authorization",
+    "Phase D2 real experiment",
+    "all-GPW expansion",
+    "sector and event data",
+    "macroeconomic ingestion",
+    "total-return or dividend reconstruction",
+    "general corporate-action subsystem",
+    "sequence and deep models",
+    "ranking objectives",
+    "large feature libraries",
+    "hyperparameter search",
+    "GPU or distributed execution",
+    "MLflow or feature stores",
+    "Phase C changes",
+    "proximity-strategy optimization",
+    "further market-state research",
+    "candidate-trade bookkeeping",
+    "portfolio simulation",
+    "orders, capital allocation, slots, rebalancing, exits, costs, and settlement"
+  ]
+}

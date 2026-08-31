@@ -11,7 +11,7 @@ pooled-ML swing-opportunity experiment—justify further engineering.
 
 ## Current checkpoint
 
-Status as of 2026-08-30:
+Status as of 2026-08-31:
 
 - The architecture study and local storage/query/backtester benchmarks are
   complete.
@@ -37,16 +37,23 @@ Status as of 2026-08-30:
   descriptive heterogeneity flag, and no market ON/OFF rule is authorized.
 - The Phase D charter and roadmap are the frozen planning baseline. No Phase D
   model has been trained and no real predictive result has been inspected.
+- Phase D0 is frozen in an owner-reviewable plan, machine-readable reference
+  configuration, 30-feature C/P/X/M registry, provenance manifest and
+  requirement audit. It authorizes neither D1 nor real predictive execution.
 
-The next gate is **Phase D0/D1 only**: freeze the complete experimental contract
-and prove the minimal ML workbench on fixtures. Phase D2 may inspect real model
-performance only after a separate owner review.
+The next gate is **owner review of Phase D0**. If separately authorized, Phase D1
+may implement only the minimal fixture-tested workbench and compute registered,
+label-inaccessible predictor values solely for the frozen structural resolution.
+It must stop before any real fit, prediction, validation score, or performance
+calculation. Phase D2 may inspect real model performance only after another owner
+review.
 
 Authoritative current documents:
 
 - [research operating policy](RESEARCH/RESEARCH_OPERATING_POLICY.md)
 - [implementation roadmap](RESEARCH/IMPLEMENTATION_ROADMAP.md)
 - [Phase D pooled-ML charter](RESEARCH/PHASE_D_POOLED_ML_RESEARCH_CHARTER.md)
+- [Phase D0 experiment plan](RESEARCH/PHASE_D0_EXPERIMENT_PLAN.md)
 - [controlling market-state checkpoint](RESEARCH/PRE_PHASE_D_MARKET_STATE_DIAGNOSTIC.md)
 - [recommended architecture](RESEARCH/RECOMMENDED_ARCHITECTURE.md)
 
@@ -181,8 +188,8 @@ Reference run/validation commands and accepted manifest conventions are kept in:
 | Phase C | Implemented and repaired | Deterministic daily portfolio accounting and independent ledger reconstruction. |
 | Phase A v2 / proximity | Bounded test passed its frozen hurdles | Retained conventional benchmark only; one later bounded validation remains, with no parameter optimization. |
 | Pre-Phase D market state | Complete | Carry the compact numerical block as context; do not turn it into a timing strategy. |
-| Phase D0 | Next | Freeze exact features, folds, purge/embargo, models, opportunity gate, evaluation thresholds and stop rule before real predictions. |
-| Phase D1 | Not started | Build `ats_ml` minimally and validate it on synthetic/hand-calculated fixtures without inspecting real predictive performance. |
+| Phase D0 | Frozen; owner review pending | Exact C/P/X/M features, folds, purge, models, opportunity gate, evaluation thresholds and stop rule are machine-readable and hashed. |
+| Phase D1 | Not authorized | If separately approved, build `ats_ml` minimally and validate it on synthetic/hand-calculated fixtures without inspecting real predictive performance. |
 | Phase D2/D3 | Not authorized | Execute the locked study once, then stop or authorize only one bounded portfolio translation. |
 | Phase E/F | Trigger-driven / later | Optimize measured pain and add richer reporting only when the completed vertical slice demonstrates a need. |
 

@@ -1,0 +1,231 @@
+{
+  "schema_version": "ats.phase_d0.requirement_audit.v1",
+  "contract_version": "phase-d0-20260831-v1",
+  "audit_scope": "Phase D0 experimental design and contract freeze only",
+  "overall_status": "PASS",
+  "requirements": [
+    {
+      "id": "D0-001",
+      "requirement": "Classify D0 as decision-grade experimental design, not deployment or evidence of strategy effectiveness.",
+      "status": "PASS",
+      "evidence": "PHASE_D0_EXPERIMENT_PLAN.md Decision design and phase boundary; phase_d0_reference.json classification and authorization"
+    },
+    {
+      "id": "D0-002",
+      "requirement": "State the exact decision, cheapest credible experiment, must-have validity work, useful diagnostics, deferred work, and stop/continue rule.",
+      "status": "PASS",
+      "evidence": "PHASE_D0_EXPERIMENT_PLAN.md Decision design"
+    },
+    {
+      "id": "D0-003",
+      "requirement": "Pin the research-grade candidate panel rather than canonical Phase B or a mutable pointer.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json input; PHASE_D0_MANIFEST.json"
+    },
+    {
+      "id": "D0-004",
+      "requirement": "Preserve split_adjusted_price_return, exclusion of cash distributions, preserved dividend gaps, and no total-return claim.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json return_semantics"
+    },
+    {
+      "id": "D0-005",
+      "requirement": "Define row identity, exact PIT membership, decision timestamp, information cutoff, and feature-specific eligibility.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json observation_contract"
+    },
+    {
+      "id": "D0-006",
+      "requirement": "Define source-switch, missing-price, missing-volume, exclusion-code, expected/eligible/scored denominator, and structural-minimum semantics.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json observation_contract"
+    },
+    {
+      "id": "D0-007",
+      "requirement": "Retain 57/60 visibility and never require every official member to possess every feature.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json feature_specific_eligibility, complete_feature_matrix_required, denominator_fields_required"
+    },
+    {
+      "id": "D0-008",
+      "requirement": "Use unchanged continuous label__open_to_open__20 with exact next-open 20-session endpoint semantics.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json target_contract; PHASE_D0_EXPERIMENT_PLAN.md Target"
+    },
+    {
+      "id": "D0-009",
+      "requirement": "Keep 5/10-session labels secondary and future path/excursion labels inaccessible to model construction.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json target_contract"
+    },
+    {
+      "id": "D0-010",
+      "requirement": "Register every predictor in exactly one of C, P, X, M with exact formula, dependencies, lookback, minimum observations, lag, missingness, range, source, and fold-local transform.",
+      "status": "PASS",
+      "evidence": "phase_d0_feature_registry.json; validate_phase_d0.py feature_required_fields and feature_blocks_exact"
+    },
+    {
+      "id": "D0-011",
+      "requirement": "Respect feature caps of C<=8, P<=8, X<=4, M=12, total<=32.",
+      "status": "PASS",
+      "evidence": "Registry counts C=6, P=8, X=4, M=12, total=30; validator feature_caps"
+    },
+    {
+      "id": "D0-012",
+      "requirement": "Keep C conventional and free of all direct, renamed, rescaled, or lag-shifted market-state variables.",
+      "status": "PASS",
+      "evidence": "phase_d0_feature_registry.json C entries uses_market_wide_state=false; validator C_has_no_market_state"
+    },
+    {
+      "id": "D0-013",
+      "requirement": "Carry all 12 corrected v2 market-state variables without outcome-based removal or regime conversion.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json feature_blocks.M; validator market_state_block_complete"
+    },
+    {
+      "id": "D0-014",
+      "requirement": "Freeze a label-blind P duplicate/near-duplicate criterion, preference, and failure behavior.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json duplication_rule"
+    },
+    {
+      "id": "D0-015",
+      "requirement": "Resolve actual P duplicate removals before real execution using only frozen label-blind rules.",
+      "status": "DEFERRED BY CONTRACT",
+      "evidence": "phase_d0_reference.json chronology.locked_test_open_policy and structural_derivations P_near_duplicate_resolution; after separate owner authorization, D1 may compute registered predictor values through 2024-12-30 while realized labels and all predictive execution remain forbidden; the result freezes before the first fit"
+    },
+    {
+      "id": "D0-016",
+      "requirement": "Define a positive predictor allowlist and prohibit direct or intentional identity encodings.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json identity_blindness"
+    },
+    {
+      "id": "D0-017",
+      "requirement": "Specify positive and negative identity-blindness tests for D1.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json identity_blindness positive_tests and negative_tests"
+    },
+    {
+      "id": "D0-018",
+      "requirement": "Freeze exactly four primary cells with identical label, folds, sessions, and comparable row mask.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json comparison; validator four_primary_cells_exact"
+    },
+    {
+      "id": "D0-019",
+      "requirement": "Freeze exact Ridge and LightGBM estimator classes, objectives, preprocessing, missingness, seeds, and bounded hyperparameters without search.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json models"
+    },
+    {
+      "id": "D0-020",
+      "requirement": "Freeze the LightGBM C+P+X versus C+P+X+M market-state ablation with disjoint blocks.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json comparison.market_state_ablation; validator ablation_disjoint"
+    },
+    {
+      "id": "D0-021",
+      "requirement": "Define date-grouped chronological folds, fit/calibration/test intervals, fold-local transforms, and a locked historical test.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json chronology; PHASE_D0_EXPERIMENT_PLAN.md Chronological validation"
+    },
+    {
+      "id": "D0-022",
+      "requirement": "Derive purge from actual label endpoint timestamps and explain why no extra embargo is needed.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json chronology purge_rule and embargo_rule"
+    },
+    {
+      "id": "D0-023",
+      "requirement": "Resolve exact retained/purged session boundaries and code/environment fingerprints before real execution.",
+      "status": "DEFERRED BY CONTRACT",
+      "evidence": "phase_d0_reference.json structural_derivations; destination phase_d1_structural_resolution.json; every resolution explicitly freezes before the first real model fit or prediction"
+    },
+    {
+      "id": "D0-024",
+      "requirement": "For every deferred D1 value define permitted inputs, deterministic formula, rounding, bounds, fallback, artifact, and pre-execution freeze.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json structural_derivations; validator derivation_rules_complete"
+    },
+    {
+      "id": "D0-025",
+      "requirement": "Prohibit outcomes, feature-label association, scores, IC, tails, and economics from D1 structural resolution.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json forbidden_derivation_inputs; validator derivations_are_label_blind"
+    },
+    {
+      "id": "D0-026",
+      "requirement": "Define score meaning, calibration population, absolute/training-tail hurdle, valid zero-candidate sessions, no quota relaxation, expiry, repeated signals, and overlap inference.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json opportunity_contract"
+    },
+    {
+      "id": "D0-027",
+      "requirement": "Keep opportunity mechanics at scientific-contract level without ledgers, orders, allocation, rebalancing, costs, or settlement.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json opportunity_contract.not_trade_construction and deferred"
+    },
+    {
+      "id": "D0-028",
+      "requirement": "Freeze the required primary and secondary evaluation hierarchy, including within-Q5 as diagnostic only.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json evaluation"
+    },
+    {
+      "id": "D0-029",
+      "requirement": "Freeze numerical stop/continue thresholds for incremental IC, tail separation, stability, concentration, opportunity count, abstention, frequency, and contributor dependence.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json decision_gate; PHASE_D0_EXPERIMENT_PLAN.md Frozen continuation gate"
+    },
+    {
+      "id": "D0-030",
+      "requirement": "Require the rich design to beat the strongest conventional design, not only linear C, and make ties fail.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json comparison selection and decision_gate.failure_rule"
+    },
+    {
+      "id": "D0-031",
+      "requirement": "Parse all machine-readable artifacts and verify unique names/formulas, caps, block separation, folds, derivations, authorization, and manifest hashes.",
+      "status": "PASS",
+      "evidence": "RESEARCH/prototypes/phase_d0/validate_phase_d0.py; final validation command recorded in completion report"
+    },
+    {
+      "id": "D0-032",
+      "requirement": "Record the actual D1 implementation fingerprints and prove formula/timing equivalence on fixtures.",
+      "status": "DEFERRED BY CONTRACT",
+      "evidence": "No D1 code is authorized in D0; phase_d0_reference.json implementation_fingerprints_and_versions rule"
+    },
+    {
+      "id": "D0-033",
+      "requirement": "Do not create ats_ml, fit a model, generate predictions, inspect real performance, or begin D1/D2.",
+      "status": "PASS",
+      "evidence": "phase_d0_reference.json authorization; repository diff contains contracts and validator only"
+    },
+    {
+      "id": "D0-034",
+      "requirement": "Preserve accepted Phase A/B/C evidence and unrelated dirty/untracked files.",
+      "status": "PASS",
+      "evidence": "Final scoped-index and Git-status verification must show only Phase D0 contract paths committed while pre-existing RESEARCH/environments and environment_repair files remain untouched and untracked"
+    },
+    {
+      "id": "D0-035",
+      "requirement": "Owner approval is required before Phase D1 and a separate later approval before any real predictive execution.",
+      "status": "PASS",
+      "evidence": "PHASE_D0_EXPERIMENT_PLAN.md Phase boundary and owner review; phase_d0_reference.json authorization"
+    },
+    {
+      "id": "D0-036",
+      "requirement": "Establish whether the rich representation actually works.",
+      "status": "DEFERRED BY CONTRACT",
+      "evidence": "D0 is design only; real predictive evidence is prohibited until separately authorized D2"
+    }
+  ],
+  "summary_counts": {
+    "PASS": 32,
+    "FAIL": 0,
+    "NOT PROVEN": 0,
+    "DEFERRED BY CONTRACT": 4
+  },
+  "completion_rule": "D0 may be reported PASS when all in-scope requirements are PASS, no requirement is FAIL, and every deferred item is explicitly outside D0 with a deterministic pre-execution boundary where applicable."
+}

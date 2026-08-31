@@ -1,0 +1,249 @@
+{
+  "schema_version": "ats.phase_d0.manifest.v1",
+  "contract_version": "phase-d0-20260831-v1",
+  "created_date": "2026-08-31",
+  "purpose": "Freeze the Phase D0 experimental design and its exact provenance without authorizing or executing Phase D1 or real predictive work.",
+  "repository_state": {
+    "starting_git_head": "dbba908e7760df22b1a0ed422f5ef0c790482eda",
+    "expected_starting_git_head": "dbba908e7760df22b1a0ed422f5ef0c790482eda",
+    "head_match": true,
+    "starting_unrelated_untracked_paths": [
+      "RESEARCH/environments/",
+      "RESEARCH/prototypes/environment_repair/repaired_environment.json",
+      "RESEARCH/prototypes/environment_repair/repaired_environment.yml"
+    ],
+    "starting_tracked_modifications": [],
+    "final_commit_recording_policy": "The focused D0 commit hash is reported after commit and is not embedded here because doing so would recursively change this manifest."
+  },
+  "starting_review": {
+    "user_request_sha256": "eecb4818679f911019b7867dc20846b03586b2cd04939018aabc4b95247b89db",
+    "starting_controlling_document_hashes": {
+      "README.md": "c540ebf06753279fa5330846246b4eccbe5cc3e829c051688ff645705b6dde3e",
+      "RESEARCH/IMPLEMENTATION_ROADMAP.md": "35ef27d067d77232f3667d9bb71e75a60209e72c4c005c605336a94d2605dfcf",
+      "RESEARCH/PHASE_D_POOLED_ML_RESEARCH_CHARTER.md": "41390ab1b7765095e2ed5850318f6b4e6607bfc95ad4d8b328d93fb236121de9"
+    },
+    "structural_candidate_facts": {
+      "candidate_rows_including_warmup": 130204,
+      "official_member_session_rows": 99780,
+      "evaluation_sessions": 1663,
+      "evaluation_start": "2019-12-23",
+      "evaluation_end": "2026-08-18",
+      "official_count_min": 60,
+      "official_count_max": 60,
+      "price_unusable_official_rows": 59,
+      "volume_unusable_official_rows": 61,
+      "structural_source_switch_rows": 180,
+      "outcome_or_association_inspection": false
+    }
+  },
+  "environment": {
+    "python": "3.12.13",
+    "platform": "Windows AMD64",
+    "packages": {
+      "numpy": "1.26.4",
+      "pandas": "3.0.5",
+      "polars": "1.43.2",
+      "pyarrow": "25.0.0",
+      "scikit-learn": "1.9.0",
+      "lightgbm": "4.7.0",
+      "pydantic": "2.13.4",
+      "PyYAML": "6.0.3",
+      "duckdb": "1.5.5",
+      "pytest": "9.1.1"
+    },
+    "invocation_wrapper": {
+      "path": "RESEARCH/environment/invoke_ats_python.ps1",
+      "bytes": 1265,
+      "sha256": "8e48b04c775d7df8f637f8d9253e79800a50c135f4df426c70221dc80dcd1eaf"
+    },
+    "environment_lock": {
+      "path": "RESEARCH/environment/environment.yml",
+      "bytes": 13063,
+      "sha256": "290334a1c972e3780b354acfc607c076ce4ae6a77b0905eb41dfb5aa45e48a6d"
+    },
+    "package_availability_conclusion": "The existing environment contains the two frozen estimator packages; no D0 environment or dependency change is required."
+  },
+  "inputs": [
+    {
+      "role": "agent_instructions",
+      "path": "AGENTS.md",
+      "bytes": 1599,
+      "sha256": "481d2364482045ee9a5ea8ef76ceaf4cf2db728cf19e50f2c8e4bbd9a2320736"
+    },
+    {
+      "role": "research_operating_policy",
+      "path": "RESEARCH/RESEARCH_OPERATING_POLICY.md",
+      "bytes": 8452,
+      "sha256": "ecfb7f54791472ea81f1d8f834bb42dc5e9775498c8b0e92a75bf735a09e3856"
+    },
+    {
+      "role": "controlling_market_state_report",
+      "path": "RESEARCH/PRE_PHASE_D_MARKET_STATE_DIAGNOSTIC.md",
+      "bytes": 16943,
+      "sha256": "34e72062c8f682cf48800db9581a2d1b719876e4c6266293285bffc69b0961ee"
+    },
+    {
+      "role": "accepted_phase_a_v2_decision",
+      "path": "RESEARCH/PHASE_A_V2_RESEARCH_DECISION.md",
+      "bytes": 13847,
+      "sha256": "2163d56679877d67fd57f297f6ac6c0a5997b5b1de4327f1fa34e157babf408a"
+    },
+    {
+      "role": "accepted_phase_a_v2_bounded_test",
+      "path": "RESEARCH/PHASE_A_V2_BOUNDED_STRATEGY_TEST.md",
+      "bytes": 18650,
+      "sha256": "df3682237958e21419d054f906c2d459ee9a19e5ac6375c8be13ab1c2f384f2e"
+    },
+    {
+      "role": "phase_a_price_basis_readiness",
+      "path": "RESEARCH/GPW_PHASE_A_PRICE_BASIS_READINESS.md",
+      "bytes": 20002,
+      "sha256": "800e72b4df2d3e7d9e53afd4661f23f35668cde33958327d2fe08b0f9a07c671"
+    },
+    {
+      "role": "python_phase_a_contract",
+      "path": "source/python/README.md",
+      "bytes": 7546,
+      "sha256": "74a7c2d72d9b463f31a7ba06173b5f49180d17be2df074db2ab8a594f0eafac9"
+    },
+    {
+      "role": "python_phase_b_contract",
+      "path": "source/python/PHASE_B.md",
+      "bytes": 6236,
+      "sha256": "d9c771bd7ab2edf61137a1b222a63261e2dceb9a84eb1119f5ba736b4d88cb21"
+    },
+    {
+      "role": "python_phase_c_contract",
+      "path": "source/python/PHASE_C.md",
+      "bytes": 16965,
+      "sha256": "28c44d4a8e6097e80b46b75db9da5592d46964be8c91595eb65807048bd8c1d2"
+    },
+    {
+      "role": "accepted_phase_b_manifest",
+      "path": "D:/Stock/data/ATS/phase_b/versions/phaseb-f88fc2d38e9811ed1573/manifest.json",
+      "bytes": 19138,
+      "sha256": "a3ef82c6aad77b99b5ff77f672475a45ad844b446ce1558eff22b51df9f29183"
+    },
+    {
+      "role": "accepted_phase_c_manifest",
+      "path": "D:/Stock/data/ATS/phase_c/runs/phasec-fa439d650410376aae9e/manifest.json",
+      "bytes": 9846,
+      "sha256": "81b9b301e86a0bdb28304c2f05af55a1ad0160c352edc8178651a16cf4b7b21a"
+    },
+    {
+      "role": "accepted_phase_a_v2_feature_and_label_source",
+      "path": "RESEARCH/prototypes/phase_a_v2_research/run_phase_a_v2.py",
+      "bytes": 58718,
+      "sha256": "3d5416c63307374f691c95b1708b64ac81e1cf377410ef18220a8e88b23db67a"
+    },
+    {
+      "role": "accepted_market_state_source",
+      "path": "RESEARCH/prototypes/pre_phase_d_market_state/market_state.py",
+      "bytes": 22901,
+      "sha256": "5698f6121a29f20028f423fb8d61fde713b5381b1f9e3612d09ef0d5a3ac1c4b"
+    },
+    {
+      "role": "accepted_market_state_config",
+      "path": "RESEARCH/prototypes/pre_phase_d_market_state/config_v2.json",
+      "bytes": 4290,
+      "sha256": "9e4eb2a94f78a2ddce33805d322b6be669494f1c843d11b58914579dcb15afd1"
+    },
+    {
+      "role": "accepted_market_state_freeze",
+      "path": "RESEARCH/prototypes/pre_phase_d_market_state/plan_freeze_v2.json",
+      "bytes": 1085,
+      "sha256": "81a9325f64ac0d4cdf8741e9e004d0da14323c432063cacbd038262fa559b875"
+    },
+    {
+      "role": "candidate_manifest",
+      "path": "D:/Stock/data/ATS/gpw_split_normalization/runs/gpw-split-normalization-20260826-v4/manifest.json",
+      "bytes": 31102,
+      "sha256": "e77ce37cb51c3a1e5608b4b2c9b112abe51635bdae1ce64db0b5aa7d4780331a"
+    },
+    {
+      "role": "candidate_panel",
+      "path": "D:/Stock/data/ATS/gpw_split_normalization/runs/gpw-split-normalization-20260826-v4/candidate_panel.parquet",
+      "bytes": 3675841,
+      "sha256": "c23ffbfc6aaab8bafd466bd980f906ec4476fd051aebcc8c0fa3b7e57a9f8c15"
+    },
+    {
+      "role": "accepted_phase_a_v2_manifest",
+      "path": "D:/Stock/data/ATS/phase_a_v2_research/runs/phase-a-v2-20260827T150000Z/manifest.json",
+      "bytes": 6243,
+      "sha256": "6868a4a1ccc230877500efae97686a505489725b78448d8463a7836a8d315fb8"
+    },
+    {
+      "role": "accepted_market_state_manifest",
+      "path": "D:/Stock/data/ATS/pre_phase_d_market_state/runs/pre-phase-d-market-state-20260830-v2/manifest.json",
+      "bytes": 9461,
+      "sha256": "82a1f3108e7eb23a38bb16ac37111c53f9b11291f2a16b0aeecef24543a86553"
+    },
+    {
+      "role": "accepted_market_state_feature_artifact",
+      "path": "D:/Stock/data/ATS/pre_phase_d_market_state/runs/pre-phase-d-market-state-20260830-v2/tables/market_state_features.parquet",
+      "bytes": 183008,
+      "sha256": "582f6e4731ec8e9816b5f4148e38ee33ec8b2bf11439aef5942653463457273c"
+    }
+  ],
+  "artifacts": [
+    {
+      "role": "phase_d0_plan",
+      "path": "RESEARCH/PHASE_D0_EXPERIMENT_PLAN.md",
+      "bytes": 28337,
+      "sha256": "30e4a3fa519eee0f926c84ca0d652f021e1462f91555610afe2faa8beef66e2a"
+    },
+    {
+      "role": "phase_d0_reference_config",
+      "path": "source/python/configs/phase_d0_reference.json",
+      "bytes": 37592,
+      "sha256": "d6700bad791eef9e7248e7139d7c8bd23ada52cc14e34f64291d7555968dd303"
+    },
+    {
+      "role": "phase_d0_feature_registry",
+      "path": "source/python/configs/phase_d0_feature_registry.json",
+      "bytes": 29614,
+      "sha256": "137ba795cfee2510b969967642016f442f361b80d7741b8e0cda4d30a173b1fa"
+    },
+    {
+      "role": "phase_d0_requirement_audit",
+      "path": "RESEARCH/PHASE_D0_REQUIREMENT_AUDIT.json",
+      "bytes": 11450,
+      "sha256": "5e11f7ace6d99cb3a7ec9763b1a8a71323a45def89f0c2fcef297d2f2a3ff909"
+    },
+    {
+      "role": "updated_repository_entrypoint",
+      "path": "README.md",
+      "bytes": 13041,
+      "sha256": "b726fd06cc5563021996b99ab15285418be780ed89d02c128c39dff7528b6a80"
+    },
+    {
+      "role": "updated_phase_d_roadmap",
+      "path": "RESEARCH/IMPLEMENTATION_ROADMAP.md",
+      "bytes": 25359,
+      "sha256": "e09cd8b2f93ae3f853b4bd2f2cf5752a46c7d25ac08e46600cb883e80a808a5c"
+    },
+    {
+      "role": "updated_phase_d_charter",
+      "path": "RESEARCH/PHASE_D_POOLED_ML_RESEARCH_CHARTER.md",
+      "bytes": 15049,
+      "sha256": "af4ee84c4ee6b5d1175743377eb9c6024a5d82a9c1efe7d1a261e439685d5f36"
+    }
+  ],
+  "code": [
+    {
+      "role": "phase_d0_contract_validator",
+      "path": "RESEARCH/prototypes/phase_d0/validate_phase_d0.py",
+      "bytes": 14585,
+      "sha256": "07ddb46897c843b5fe4a3b6f3e228f32fca7d2c2ee9f1dbd3ac59132cf1e6a19"
+    }
+  ],
+  "prohibited_outputs_confirmed_absent": [
+    "ats_ml package",
+    "real fitted model",
+    "real prediction",
+    "real feature-label correlation",
+    "real Phase D IC or tail result",
+    "locked historical-test result inspection",
+    "trade, order, allocation, or portfolio artifact"
+  ]
+}
