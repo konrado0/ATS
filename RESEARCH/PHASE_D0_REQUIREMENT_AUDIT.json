@@ -231,10 +231,16 @@
       "requirement": "Ensure every decisive identity-tied economic boundary is invariant to identity reassignment.",
       "status": "PASS",
       "evidence": "phase_d0_reference.json opportunity_contract.frequency_matching and evaluation.metric_definitions.top_security_contributors; validator identity_neutral_decisive_ties"
+    },
+    {
+      "id": "D0-039",
+      "requirement": "Provide a concise owner-review table for all 30 registered predictors without creating a second source of truth.",
+      "status": "PASS",
+      "evidence": "PHASE_D0_FEATURE_REGISTRY_TABLE.md; authoritative JSON hash and all 30 canonical names are checked by validate_phase_d0.py owner_review_feature_table_consistent"
     }
   ],
   "summary_counts": {
-    "PASS": 34,
+    "PASS": 35,
     "FAIL": 0,
     "NOT PROVEN": 0,
     "DEFERRED BY CONTRACT": 4

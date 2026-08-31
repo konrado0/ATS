@@ -14,6 +14,7 @@
     "unchanged": "inputs, candidate facts, feature formulas, model families and parameters, folds, numerical thresholds, opportunity hurdle, phase authorization, and all prior accepted evidence",
     "predictive_result_inspection": false,
     "phase_d1_started": false,
+    "owner_review_presentation": "RESEARCH/PHASE_D0_FEATURE_REGISTRY_TABLE.md is a non-authoritative table checked against the frozen JSON registry; adding it changes no scientific contract value.",
     "parent_artifact_sha256": {
       "RESEARCH/PHASE_D0_EXPERIMENT_PLAN.md": "30e4a3fa519eee0f926c84ca0d652f021e1462f91555610afe2faa8beef66e2a",
       "source/python/configs/phase_d0_reference.json": "d6700bad791eef9e7248e7139d7c8bd23ada52cc14e34f64291d7555968dd303",
@@ -209,8 +210,8 @@
     {
       "role": "phase_d0_plan",
       "path": "RESEARCH/PHASE_D0_EXPERIMENT_PLAN.md",
-      "bytes": 30055,
-      "sha256": "67f0aec5014a6581abbc78be9e302e6728e17805526b7a97a88b11959ac49ebe"
+      "bytes": 30280,
+      "sha256": "10645dd41f1aea1f74c9f137a2f0dfd34e0a0f41f6355854c0cf9ed4b9ba0baa"
     },
     {
       "role": "phase_d0_reference_config",
@@ -225,16 +226,22 @@
       "sha256": "733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6"
     },
     {
+      "role": "phase_d0_feature_registry_owner_review_table",
+      "path": "RESEARCH/PHASE_D0_FEATURE_REGISTRY_TABLE.md",
+      "bytes": 6184,
+      "sha256": "9592999940e9802f2d21a2a896d55b3c87ce70eddedeae0bb38fbcbc9cd3ff7a"
+    },
+    {
       "role": "phase_d0_requirement_audit",
       "path": "RESEARCH/PHASE_D0_REQUIREMENT_AUDIT.json",
-      "bytes": 12484,
-      "sha256": "c06817f81eaf66ce51703aab840900ba88db3531f1ddf5332610e8818ed2b8ad"
+      "bytes": 12861,
+      "sha256": "f34202158f8b19cd903fd7dd00717ea529e9146fe2a94e790694892ec63559ed"
     },
     {
       "role": "updated_repository_entrypoint",
       "path": "README.md",
-      "bytes": 13164,
-      "sha256": "4568a6661d90f2b3435aeb3f3d6f53226bec49c07eec7f8a79d5f51e7913f4b1"
+      "bytes": 13252,
+      "sha256": "a9ee08501e45e86d583fe1f92de128fb9f7f37f21d3f0456dfa770ccb70195bd"
     },
     {
       "role": "updated_phase_d_roadmap",
@@ -253,8 +260,8 @@
     {
       "role": "phase_d0_contract_validator",
       "path": "RESEARCH/prototypes/phase_d0/validate_phase_d0.py",
-      "bytes": 17930,
-      "sha256": "3b3d644aff01034a30fbacbb8adad79a15d6a1d133909418fdb9dc71efb17e72"
+      "bytes": 18556,
+      "sha256": "81534501a03468394cd22ee0953606f9db627056059f3d4a17d0e28b4a8ee8a6"
     }
   ],
   "prohibited_outputs_confirmed_absent": [

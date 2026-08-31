@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[3]
 CONFIG_PATH = ROOT / "source/python/configs/phase_d0_reference.json"
 REGISTRY_PATH = ROOT / "source/python/configs/phase_d0_feature_registry.json"
 PLAN_PATH = ROOT / "RESEARCH/PHASE_D0_EXPERIMENT_PLAN.md"
+FEATURE_TABLE_PATH = ROOT / "RESEARCH/PHASE_D0_FEATURE_REGISTRY_TABLE.md"
 AUDIT_PATH = ROOT / "RESEARCH/PHASE_D0_REQUIREMENT_AUDIT.json"
 MANIFEST_PATH = ROOT / "RESEARCH/PHASE_D0_MANIFEST.json"
 CHARTER_PATH = ROOT / "RESEARCH/PHASE_D_POOLED_ML_RESEARCH_CHARTER.md"
@@ -91,7 +92,7 @@ def main() -> int:
     def check(name: str, condition: bool, detail: str) -> None:
         checks.append({"check": name, "status": "PASS" if condition else "FAIL", "detail": detail})
 
-    required_paths = [CONFIG_PATH, REGISTRY_PATH, PLAN_PATH, AUDIT_PATH, MANIFEST_PATH, CHARTER_PATH, ROADMAP_PATH]
+    required_paths = [CONFIG_PATH, REGISTRY_PATH, PLAN_PATH, FEATURE_TABLE_PATH, AUDIT_PATH, MANIFEST_PATH, CHARTER_PATH, ROADMAP_PATH]
     check("required_files_exist", all(path.is_file() for path in required_paths), ", ".join(str(path) for path in required_paths))
     if not all(path.is_file() for path in required_paths):
         print(json.dumps({"schema_version": "ats.phase_d0.validation.v1", "status": "FAIL", "checks": checks}, indent=2))
@@ -145,6 +146,11 @@ def main() -> int:
         for block in ["C", "P", "X", "M"]
     }
     check("config_registry_block_agreement", registry_by_block == config["feature_blocks"], repr(registry_by_block))
+    feature_table = FEATURE_TABLE_PATH.read_text(encoding="utf-8")
+    table_names_ok = all(feature_table.count(f"| `{name}` |") == 1 for name in names)
+    table_hash_ok = sha256(REGISTRY_PATH) in feature_table
+    table_version_ok = config["contract_version"] in feature_table
+    check("owner_review_feature_table_consistent", table_names_ok and table_hash_ok and table_version_ok and "**Total** | **30 before permitted P resolution**" in feature_table, f"names={table_names_ok} hash={table_hash_ok} version={table_version_ok}")
     check("market_state_block_complete", registry_by_block["M"] == EXPECTED_M, repr(registry_by_block["M"]))
     check("C_has_no_market_state", all(not item["uses_market_wide_state"] for item in features if item["block"] == "C"), "all C uses_market_wide_state=false")
     check("M_is_market_state", all(item["uses_market_wide_state"] for item in features if item["block"] == "M"), "all M uses_market_wide_state=true")

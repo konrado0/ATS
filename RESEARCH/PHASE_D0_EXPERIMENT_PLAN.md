@@ -16,6 +16,8 @@ Machine-readable authorities:
 - `RESEARCH/PHASE_D0_REQUIREMENT_AUDIT.json` — requirement-by-requirement status; and
 - `RESEARCH/prototypes/phase_d0/validate_phase_d0.py` — contract-only validator.
 
+Owner-review presentation: `RESEARCH/PHASE_D0_FEATURE_REGISTRY_TABLE.md` provides a concise table of all 30 predictors. It is hash-pinned and validator-checked against the authoritative JSON registry but cannot override it.
+
 If prose and machine-readable content differ, validation fails and the D0 contract is not executable. No path may follow a mutable `latest` pointer.
 
 ## Decision design
