@@ -1,16 +1,20 @@
 # ATS Technical Research Study
 
-This directory contains the workstation-specific architecture study, retained benchmark harnesses and reproducibility records. `D:\Stock\data` was treated as read-only; generated data is isolated under `prototypes/cache/` and ignored by Git.
+This directory contains the architecture study, research contracts, phase reports,
+retained benchmark harnesses and reproducibility records. Vendor/source areas
+under `D:\Stock\data` are immutable evidence. Versioned ATS publications and
+runs live under `D:\Stock\data\ATS`; disposable prototype caches remain under
+documented cache/temporary roots and are ignored by Git.
 
 ## Read in this order
 
-1. [`RECOMMENDED_ARCHITECTURE.md`](RECOMMENDED_ARCHITECTURE.md) — direct component and physical-layout decisions.
-2. [`FEEDBACK_ASSESSMENT.md`](FEEDBACK_ASSESSMENT.md) — accepted, modified and rejected simplification points.
-3. [`IMPLEMENTATION_ROADMAP.md`](IMPLEMENTATION_ROADMAP.md) — correctness-first vertical-slice sequence.
-4. [`LOCAL_BENCHMARKS.md`](LOCAL_BENCHMARKS.md) — measured evidence and limitations.
-5. [`ARCHITECTURE_OPTIONS.md`](ARCHITECTURE_OPTIONS.md) — separate scorecards and weighted stack decision.
-6. [`EXISTING_PROJECT_AUDIT.md`](EXISTING_PROJECT_AUDIT.md) and [`HARDWARE_ENVIRONMENT.md`](HARDWARE_ENVIRONMENT.md) — input and machine context.
-7. [`TECHNOLOGY_COMPARISON.md`](TECHNOLOGY_COMPARISON.md) and [`technology_matrix.csv`](technology_matrix.csv) — current technology research.
+1. [`RESEARCH_OPERATING_POLICY.md`](RESEARCH_OPERATING_POLICY.md) — decision-proportional rigor and scope rules.
+2. [`IMPLEMENTATION_ROADMAP.md`](IMPLEMENTATION_ROADMAP.md) — correctness-first vertical-slice sequence and current Phase D gates.
+3. [`PHASE_D_POOLED_ML_RESEARCH_CHARTER.md`](PHASE_D_POOLED_ML_RESEARCH_CHARTER.md) — frozen direction for the next bounded research phase.
+4. [`PRE_PHASE_D_MARKET_STATE_DIAGNOSTIC.md`](PRE_PHASE_D_MARKET_STATE_DIAGNOSTIC.md) — controlling market-state readiness checkpoint.
+5. [`RECOMMENDED_ARCHITECTURE.md`](RECOMMENDED_ARCHITECTURE.md) — direct component and physical-layout decisions.
+6. [`LOCAL_BENCHMARKS.md`](LOCAL_BENCHMARKS.md) and [`ARCHITECTURE_OPTIONS.md`](ARCHITECTURE_OPTIONS.md) — measured evidence and stack alternatives.
+7. [`EXISTING_PROJECT_AUDIT.md`](EXISTING_PROJECT_AUDIT.md), [`HARDWARE_ENVIRONMENT.md`](HARDWARE_ENVIRONMENT.md), and [`TECHNOLOGY_COMPARISON.md`](TECHNOLOGY_COMPARISON.md) — input, machine and technology context.
 
 Raw benchmark rows are in [`benchmark_results.csv`](benchmark_results.csv). Scripts are grouped by benchmark layer under [`prototypes`](prototypes/); environment records are in [`environments`](environments/).
 

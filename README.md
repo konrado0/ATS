@@ -44,6 +44,7 @@ performance only after a separate owner review.
 
 Authoritative current documents:
 
+- [research operating policy](RESEARCH/RESEARCH_OPERATING_POLICY.md)
 - [implementation roadmap](RESEARCH/IMPLEMENTATION_ROADMAP.md)
 - [Phase D pooled-ML charter](RESEARCH/PHASE_D_POOLED_ML_RESEARCH_CHARTER.md)
 - [controlling market-state checkpoint](RESEARCH/PRE_PHASE_D_MARKET_STATE_DIAGNOSTIC.md)
@@ -212,19 +213,20 @@ The following distinctions should survive every future report:
 
 ## Working rules
 
-1. Read this README, the current roadmap and the relevant controlling report
-   before changing code.
-2. Freeze and hash research plans/configuration before inspecting new outcomes.
-3. Preserve accepted runs, prior versions and unfavorable results.
-4. Fail closed on identity, timing, schema, adjustment, denominator or accounting
-   ambiguity that could materially invalidate a result.
-5. Keep bounded documented imperfections as caveats when they cannot materially
-   change the decision; infrastructure work must be pulled by demonstrated need.
-6. Reuse existing contracts and reproducibility machinery before adding a new
-   subsystem.
-7. Keep unrelated dirty work untouched and commit scoped paths explicitly.
-8. Never optimize a hypothesis after viewing the result unless a new,
-   independently frozen experiment explicitly authorizes it.
+The project-wide rules are defined in the
+[research operating policy](RESEARCH/RESEARCH_OPERATING_POLICY.md). Its priority
+rule is: **additional infrastructure must justify itself through research need.**
+
+For each bounded step, name the decision, cheapest credible experiment,
+must-have validity work, useful diagnostics, deferred work and stop/continue
+rule. Minimum rigor still includes any PIT timing, leakage, denominator,
+missing-state, price-basis or accounting issue capable of changing the result.
+Freeze and reproduce accepted decision evidence, not every disposable diagnostic.
+
+Preserve accepted runs, prior versions, negative results and unrelated dirty
+work. Correct bugs within the smallest demonstrated scope. Do not optimize after
+viewing results or let secondary diagnostics silently create new research
+branches.
 
 ## Documentation maintenance
 
