@@ -233,22 +233,28 @@ approximately ties either conventional model fails the incremental-value objecti
 
 ### Phase D1 — Build only the minimum workbench
 
+**Checkpoint 2026-09-01: complete — PASS.** The accepted implementation and
+evidence are recorded in `PHASE_D1_READINESS.md`,
+`PHASE_D1_REQUIREMENT_AUDIT.json`, `PHASE_D1_MANIFEST.json` and immutable run
+`phase-d1-structural-f6856e5c5f485c002b4b`. All eight P features survive. No
+real label, fit, prediction, performance result or D2 machinery was created.
+
 Add a small `ats_ml` boundary for:
 
-- a manifest-pinned security-session dataset builder that reuses `ats_research`
-  PIT, feature, timing and label contracts;
-- date-grouped chronological split generation from explicit feature/label
-  information intervals;
-- fold-local numeric preprocessing with no security identifier, ticker, nominal
-  price, raw volume or other direct identity input;
-- adapters for one regularized linear estimator and LightGBM;
-- session-level prediction evaluation, paired model comparison, block-aware
-  uncertainty, selective opportunity-tail evaluation, signal frequency and idle
-  state, prospective excursion/path diagnostics, overlap, temporal and security
-  concentration, feature-block ablation, and the predefined within-proximity-Q5
-  diagnostic; and
-- portable run manifests containing data, universe, feature, split, model,
-  environment, seed, Git and artifact fingerprints.
+- manifest-pinned D0/input loading and an exact security-session observation
+  builder;
+- the 30 registered PIT feature calculations, synthetic-only primary label
+  builder, chronological folds and endpoint-derived purge;
+- identity-blind four-cell matrices and fold-local Ridge preprocessing/
+  LightGBM-native missingness;
+- fixed deterministic Ridge and LightGBM adapters that fit/predict only on
+  content-pinned repository fixtures;
+- strict abstention and pure fractional boundary-tie mechanics; and
+- immutable evidence for only the four frozen label-blind structural resolutions.
+
+Session-level predictive evaluation, paired comparisons, uncertainty, opportunity
+tails, episode accounting, concentration, ablations and verdict generation remain
+Phase D2 work. Their D0 definitions do not move them into D1.
 
 D1 validates this machinery with hand-calculated, synthetic and mechanically
 bounded fixtures. After separate owner authorization it may inspect real data
@@ -261,6 +267,9 @@ publish or inspect real predictive performance. No locked historical test data
 are opened by a model in D1.
 
 ### Phase D0/D1 acceptance checkpoint
+
+**D0/D1 checkpoint result: PASS for requesting separate owner review of D2;
+Phase D2 remains unauthorized.**
 
 - The owner-approved plan is frozen and hashed before any real model result.
 - The primary label is unchanged and inaccessible to feature computation.

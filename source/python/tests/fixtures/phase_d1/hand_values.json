@@ -1,0 +1,24 @@
+{
+  "geometric_stock": {
+    "growth": 1.01,
+    "proximity_to_max_high_252": 0.9090909090909091,
+    "proximity_to_max_close_252": 1.0,
+    "momentum_12_1": 8.959495593406631,
+    "return_5": 0.05101005010000015,
+    "relative_volume_20": 0.9047619047619048,
+    "stock_log_return_20": 0.19900661706336184,
+    "stock_log_return_60": 0.5970198511900855,
+    "stock_path_efficiency_20": 1.0,
+    "stock_positive_return_share_20": 1.0,
+    "stock_drawdown_depth_60": 0.0,
+    "stock_recovery_from_low_60": 0.7987096025387042
+  },
+  "volatility_ratio_20_60": 0.7621756887140216,
+  "top60": {
+    "dispersion_57_of_60": 0.28,
+    "leadership_57_of_60": 0.16917293233082706,
+    "breadth_30_of_57": 0.5263157894736842,
+    "breadth_change": 0.3263157894736842,
+    "pairwise_correlation_45_plus_one_inverse": 0.9130434782608695
+  }
+}

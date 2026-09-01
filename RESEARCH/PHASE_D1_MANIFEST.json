@@ -1,0 +1,118 @@
+{
+  "schema_version": "ats.phase_d1.manifest.v1",
+  "phase": "D1",
+  "status": "PASS",
+  "assessment_date": "2026-09-01",
+  "decision": "Safe to request separate owner authorization for Phase D2; Phase D2 is not authorized by this manifest.",
+  "repository_state": {
+    "expected_starting_commit": "5e971924023e6e19226269771a40492d113ebc43",
+    "actual_starting_commit": "cbddb4ff13f4452aa37f427f0f3c09a3f3da1ae4",
+    "expected_commit_is_direct_parent": true,
+    "intervening_change": "Add Phase D0 feature registry review table",
+    "phase_d1_commit_policy": "The final commit hash is reported after commit; embedding it here would recursively change that commit.",
+    "unrelated_untracked_preserved": [
+      "RESEARCH/environments/",
+      "RESEARCH/prototypes/environment_repair/repaired_environment.json",
+      "RESEARCH/prototypes/environment_repair/repaired_environment.yml"
+    ]
+  },
+  "d0_v2_artifact_sha256": {
+    "RESEARCH/PHASE_D0_EXPERIMENT_PLAN.md": "10645dd41f1aea1f74c9f137a2f0dfd34e0a0f41f6355854c0cf9ed4b9ba0baa",
+    "source/python/configs/phase_d0_reference.json": "ef5a7f0fa76a104ff86cae7c2ad520867a0720e1c6e508558ef31316e7e153ae",
+    "source/python/configs/phase_d0_feature_registry.json": "733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6",
+    "RESEARCH/PHASE_D0_MANIFEST.json": "7fe34d679511eb4d75b269f5a908c6ac5e624d624aa067645286576f0f9e918c"
+  },
+  "pinned_inputs": {
+    "candidate_run_id": "gpw-split-normalization-20260826-v4",
+    "candidate_manifest_sha256": "e77ce37cb51c3a1e5608b4b2c9b112abe51635bdae1ce64db0b5aa7d4780331a",
+    "candidate_panel_sha256": "c23ffbfc6aaab8bafd466bd980f906ec4476fd051aebcc8c0fa3b7e57a9f8c15",
+    "candidate_logical_hash": "447fbadaac4418c04b257bd46bf8daa81b24b2546ac40b0f3ff89763ed9fdd4e",
+    "candidate_data_basis_version": "gpw_split_adjusted_price_candidate.v1",
+    "market_state_run_id": "pre-phase-d-market-state-20260830-v2",
+    "market_state_manifest_sha256": "82a1f3108e7eb23a38bb16ac37111c53f9b11291f2a16b0aeecef24543a86553",
+    "market_state_logical_hash": "b21793076e76f945b72fa1f37bb5a6bab85e40f7e31603ad4ca6d0d7d79a57eb",
+    "market_state_feature_artifact_sha256": "582f6e4731ec8e9816b5f4148e38ee33ec8b2bf11439aef5942653463457273c"
+  },
+  "structural_run": {
+    "run_id": "phase-d1-structural-f6856e5c5f485c002b4b",
+    "logical_hash": "f6856e5c5f485c002b4bbd76a7c44a411353ffc26a5f1e1e9e9cebd8675a9e15",
+    "path": "D:/Stock/data/ATS/phase_d_ml/structural_runs/phase-d1-structural-f6856e5c5f485c002b4b",
+    "files": {
+      "permitted_read_audit.json": "106e0e774ff4638f8423fd829a6d9f00cf09abaeacac6d5883dbe249997b1cf1",
+      "structural_resolution.json": "fe5df6c646140b4b48b6f3e032e0e5ce6ec43bca681b08c0652d9cc0fc644506"
+    },
+    "repeated_resolution_identical": true,
+    "p_survivor_count": 8,
+    "p_removal_count": 0
+  },
+  "environment": {
+    "python": "3.12.13",
+    "platform": "Windows-11-10.0.26100-SP0",
+    "packages": {
+      "numpy": "1.26.4",
+      "pandas": "3.0.5",
+      "polars": "1.43.2",
+      "pyarrow": "25.0.0",
+      "scikit-learn": "1.9.0",
+      "lightgbm": "4.7.0",
+      "pydantic": "2.13.4",
+      "PyYAML": "6.0.3",
+      "duckdb": "1.5.5",
+      "pytest": "9.1.1"
+    }
+  },
+  "verification": {
+    "phase_d0_validator": "PASS",
+    "focused_phase_d1": "64 passed in 47.76s",
+    "full_source_python": "171 passed in 68.61s",
+    "pre_phase_d_market_state": "10 passed in 3.35s",
+    "structural_resolve_first": "PASS",
+    "structural_resolve_reproduction": "PASS"
+  },
+  "authorization": {
+    "synthetic_fixture_fit_predict": true,
+    "real_structural_only": true,
+    "realized_real_labels": false,
+    "real_model_fit": false,
+    "real_prediction_or_score": false,
+    "real_predictive_performance": false,
+    "real_model_family_selection": false,
+    "phase_d2": false
+  },
+  "not_proven": [
+    "Authoritative exhaustive split-event discovery for the inherited research candidate panel.",
+    "Live operational data/feed availability at the 08:45 decision timestamp."
+  ],
+  "artifacts": [
+    {"path": "README.md", "bytes": 13415, "sha256": "fc6edad5906b4f37bb1f59fa85746c9bd464e1109589789232b5fa395f80a1ca"},
+    {"path": "RESEARCH/IMPLEMENTATION_ROADMAP.md", "bytes": 26041, "sha256": "2f77633930f6ec4e9655d441baadd00af0c157e4e98028c2ff80c25dcd403843"},
+    {"path": "RESEARCH/PHASE_D1_READINESS.md", "bytes": 9735, "sha256": "8f75986c6115016ca7f71fabecbb3db45449b36bf50ff5f9b182d6cad15d4b74"},
+    {"path": "RESEARCH/PHASE_D1_REQUIREMENT_AUDIT.json", "bytes": 11128, "sha256": "617de2c54d017c69e8e8c4fd4eeaa16444bbf48f86548674b348f74843c1b434"},
+    {"path": "RESEARCH/prototypes/phase_d1/validate_phase_d1.py", "bytes": 3619, "sha256": "0c2283812b7a489c98df865a5cc3c3ab755d7dc1aa1ea214a5b99ecc44bed12f"},
+    {"path": "source/python/configs/phase_d1_fixture_registry.json", "bytes": 3899, "sha256": "3667f102f3edb9dcc12bf23aadd4dd9f3470fdeba875ec588c6589dc2f12c92c"},
+    {"path": "source/python/configs/phase_d1_structural_resolution.json", "bytes": 30915, "sha256": "fe5df6c646140b4b48b6f3e032e0e5ce6ec43bca681b08c0652d9cc0fc644506"},
+    {"path": "source/python/pyproject.toml", "bytes": 868, "sha256": "906d4bf4933600f0651790d35c693b583deeeb8e051144fc2f8859fdd22fd729"},
+    {"path": "source/python/src/ats_ml/__init__.py", "bytes": 276, "sha256": "c33dea0816876d799504b72c208ab9dad78ccad54eeac45a8565790a85aaa55d"},
+    {"path": "source/python/src/ats_ml/__main__.py", "bytes": 54, "sha256": "0475bb12e348cc85d95413d40fc8d0ceffe0aa87e4a7a976f543c7bfe2d16cd4"},
+    {"path": "source/python/src/ats_ml/chronology.py", "bytes": 5513, "sha256": "8cef5ca2822685c6585290516168a6d0ae354999f6bfdf0396b02d1c010fe328"},
+    {"path": "source/python/src/ats_ml/cli.py", "bytes": 955, "sha256": "1cee3670248aea4a3d8b321799523d170a8790f2532cd25a917b02a3065f47ce"},
+    {"path": "source/python/src/ats_ml/contracts.py", "bytes": 7025, "sha256": "6ba8c67baee3d31ef9e6bde0408eef83cb4e30d2632738ac69d586f142d2dd70"},
+    {"path": "source/python/src/ats_ml/duplicates.py", "bytes": 6234, "sha256": "6bd2c1808d8a8db4d36922f5e79633b8bfb090294b05b5a19a9724bde92b0c78"},
+    {"path": "source/python/src/ats_ml/features.py", "bytes": 32922, "sha256": "4e7a506ab5e85245fc196cb91da8ab9c66fe49236313a1b847d16f307c7d50d1"},
+    {"path": "source/python/src/ats_ml/guard.py", "bytes": 9158, "sha256": "0fe6443e6b69f0fdcacafb60914dbf69888f9ab95d61861e801deff58467f092"},
+    {"path": "source/python/src/ats_ml/labels.py", "bytes": 5310, "sha256": "ce72633bb926b61697f8540906e7c42dc6365c849968437f025a9e3afe3ac396"},
+    {"path": "source/python/src/ats_ml/matrices.py", "bytes": 11856, "sha256": "1cfbebb79f8fa04fbf2c00caa78ea05813e3b9af93579139af517e67c1a0cdf6"},
+    {"path": "source/python/src/ats_ml/models.py", "bytes": 7661, "sha256": "e7791d9ffe9fb28707ee16741974396899dff285138a8ee31517b0a310e00a49"},
+    {"path": "source/python/src/ats_ml/observations.py", "bytes": 8185, "sha256": "b928b0d6fd532b1d5e7bc8e7916dc87ff7281421c2192b17a0d6136ab5ba2156"},
+    {"path": "source/python/src/ats_ml/opportunity.py", "bytes": 3689, "sha256": "74a8a1d7fedf6066b264fc1f3cfaec8b79ef77ae1ac0524e1a1c76f7f1a7efd0"},
+    {"path": "source/python/src/ats_ml/structural.py", "bytes": 21293, "sha256": "92c887b2446430c8e7dc195316ff66051d58c9e579e65fa8394bd603ef4e0580"},
+    {"path": "source/python/tests/fixtures/phase_d1/hand_values.json", "bytes": 830, "sha256": "7eceac6e1adc2b881c9f62ecda6126ce7daf41c0434f33960d9ffb5921e37bd6"},
+    {"path": "source/python/tests/phase_d1_helpers.py", "bytes": 2278, "sha256": "8f195ef7dc0cda0fd297f98554dcbd0f17a64e49e8ffda43b344af519cc2688d"},
+    {"path": "source/python/tests/test_phase_d1_contract_firewall.py", "bytes": 5241, "sha256": "8e851b9d371cb1b99e5615496848edcf1c7288b2aa26ec125853d40a469cf458"},
+    {"path": "source/python/tests/test_phase_d1_features.py", "bytes": 23658, "sha256": "cfe6bc0a64865e4b3fb4efab4579456b613f2cd28bacc292f3450b08912d3143"},
+    {"path": "source/python/tests/test_phase_d1_labels_chronology.py", "bytes": 6931, "sha256": "3405d1cc90f3590d0c7ffb6579ff5f31eb0892f81d8c3a4a93b5c393f4245485"},
+    {"path": "source/python/tests/test_phase_d1_models_opportunity.py", "bytes": 12195, "sha256": "849b0cb59cd1e66ce3e28a942e124eaded961253502b92610e282513ed56e12c"},
+    {"path": "source/python/tests/test_phase_d1_observations_structural.py", "bytes": 9726, "sha256": "91b13855183cbaeed2966038909c17df13d6fcaa71a2bbde2664d6d14940ca26"}
+  ],
+  "mutable_latest_pointer": false
+}

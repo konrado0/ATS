@@ -1,0 +1,74 @@
+{
+  "schema_version": "ats.phase_d1.fixture_registry.v1",
+  "data_basis_version": "synthetic.phase_d1.v1",
+  "fixtures": {
+    "phase-d1-fixture-core": {
+      "kind": "feature_and_chronology",
+      "fixture_logical_hash": "08f5f098df1c98f28bf317c9ac98e56e650d768fd829f2f09181f0b5b4d02b74"
+    },
+    "phase-d1-fixture-linear-train": {
+      "kind": "model",
+      "suite_id": "linear",
+      "fixture_logical_hash": "3ec534654b043536e5f335b5ac1db37d130d7a81b77e716a27bd7ee520c18176",
+      "feature_names": ["proximity_to_max_high_252", "proximity_to_max_close_252", "momentum_12_1", "return_5", "realized_volatility_20", "relative_volume_20"],
+      "rows": 500,
+      "seed": 4,
+      "matrix_transform": "linear_train",
+      "model_matrix_sha256": "2127b007eed546114d2548589b970330eafb8ae1ffd29338db9dd7e3eec85774",
+      "model_target_sha256": "168eb3df1045fd6c992058411ff3e1fc968fb01052307ddf35264bd52334c2fc"
+    },
+    "phase-d1-fixture-linear-eval": {
+      "kind": "model",
+      "suite_id": "linear",
+      "fixture_logical_hash": "d5bb130f8dd1d0f2ca43572a10816eae8aa5360edbbc5760c00cd4b15b375058",
+      "feature_names": ["proximity_to_max_high_252", "proximity_to_max_close_252", "momentum_12_1", "return_5", "realized_volatility_20", "relative_volume_20"],
+      "rows": 500,
+      "seed": 4,
+      "matrix_transform": "linear_eval",
+      "model_matrix_sha256": "a04f34c36ed8828861e866c29bc7f920249315202b44fa7835f1b20d7814f95d"
+    },
+    "phase-d1-fixture-nonlinear-train": {
+      "kind": "model",
+      "suite_id": "nonlinear",
+      "fixture_logical_hash": "f3db1b293e98c07764c162a8cb92f2791a919cf5ae7ec8627336b4faee0729a8",
+      "feature_names": ["proximity_to_max_high_252", "proximity_to_max_close_252", "momentum_12_1", "return_5", "realized_volatility_20", "relative_volume_20"],
+      "rows": 1200,
+      "seed": 9,
+      "matrix_transform": "nonlinear_train",
+      "model_matrix_sha256": "c1d1502b905211fecdb9af964f032d1e9681c379b8798a6de477c9463e3ae8b5",
+      "model_target_sha256": "0aa2400e2bc7f5ce447e5367655f44609800b07855aa5c6aa9cb2d7aed2b726e"
+    },
+    "phase-d1-fixture-no-signal-train": {
+      "kind": "model",
+      "suite_id": "no-signal",
+      "fixture_logical_hash": "06f3a2c1a9568f2d3f37aeedbabf2fcf1697505bdaac46920fbb34e27a1ac2d8",
+      "feature_names": ["proximity_to_max_high_252", "proximity_to_max_close_252", "momentum_12_1", "return_5", "realized_volatility_20", "relative_volume_20"],
+      "rows": 500,
+      "seed": 13,
+      "matrix_transform": "no_signal_train",
+      "model_matrix_sha256": "91152ddb2683477228eb1a2c2d14a0030d5ad936c88ff8287c895a60dacd800c",
+      "model_target_sha256": "b9a0460222e2af4a03575bd9a5a9cb202faa0ca3f1869409c4c4af9fa4d74a20"
+    },
+    "phase-d1-fixture-all-missing-train": {
+      "kind": "model",
+      "suite_id": "missing",
+      "fixture_logical_hash": "c2167170387909129b179cc8c5de8281617aa6eba847ee8ea3224b12b6d712a9",
+      "feature_names": ["proximity_to_max_high_252", "proximity_to_max_close_252", "momentum_12_1", "return_5", "realized_volatility_20", "relative_volume_20"],
+      "rows": 500,
+      "seed": 13,
+      "matrix_transform": "all_missing_train",
+      "model_matrix_sha256": "c748967ff59f3f5d8b2a93a3d5f525c52c2ca93ae296a65815c31ba3add0b89a",
+      "model_target_sha256": "b9a0460222e2af4a03575bd9a5a9cb202faa0ca3f1869409c4c4af9fa4d74a20"
+    },
+    "phase-d1-fixture-label-exact": {
+      "kind": "label",
+      "fixture_logical_hash": "179b72e7d88f786e158d48f39da4312017287e73e60a245ec0a5491f86178397",
+      "label_payload_sha256": "2f64aec119f8d08855859e8cf5a0ea2e850a839243a299f1f26cf77bc8e8d789"
+    },
+    "phase-d1-fixture-label-missing": {
+      "kind": "label",
+      "fixture_logical_hash": "995cf2bd3b9fdf617af118ed0307f54923711bff2d42ec0d9c9a5ea2cfebadd9",
+      "label_payload_sha256": "18d702b29f642efd3c7ae6c346bea45df45e4214cef4e0c9ebc93bba4cb3ee47"
+    }
+  }
+}
