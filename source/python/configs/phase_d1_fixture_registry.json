@@ -1,5 +1,5 @@
 {
-  "schema_version": "ats.phase_d1.fixture_registry.v1",
+  "schema_version": "ats.phase_d1.fixture_registry.v2",
   "data_basis_version": "synthetic.phase_d1.v1",
   "fixtures": {
     "phase-d1-fixture-core": {
@@ -14,6 +14,7 @@
       "rows": 500,
       "seed": 4,
       "matrix_transform": "linear_train",
+      "semantic_row_sha256": "ce887701e8375022945d622b3be5f555f6499fb6e21b0aa286213bae416366f9",
       "model_matrix_sha256": "2127b007eed546114d2548589b970330eafb8ae1ffd29338db9dd7e3eec85774",
       "model_target_sha256": "168eb3df1045fd6c992058411ff3e1fc968fb01052307ddf35264bd52334c2fc"
     },
@@ -25,6 +26,7 @@
       "rows": 500,
       "seed": 4,
       "matrix_transform": "linear_eval",
+      "semantic_row_sha256": "005d4a592623b1906db543ee80a9d3d8d2300dd2ac1a28679cbc12694c68b652",
       "model_matrix_sha256": "a04f34c36ed8828861e866c29bc7f920249315202b44fa7835f1b20d7814f95d"
     },
     "phase-d1-fixture-nonlinear-train": {
@@ -35,6 +37,7 @@
       "rows": 1200,
       "seed": 9,
       "matrix_transform": "nonlinear_train",
+      "semantic_row_sha256": "97b6510635ea622ada6ec08d0920ed1ac9b37c688b85f30605120d2db4f32194",
       "model_matrix_sha256": "c1d1502b905211fecdb9af964f032d1e9681c379b8798a6de477c9463e3ae8b5",
       "model_target_sha256": "0aa2400e2bc7f5ce447e5367655f44609800b07855aa5c6aa9cb2d7aed2b726e"
     },
@@ -46,6 +49,7 @@
       "rows": 500,
       "seed": 13,
       "matrix_transform": "no_signal_train",
+      "semantic_row_sha256": "aeb354b709cf783e43f6d4bd78c878dc06c96fd68875b2435989d0a086bf2640",
       "model_matrix_sha256": "91152ddb2683477228eb1a2c2d14a0030d5ad936c88ff8287c895a60dacd800c",
       "model_target_sha256": "b9a0460222e2af4a03575bd9a5a9cb202faa0ca3f1869409c4c4af9fa4d74a20"
     },
@@ -57,6 +61,7 @@
       "rows": 500,
       "seed": 13,
       "matrix_transform": "all_missing_train",
+      "semantic_row_sha256": "f25eb49aafb2322cb726cf82504d56d5a1b6ea29e7026c41fd2473916de6a7b0",
       "model_matrix_sha256": "c748967ff59f3f5d8b2a93a3d5f525c52c2ca93ae296a65815c31ba3add0b89a",
       "model_target_sha256": "b9a0460222e2af4a03575bd9a5a9cb202faa0ca3f1869409c4c4af9fa4d74a20"
     },

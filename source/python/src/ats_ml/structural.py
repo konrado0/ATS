@@ -88,6 +88,78 @@ def _implementation_fingerprints(contract: FrozenD0Contract) -> dict[str, Any]:
     }
 
 
+def _ordered_sessions(values: Any, role: str) -> pd.DatetimeIndex:
+    sessions = pd.DatetimeIndex(pd.to_datetime(values, errors="coerce")).normalize()
+    if sessions.hasnans:
+        raise ValueError(f"{role} calendar contains invalid sessions")
+    return sessions.sort_values().unique()
+
+
+def assert_calendar_provenance(
+    candidate_sessions: Any,
+    validated_wig_sessions: Any,
+    official_membership_sessions: Any,
+    market_state_sessions: Any,
+) -> dict[str, Any]:
+    candidate = _ordered_sessions(candidate_sessions, "candidate")
+    wig_all = _ordered_sessions(validated_wig_sessions, "validated WIG")
+    official = _ordered_sessions(official_membership_sessions, "official membership")
+    market = _ordered_sessions(market_state_sessions, "market-state")
+    if len(candidate) == 0 or len(official) == 0:
+        raise ValueError("calendar provenance requires nonempty candidate and official calendars")
+    wig = wig_all[(wig_all >= candidate[0]) & (wig_all <= candidate[-1])]
+    if not candidate.equals(wig):
+        candidate_only = candidate.difference(wig)
+        wig_only = wig.difference(candidate)
+        raise ValueError(
+            "candidate calendar differs from validated WIG over the candidate range; "
+            f"candidate_only={list(candidate_only[:5])}, wig_only={list(wig_only[:5])}"
+        )
+    if not official.equals(market):
+        official_only = official.difference(market)
+        market_only = market.difference(official)
+        raise ValueError(
+            "official membership calendar differs from accepted market-state sessions; "
+            f"official_only={list(official_only[:5])}, market_only={list(market_only[:5])}"
+        )
+
+    def calendar_hash(sessions: pd.DatetimeIndex) -> str:
+        return content_hash([value.strftime("%Y-%m-%d") for value in sessions])
+
+    return {
+        "status": "PASS",
+        "candidate_vs_validated_wig_equal": True,
+        "official_membership_vs_market_state_equal": True,
+        "candidate_calendar_count": len(candidate),
+        "validated_wig_candidate_range_count": len(wig),
+        "official_membership_calendar_count": len(official),
+        "market_state_calendar_count": len(market),
+        "candidate_calendar_start": candidate[0].strftime("%Y-%m-%d"),
+        "candidate_calendar_end": candidate[-1].strftime("%Y-%m-%d"),
+        "candidate_calendar_hash": calendar_hash(candidate),
+        "validated_wig_candidate_range_hash": calendar_hash(wig),
+        "official_membership_calendar_hash": calendar_hash(official),
+        "market_state_calendar_hash": calendar_hash(market),
+    }
+
+
+def _resolve_validated_wig(market_state_manifest_path: Path) -> tuple[Path, str]:
+    manifest = json.loads(market_state_manifest_path.read_text(encoding="utf-8"))
+    files = manifest.get("files", {})
+    artifacts = manifest.get("artifacts", {})
+    file_entry = files.get("tables/validated_wig.parquet")
+    artifact_entry = artifacts.get("validated_wig.parquet")
+    if not isinstance(file_entry, dict) or not isinstance(artifact_entry, dict):
+        raise ValueError("market-state manifest does not pin validated_wig.parquet")
+    digest = str(file_entry.get("sha256", ""))
+    if digest != artifact_entry.get("sha256"):
+        raise ValueError("market-state manifest validated-WIG hashes disagree")
+    path = market_state_manifest_path.parent / "tables/validated_wig.parquet"
+    if not path.is_file() or sha256_file(path) != digest:
+        raise ValueError("validated WIG calendar artifact does not match the pinned market-state manifest")
+    return path, digest
+
+
 def build_structural_resolution() -> StructuralBuild:
     contract = load_frozen_d0_contract()
     paths = resolve_pinned_inputs(contract)
@@ -105,6 +177,16 @@ def build_structural_resolution() -> StructuralBuild:
     if any(column in panel for column in FORBIDDEN_COLUMNS):
         raise AssertionError("forbidden predictive data entered structural memory")
     calendar = pd.DatetimeIndex(sorted(panel["session_date"].unique()))
+    validated_wig_path, validated_wig_sha256 = _resolve_validated_wig(paths["market_state_manifest"])
+    validated_wig = pd.read_parquet(validated_wig_path, columns=["session_date"])
+    market_state_sessions = pd.read_parquet(paths["market_state_feature_artifact"], columns=["decision_session"])
+    official_calendar = panel.loc[panel["official_membership"].fillna(False), "session_date"]
+    calendar_provenance = assert_calendar_provenance(
+        calendar,
+        validated_wig["session_date"],
+        official_calendar,
+        market_state_sessions["decision_session"],
+    )
     eval_start = pd.Timestamp(contract.config["observation_contract"]["evaluation_start"])
     cutoff = pd.Timestamp("2024-12-30")
     p_panel = panel.loc[panel["session_date"].le(cutoff)].copy()
@@ -128,7 +210,7 @@ def build_structural_resolution() -> StructuralBuild:
     official = panel.loc[panel["official_membership"].fillna(False)]
     per_session = official.groupby("session_date")["security_id"].nunique()
     core: dict[str, Any] = {
-        "schema_version": "ats.phase_d1.structural_resolution.v1",
+        "schema_version": "ats.phase_d1.structural_resolution.v2",
         "d0_contract_version": contract.config["contract_version"],
         "d0_artifacts": contract.hashes,
         "pinned_inputs": {
@@ -139,6 +221,7 @@ def build_structural_resolution() -> StructuralBuild:
             "candidate_data_basis_version": candidate_manifest["data_basis_version"],
             "market_state_manifest_sha256": sha256_file(paths["market_state_manifest"]),
             "market_state_feature_artifact_sha256": sha256_file(paths["market_state_feature_artifact"]),
+            "validated_wig_sha256": validated_wig_sha256,
         },
         "read_audit": {
             "artifacts_opened": [
@@ -146,11 +229,16 @@ def build_structural_resolution() -> StructuralBuild:
                 str(paths["candidate_panel"]),
                 str(paths["market_state_manifest"]),
                 str(paths["market_state_feature_artifact"]),
+                str(validated_wig_path),
             ],
             "candidate_parquet_metadata_rows": parquet.metadata.num_rows,
             "candidate_schema_columns": list(schema_columns),
             "candidate_value_columns_loaded": list(STRUCTURAL_COLUMNS),
             "market_state_feature_values_loaded": False,
+            "calendar_key_columns_loaded": {
+                "market_state_feature_artifact": ["decision_session"],
+                "validated_wig": ["session_date"],
+            },
             "forbidden_columns": list(FORBIDDEN_COLUMNS),
             "forbidden_columns_loaded_or_derived": False,
             "realized_label_values_loaded_or_derived": False,
@@ -158,6 +246,7 @@ def build_structural_resolution() -> StructuralBuild:
             "model_scores_predictions_tail_outcomes_or_economics_computed": False,
         },
         "purge_boundaries": boundaries,
+        "calendar_provenance": calendar_provenance,
         "p_duplicate_resolution": p_resolution,
         "chronological_concentration_bins": bins,
         "implementation_and_environment": implementation,
@@ -184,6 +273,7 @@ def build_structural_resolution() -> StructuralBuild:
             "candidate_panel": sha256_file(paths["candidate_panel"]),
             "market_state_manifest": sha256_file(paths["market_state_manifest"]),
             "market_state_feature_artifact": sha256_file(paths["market_state_feature_artifact"]),
+            "validated_wig": validated_wig_sha256,
             "implementation_files": implementation["files"],
         },
     }
@@ -211,7 +301,7 @@ def publish_structural_resolution(build: StructuralBuild) -> Path:
         _write_json(stage / "structural_resolution.json", resolution)
         _write_json(stage / "permitted_read_audit.json", read_audit)
         manifest = {
-            "schema_version": "ats.phase_d1.structural_run_manifest.v1",
+            "schema_version": "ats.phase_d1.structural_run_manifest.v2",
             "run_id": resolution["run_id"],
             "logical_hash": resolution["logical_hash"],
             "files": {
@@ -243,17 +333,18 @@ def _validate_structural_payload(resolution: dict[str, Any], read_audit: dict[st
     paths = resolve_pinned_inputs(contract)
     required = {
         "schema_version", "d0_contract_version", "d0_artifacts", "pinned_inputs", "read_audit",
-        "purge_boundaries", "p_duplicate_resolution", "chronological_concentration_bins",
+        "purge_boundaries", "calendar_provenance", "p_duplicate_resolution", "chronological_concentration_bins",
         "implementation_and_environment", "structural_counts", "authorization", "physical_hashes",
         "logical_hash", "run_id",
     }
     if set(resolution) != required:
         raise ValueError(f"structural resolution schema mismatch: {sorted(set(resolution) ^ required)}")
-    if resolution["schema_version"] != "ats.phase_d1.structural_resolution.v1":
+    if resolution["schema_version"] != "ats.phase_d1.structural_resolution.v2":
         raise ValueError("unexpected structural resolution schema")
     if resolution["d0_contract_version"] != contract.config["contract_version"] or resolution["d0_artifacts"] != contract.hashes:
         raise ValueError("structural resolution does not bind accepted D0 bytes")
     pinned = resolution["pinned_inputs"]
+    validated_wig_path, validated_wig_sha256 = _resolve_validated_wig(paths["market_state_manifest"])
     expected_pinned = {
         "candidate_run_id": contract.pinned_identity["candidate_run_id"],
         "candidate_manifest_sha256": contract.pinned_identity["candidate_manifest_sha256"],
@@ -262,6 +353,7 @@ def _validate_structural_payload(resolution: dict[str, Any], read_audit: dict[st
         "candidate_data_basis_version": contract.pinned_identity["candidate_data_basis_version"],
         "market_state_manifest_sha256": contract.config["input"]["market_state_manifest_sha256"],
         "market_state_feature_artifact_sha256": contract.config["input"]["market_state_feature_artifact_sha256"],
+        "validated_wig_sha256": validated_wig_sha256,
     }
     if pinned != expected_pinned:
         raise ValueError("structural resolution pinned-input identity mismatch")
@@ -279,7 +371,12 @@ def _validate_structural_payload(resolution: dict[str, Any], read_audit: dict[st
         raise ValueError("structural read projection includes predictive columns")
     if tuple(audit.get("forbidden_columns", ())) != FORBIDDEN_COLUMNS:
         raise ValueError("structural forbidden-column declaration mismatch")
-    expected_opened = {str(path) for path in paths.values()}
+    if audit.get("calendar_key_columns_loaded") != {
+        "market_state_feature_artifact": ["decision_session"],
+        "validated_wig": ["session_date"],
+    }:
+        raise ValueError("structural calendar-key read projection differs from the frozen assertion")
+    expected_opened = {str(path) for path in paths.values()} | {str(validated_wig_path)}
     if set(audit.get("artifacts_opened", ())) != expected_opened:
         raise ValueError("structural read-audit artifact set mismatch")
     if read_audit != audit | {"run_id": resolution["run_id"], "status": "PASS"}:
@@ -288,6 +385,15 @@ def _validate_structural_payload(resolution: dict[str, Any], read_audit: dict[st
         raise ValueError("structural fold set mismatch")
     if any(len(value) != 4 for value in resolution["chronological_concentration_bins"].values()):
         raise ValueError("each evaluation fold must have four chronological concentration bins")
+    calendar_provenance = resolution["calendar_provenance"]
+    if calendar_provenance.get("status") != "PASS":
+        raise ValueError("structural calendar provenance is not PASS")
+    if calendar_provenance.get("candidate_vs_validated_wig_equal") is not True or calendar_provenance.get("official_membership_vs_market_state_equal") is not True:
+        raise ValueError("structural calendar provenance equality is not proven")
+    if calendar_provenance.get("candidate_calendar_hash") != calendar_provenance.get("validated_wig_candidate_range_hash"):
+        raise ValueError("candidate and validated-WIG calendar hashes differ")
+    if calendar_provenance.get("official_membership_calendar_hash") != calendar_provenance.get("market_state_calendar_hash"):
+        raise ValueError("official membership and market-state calendar hashes differ")
     p_resolution = resolution["p_duplicate_resolution"]
     if int(p_resolution.get("survivor_count", 0)) < 5 or len(p_resolution.get("survivors", ())) != p_resolution.get("survivor_count"):
         raise ValueError("structural P duplicate resolution violates the frozen minimum")
@@ -326,6 +432,7 @@ def _validate_structural_payload(resolution: dict[str, Any], read_audit: dict[st
         "candidate_panel": pinned["candidate_panel_sha256"],
         "market_state_manifest": pinned["market_state_manifest_sha256"],
         "market_state_feature_artifact": pinned["market_state_feature_artifact_sha256"],
+        "validated_wig": pinned["validated_wig_sha256"],
         "implementation_files": implementation["files"],
     }:
         raise ValueError("structural physical hashes do not reconcile")
@@ -334,6 +441,8 @@ def _validate_structural_payload(resolution: dict[str, Any], read_audit: dict[st
         raise ValueError("structural official denominator is not exactly 60")
     if set(counts.get("p_feature_valid_counts", {})) != p_names or any(int(counts[key]) <= 0 for key in ("candidate_rows", "calendar_sessions", "official_member_rows", "p_population_rows", "p_population_sessions")):
         raise ValueError("structural count evidence is incomplete")
+    if int(calendar_provenance.get("candidate_calendar_count", 0)) != int(counts["calendar_sessions"]):
+        raise ValueError("calendar provenance count does not reconcile to structural counts")
     stable = {key: value for key, value in resolution.items() if key not in {"logical_hash", "run_id"}}
     logical = content_hash(stable)
     if resolution["logical_hash"] != logical or resolution["run_id"] != f"phase-d1-structural-{logical[:20]}":
@@ -345,7 +454,7 @@ def validate_structural_run(run_dir: Path) -> dict[str, Any]:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     if set(manifest) != {"schema_version", "run_id", "logical_hash", "files", "mutable_latest_pointer", "real_fit_or_prediction_authorized"}:
         raise ValueError("structural manifest schema mismatch")
-    if manifest["schema_version"] != "ats.phase_d1.structural_run_manifest.v1" or manifest["mutable_latest_pointer"] is not False or manifest["real_fit_or_prediction_authorized"] is not False:
+    if manifest["schema_version"] != "ats.phase_d1.structural_run_manifest.v2" or manifest["mutable_latest_pointer"] is not False or manifest["real_fit_or_prediction_authorized"] is not False:
         raise ValueError("structural manifest authorization or schema mismatch")
     if run_dir.name != manifest["run_id"] and not run_dir.name.startswith(".stage-"):
         raise ValueError("structural run directory identity mismatch")

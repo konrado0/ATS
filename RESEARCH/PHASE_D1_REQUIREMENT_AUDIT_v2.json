@@ -1,0 +1,114 @@
+{
+  "schema_version": "ats.phase_d1.requirement_audit.v2",
+  "phase": "D1",
+  "status": "PASS",
+  "assessment_date": "2026-09-01",
+  "decision": "The narrow D1 correctness repair closes the rejected publication, semantic-row-alignment, CLI reproduction and calendar-provenance findings. It is safe only to request a separate owner decision about D2; D2 remains unauthorized.",
+  "supersedes": {
+    "rejected_commit": "be3cacd6fab9b67e98dc7e1e05b00ebac002c193",
+    "prior_audit": "RESEARCH/PHASE_D1_REQUIREMENT_AUDIT.json",
+    "prior_manifest": "RESEARCH/PHASE_D1_MANIFEST.json",
+    "reason": "The v1 publication claimed a passing D0 validator when the documented command failed, published an invalid structural CLI command, and did not prove semantic matrix-target-score row alignment. Calendar equality was confirmed but not asserted."
+  },
+  "acceptance_rule": "All reopened and new gating requirements must be PASS, the 30 unaffected v1 PASS requirements must remain covered by the complete regression suite, and every real predictive operation remains forbidden.",
+  "carried_forward_pass_ids": [
+    "starting_commit_verified",
+    "pinned_inputs",
+    "observation_matrix",
+    "pit_information_session",
+    "decision_timestamp",
+    "official_denominator_60",
+    "closed_missing_states",
+    "source_and_factor_validity",
+    "feature_block_C",
+    "feature_block_P",
+    "feature_block_X",
+    "feature_block_M",
+    "registry_formula_collisions",
+    "p_duplicate_algorithm",
+    "p_real_resolution",
+    "primary_label_endpoint",
+    "label_boundary",
+    "chronological_folds",
+    "endpoint_derived_purge",
+    "fold_local_preprocessing",
+    "positive_predictor_allowlist",
+    "synthetic_fixture_registry",
+    "ridge_adapter",
+    "lightgbm_adapter",
+    "no_signal_and_missing_controls",
+    "adapter_fit_state",
+    "abstention_mechanics",
+    "fractional_boundary_ties",
+    "real_execution_firewall",
+    "structural_publication"
+  ],
+  "reopened_and_new_requirements": [
+    {
+      "id": "d0_bytes_and_current_validator",
+      "classification": "PASS",
+      "gating": true,
+      "evidence": "The authoritative D0 plan, reference, registry and manifest retain their accepted hashes. README.md and RESEARCH/IMPLEMENTATION_ROADMAP.md were restored byte-for-byte to the D0-pinned versions, and the documented Phase D0 validator now returns PASS."
+    },
+    {
+      "id": "semantic_matrix_target_score_binding",
+      "classification": "PASS",
+      "gating": true,
+      "evidence": "ModelMatrix, ModelTarget and ModelScores carry the same sealed ordered ledger over candidate_run_id, contract_version, decision_session and security_id. Registry-pinned semantic-row hashes, fit-time exact-ledger equality, score propagation, bound-frame accessors and adversarial reorder/mismatch tests fail closed. Identity remains outside numerical predictors, while identity reassignment changes the semantic binding."
+    },
+    {
+      "id": "calendar_provenance_assertion",
+      "classification": "PASS",
+      "gating": true,
+      "evidence": "The structural builder now reads only session_date from the manifest-pinned validated WIG and decision_session from the pinned market-state artifact. It fails on either mismatch. The accepted inputs prove 1,915/1,915 candidate-range WIG sessions and 1,663/1,663 official-membership/market-state sessions with equal ordered hashes."
+    },
+    {
+      "id": "structural_reproduction_cli",
+      "classification": "PASS",
+      "gating": true,
+      "evidence": "The supported command is `python -m ats_ml validate-structural --run-dir <explicit-run-dir>`. It returns PASS for phase-d1-structural-b4fb9bbc480c2026e423, and the D1 validator invokes this exact CLI rather than only calling the Python function."
+    },
+    {
+      "id": "full_regression_after_repair",
+      "classification": "PASS",
+      "gating": true,
+      "evidence": "Focused D1: 67 passed; supported source/python suite: 174 passed; pre-Phase-D market-state: 10 passed; Phase D0 validator: PASS; corrected structural CLI: PASS; structural-resolve repeated with identical logical and physical identities."
+    },
+    {
+      "id": "published_evidence_consistency",
+      "classification": "PASS",
+      "gating": true,
+      "evidence": "The versioned v2 readiness, audit and manifest preserve the rejected v1 evidence as superseded, pin every v2 artifact, require the current D0 validator and corrected structural CLI to execute successfully, and report no result contradicted by those commands."
+    }
+  ],
+  "not_proven": [
+    {
+      "id": "authoritative_split_discovery",
+      "classification": "NOT PROVEN",
+      "gating": false,
+      "evidence": "Authoritative exhaustive split-event discovery for the inherited research candidate panel remains unproven; no canonical-data or deployment claim is made."
+    },
+    {
+      "id": "real_0845_operational_availability",
+      "classification": "NOT PROVEN",
+      "gating": false,
+      "evidence": "Historical PIT semantics do not prove live data or auction-feed availability at 08:45."
+    }
+  ],
+  "deferred_by_contract": [
+    "real_model_family_selection",
+    "real_predictions_and_evaluation",
+    "bootstrap_and_leave_security_out",
+    "episode_concentration_and_tail_gate",
+    "portfolio_translation",
+    "final_stop_continue_verdict"
+  ],
+  "effective_summary_counts": {
+    "PASS": 36,
+    "FAIL": 0,
+    "NOT PROVEN": 2,
+    "DEFERRED BY CONTRACT": 6
+  },
+  "safe_to_request_owner_authorization_for_phase_d2": true,
+  "phase_d2_authorized": false
+}

@@ -17,6 +17,8 @@ from ats_ml.matrices import (
     MatrixContractError,
     ModelMatrix,
     ModelTarget,
+    SemanticRowLedger,
+    require_same_semantic_rows,
     validate_authorized_model_matrix,
     validate_authorized_model_target,
     validate_predictor_frame,
@@ -65,6 +67,7 @@ class _FittedState:
     feature_names: tuple[str, ...]
     fixture_suite: str
     fit_provenance_hash: str
+    fit_semantic_row_hash: str
 
     def __init__(self, adapter: "_BaseAdapter", matrix: ModelMatrix, *, _token: object):
         if _token is not _FIT_STATE_SEAL or adapter.estimator is None or matrix.suite_id is None:
@@ -75,6 +78,7 @@ class _FittedState:
         object.__setattr__(self, "feature_names", matrix.feature_names)
         object.__setattr__(self, "fixture_suite", matrix.suite_id)
         object.__setattr__(self, "fit_provenance_hash", matrix.provenance_hash)
+        object.__setattr__(self, "fit_semantic_row_hash", matrix.semantic_row_hash)
 
 
 @dataclass(frozen=True, init=False)
@@ -85,6 +89,10 @@ class ModelScores:
     suite_id: str
     model_class: str
     provenance_hash: str
+    row_ledger: SemanticRowLedger
+    matrix_data_hash: str
+    fit_provenance_hash: str
+    fixture_registry_sha256: str
 
     def __init__(self, values: np.ndarray, matrix: ModelMatrix, model_class: str, fit_provenance_hash: str, *, _token: object):
         if _token is not _MODEL_SCORE_SEAL or matrix.fixture_id is None or matrix.suite_id is None:
@@ -99,11 +107,58 @@ class ModelScores:
         object.__setattr__(self, "fixture_id", matrix.fixture_id)
         object.__setattr__(self, "suite_id", matrix.suite_id)
         object.__setattr__(self, "model_class", model_class)
-        object.__setattr__(self, "provenance_hash", content_hash({"fit": fit_provenance_hash, "matrix": matrix.data_hash, "model": model_class}))
+        object.__setattr__(self, "row_ledger", matrix.row_ledger)
+        object.__setattr__(self, "matrix_data_hash", matrix.data_hash)
+        object.__setattr__(self, "fit_provenance_hash", fit_provenance_hash)
+        object.__setattr__(self, "fixture_registry_sha256", str(matrix.fixture_registry_sha256))
+        object.__setattr__(self, "provenance_hash", content_hash({
+            "fit": fit_provenance_hash,
+            "matrix": matrix.data_hash,
+            "model": model_class,
+            "semantic_rows": matrix.semantic_row_hash,
+        }))
 
     @property
     def values(self) -> np.ndarray:
         return self._values.copy()
+
+    @property
+    def semantic_row_hash(self) -> str:
+        self.row_ledger.validate()
+        return self.row_ledger.logical_hash
+
+    @property
+    def semantic_rows(self):
+        self.row_ledger.validate()
+        return self.row_ledger.frame
+
+    @property
+    def bound_frame(self):
+        frame = self.semantic_rows
+        frame["model_score"] = self.values
+        return frame
+
+
+def validate_model_scores(scores: ModelScores, guard: D1ExecutionGuard) -> None:
+    if not isinstance(scores, ModelScores):
+        raise MatrixContractError("scores must be emitted by an authorized D1 adapter")
+    guard.require(Operation.PREDICT, scores.context)
+    scores.row_ledger.validate()
+    if len(scores.values) != len(scores.row_ledger):
+        raise MatrixContractError("scores and semantic row ledger lengths differ")
+    if scores.fixture_registry_sha256 != guard.fixture_registry_sha256:
+        raise MatrixContractError("scores are not bound to the current fixture registry")
+    entry = guard.fixture_entry(scores.fixture_id)
+    if entry.get("model_matrix_sha256") != scores.matrix_data_hash or entry.get("semantic_row_sha256") != scores.semantic_row_hash:
+        raise MatrixContractError("scores are not bound to the authorized evaluation matrix and semantic rows")
+    expected = content_hash({
+        "fit": scores.fit_provenance_hash,
+        "matrix": scores.matrix_data_hash,
+        "model": scores.model_class,
+        "semantic_rows": scores.semantic_row_hash,
+    })
+    if scores.provenance_hash != expected:
+        raise MatrixContractError("score provenance differs from its sealed semantic binding")
 
 
 class _BaseAdapter:
@@ -123,6 +178,7 @@ class _BaseAdapter:
             raise MatrixContractError("matrix/target provenance or row count differs")
         if matrix.fixture_id != target.fixture_id or matrix.suite_id != target.suite_id:
             raise MatrixContractError("matrix and target are not the same authorized fixture")
+        require_same_semantic_rows(matrix.row_ledger, target.row_ledger)
         validate_predictor_frame(matrix.frame, matrix.feature_names)
         finite_by_column = np.isfinite(matrix.frame.to_numpy(dtype=float)).any(axis=0)
         if not finite_by_column.all():
@@ -143,6 +199,7 @@ class _BaseAdapter:
             raise MatrixContractError("prediction feature allowlist differs from fit")
         if entry.get("suite_id") != state.fixture_suite:
             raise MatrixContractError("prediction fixture suite differs from fit")
+        matrix.row_ledger.validate()
         validate_predictor_frame(matrix.frame, state.feature_names)
 
     def predict(self, matrix: ModelMatrix) -> ModelScores:

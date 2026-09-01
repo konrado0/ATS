@@ -1,0 +1,118 @@
+{
+  "schema_version": "ats.phase_d1.manifest.v2",
+  "phase": "D1",
+  "status": "PASS",
+  "assessment_date": "2026-09-01",
+  "decision": "Safe only to request a separate owner decision about Phase D2; Phase D2 remains unauthorized.",
+  "supersedes": {
+    "rejected_commit": "be3cacd6fab9b67e98dc7e1e05b00ebac002c193",
+    "prior_readiness_sha256": "8f75986c6115016ca7f71fabecbb3db45449b36bf50ff5f9b182d6cad15d4b74",
+    "prior_audit_sha256": "617de2c54d017c69e8e8c4fd4eeaa16444bbf48f86548674b348f74843c1b434",
+    "prior_manifest_sha256": "8c5e6473d50f8c9e337291d016f789f31fb42eac31aac4136f07297114a3b49c",
+    "prior_status": "REJECTED"
+  },
+  "repository_state": {
+    "repair_parent_commit": "be3cacd6fab9b67e98dc7e1e05b00ebac002c193",
+    "commit_policy": "The focused repair commit is reported after creation; embedding its hash would recursively alter the commit.",
+    "unrelated_untracked_preserved": [
+      "RESEARCH/environments/",
+      "RESEARCH/prototypes/environment_repair/repaired_environment.json",
+      "RESEARCH/prototypes/environment_repair/repaired_environment.yml"
+    ]
+  },
+  "d0_v2_artifact_sha256": {
+    "RESEARCH/PHASE_D0_EXPERIMENT_PLAN.md": "10645dd41f1aea1f74c9f137a2f0dfd34e0a0f41f6355854c0cf9ed4b9ba0baa",
+    "source/python/configs/phase_d0_reference.json": "ef5a7f0fa76a104ff86cae7c2ad520867a0720e1c6e508558ef31316e7e153ae",
+    "source/python/configs/phase_d0_feature_registry.json": "733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6",
+    "RESEARCH/PHASE_D0_MANIFEST.json": "7fe34d679511eb4d75b269f5a908c6ac5e624d624aa067645286576f0f9e918c"
+  },
+  "d0_pinned_repository_documents": {
+    "README.md": "a9ee08501e45e86d583fe1f92de128fb9f7f37f21d3f0456dfa770ccb70195bd",
+    "RESEARCH/IMPLEMENTATION_ROADMAP.md": "2b3a5eadc1605daf21b2b825d18b0952cd70840172c610b0155b573b6666f67b"
+  },
+  "semantic_row_binding": {
+    "fields": ["candidate_run_id", "contract_version", "decision_session", "security_id"],
+    "ordered": true,
+    "immutable": true,
+    "matrix_target_exact_equality_required": true,
+    "score_inherits_evaluation_ledger": true,
+    "fixture_registry_schema": "ats.phase_d1.fixture_registry.v2",
+    "fixture_registry_sha256": "91e37cd8b8a2354316d83840e86422665329d3c2a6442b8f0c8d41cfeee522fa"
+  },
+  "structural_run": {
+    "run_id": "phase-d1-structural-b4fb9bbc480c2026e423",
+    "logical_hash": "b4fb9bbc480c2026e423f59cc0c047d635571f58c3493fcdf1a64ab6b31f911a",
+    "path": "D:/Stock/data/ATS/phase_d_ml/structural_runs/phase-d1-structural-b4fb9bbc480c2026e423",
+    "files": {
+      "permitted_read_audit.json": "7b48361fb082c305374d04dacfc2a50653b3c2616fd7dcf71aae2bd3c652a717",
+      "structural_resolution.json": "6801c396932a7200960dfedd72b9454088e8f7875c9af9ef402ef212005a599b"
+    },
+    "repeated_resolution_identical": true,
+    "p_survivor_count": 8,
+    "p_removal_count": 0,
+    "calendar_provenance": {
+      "candidate_vs_validated_wig_count": 1915,
+      "candidate_vs_validated_wig_hash": "5b88b3a54bf496304de16dc18029aedbca602921e10077248711112336f7c7eb",
+      "official_membership_vs_market_state_count": 1663,
+      "official_membership_vs_market_state_hash": "466b76b5f932364e97144121b99e48a143a024e778c5e886a5be1770dbe71d45",
+      "status": "PASS"
+    }
+  },
+  "verification": {
+    "phase_d0_validator": "PASS",
+    "focused_phase_d1": "67 passed in 48.03s",
+    "full_source_python": "174 passed in 84.61s",
+    "pre_phase_d_market_state": "10 passed in 3.40s",
+    "correct_structural_cli": "PASS",
+    "structural_resolve_reproduction": "PASS"
+  },
+  "authorization": {
+    "synthetic_fixture_fit_predict": true,
+    "real_structural_only": true,
+    "realized_real_labels": false,
+    "real_model_fit": false,
+    "real_prediction_or_score": false,
+    "real_predictive_performance": false,
+    "real_model_family_selection": false,
+    "phase_d2": false
+  },
+  "not_proven": [
+    "Authoritative exhaustive split-event discovery for the inherited research candidate panel.",
+    "Live operational data/feed availability at the 08:45 decision timestamp."
+  ],
+  "artifacts": [
+    {"path": "README.md", "bytes": 13252, "sha256": "a9ee08501e45e86d583fe1f92de128fb9f7f37f21d3f0456dfa770ccb70195bd"},
+    {"path": "RESEARCH/IMPLEMENTATION_ROADMAP.md", "bytes": 25633, "sha256": "2b3a5eadc1605daf21b2b825d18b0952cd70840172c610b0155b573b6666f67b"},
+    {"path": "RESEARCH/PHASE_D1_READINESS.md", "bytes": 9735, "sha256": "8f75986c6115016ca7f71fabecbb3db45449b36bf50ff5f9b182d6cad15d4b74"},
+    {"path": "RESEARCH/PHASE_D1_REQUIREMENT_AUDIT.json", "bytes": 11128, "sha256": "617de2c54d017c69e8e8c4fd4eeaa16444bbf48f86548674b348f74843c1b434"},
+    {"path": "RESEARCH/PHASE_D1_MANIFEST.json", "bytes": 8478, "sha256": "8c5e6473d50f8c9e337291d016f789f31fb42eac31aac4136f07297114a3b49c"},
+    {"path": "RESEARCH/PHASE_D1_READINESS_v2.md", "bytes": 7508, "sha256": "417cca1b87fdd3fa48e09567691057028d0c5f0b8b05383ec89fb83ae4d4dcd8"},
+    {"path": "RESEARCH/PHASE_D1_REQUIREMENT_AUDIT_v2.json", "bytes": 5554, "sha256": "3747d010c304809201d22d215db67c7901096a4f44cb1ed56e96df330fa6f17a"},
+    {"path": "RESEARCH/prototypes/phase_d1/validate_phase_d1.py", "bytes": 6864, "sha256": "81b999cbf7d65c2d23c702d80ba3808de0989103c6a9219150bfe3c9a8483bde"},
+    {"path": "source/python/configs/phase_d1_fixture_registry.json", "bytes": 4384, "sha256": "91e37cd8b8a2354316d83840e86422665329d3c2a6442b8f0c8d41cfeee522fa"},
+    {"path": "source/python/configs/phase_d1_structural_resolution.json", "bytes": 32248, "sha256": "6801c396932a7200960dfedd72b9454088e8f7875c9af9ef402ef212005a599b"},
+    {"path": "source/python/pyproject.toml", "bytes": 868, "sha256": "906d4bf4933600f0651790d35c693b583deeeb8e051144fc2f8859fdd22fd729"},
+    {"path": "source/python/src/ats_ml/__init__.py", "bytes": 276, "sha256": "c33dea0816876d799504b72c208ab9dad78ccad54eeac45a8565790a85aaa55d"},
+    {"path": "source/python/src/ats_ml/__main__.py", "bytes": 54, "sha256": "0475bb12e348cc85d95413d40fc8d0ceffe0aa87e4a7a976f543c7bfe2d16cd4"},
+    {"path": "source/python/src/ats_ml/chronology.py", "bytes": 5513, "sha256": "8cef5ca2822685c6585290516168a6d0ae354999f6bfdf0396b02d1c010fe328"},
+    {"path": "source/python/src/ats_ml/cli.py", "bytes": 955, "sha256": "1cee3670248aea4a3d8b321799523d170a8790f2532cd25a917b02a3065f47ce"},
+    {"path": "source/python/src/ats_ml/contracts.py", "bytes": 7025, "sha256": "6ba8c67baee3d31ef9e6bde0408eef83cb4e30d2632738ac69d586f142d2dd70"},
+    {"path": "source/python/src/ats_ml/duplicates.py", "bytes": 6234, "sha256": "6bd2c1808d8a8db4d36922f5e79633b8bfb090294b05b5a19a9724bde92b0c78"},
+    {"path": "source/python/src/ats_ml/features.py", "bytes": 32922, "sha256": "4e7a506ab5e85245fc196cb91da8ab9c66fe49236313a1b847d16f307c7d50d1"},
+    {"path": "source/python/src/ats_ml/guard.py", "bytes": 9158, "sha256": "f2b0506e974d55de519080cf4177d71a96931877e79b51db61d6d547163f6ec9"},
+    {"path": "source/python/src/ats_ml/labels.py", "bytes": 5310, "sha256": "ce72633bb926b61697f8540906e7c42dc6365c849968437f025a9e3afe3ac396"},
+    {"path": "source/python/src/ats_ml/matrices.py", "bytes": 18142, "sha256": "69c72d22eef366c052a7bd17144501b4b61b050c36bc9bc08911538b4b4ab587"},
+    {"path": "source/python/src/ats_ml/models.py", "bytes": 10110, "sha256": "3a8a30cfbb21e111418826090afd2290ef50dfa2b3e3eccedb1e17445212457a"},
+    {"path": "source/python/src/ats_ml/observations.py", "bytes": 8185, "sha256": "b928b0d6fd532b1d5e7bc8e7916dc87ff7281421c2192b17a0d6136ab5ba2156"},
+    {"path": "source/python/src/ats_ml/opportunity.py", "bytes": 3677, "sha256": "53f4ff0eb51770cf76751f5fc26dbab0aee904554608b6c834d169cb586bfc99"},
+    {"path": "source/python/src/ats_ml/structural.py", "bytes": 27428, "sha256": "128260406413b7be8e567e37eb5a2b5a6dc8c9a2195e5c683a2ba574eb5d14eb"},
+    {"path": "source/python/tests/fixtures/phase_d1/hand_values.json", "bytes": 830, "sha256": "7eceac6e1adc2b881c9f62ecda6126ce7daf41c0434f33960d9ffb5921e37bd6"},
+    {"path": "source/python/tests/phase_d1_helpers.py", "bytes": 2278, "sha256": "8f195ef7dc0cda0fd297f98554dcbd0f17a64e49e8ffda43b344af519cc2688d"},
+    {"path": "source/python/tests/test_phase_d1_contract_firewall.py", "bytes": 5550, "sha256": "ddc1de23e4d671f639d28a94635a7669655b5c08309e1cd2650fa1525fa6a80e"},
+    {"path": "source/python/tests/test_phase_d1_features.py", "bytes": 23658, "sha256": "cfe6bc0a64865e4b3fb4efab4579456b613f2cd28bacc292f3450b08912d3143"},
+    {"path": "source/python/tests/test_phase_d1_labels_chronology.py", "bytes": 6931, "sha256": "3405d1cc90f3590d0c7ffb6579ff5f31eb0892f81d8c3a4a93b5c393f4245485"},
+    {"path": "source/python/tests/test_phase_d1_models_opportunity.py", "bytes": 15442, "sha256": "c5f0e35bd9ae48228eec588a3370ec087ca4fd3f2733b4e103e7fec90eec4dbb"},
+    {"path": "source/python/tests/test_phase_d1_observations_structural.py", "bytes": 10660, "sha256": "3212c053f7197fb22e6105131f740e2b1074f5b6a9555f6c50e63d02f04a294b"}
+  ],
+  "mutable_latest_pointer": false
+}

@@ -14,7 +14,7 @@ from ats_ml.features import compute_market_features, compute_stock_feature_histo
 from ats_ml.features import FROZEN_EXCLUSION_CODES
 from ats_ml.guard import AuthorizationError, ExecutionClass, pinned_real_context
 from ats_ml.observations import ObservationContractError, build_observation_matrix
-from ats_ml.structural import validate_structural_run
+from ats_ml.structural import assert_calendar_provenance, validate_structural_run
 from ats_research.hashing import content_hash, sha256_file
 from phase_d1_helpers import d1_contract_guard_context, official_membership, stock_bars
 
@@ -153,6 +153,22 @@ def test_real_structural_context_cannot_compute_non_p_features() -> None:
     bars = stock_bars(dates)
     with pytest.raises((AuthorizationError, ValueError)):
         compute_stock_feature_history(bars, dates, contract, guard, real, blocks=("C", "P"))
+
+
+def test_calendar_provenance_requires_exact_wig_and_market_state_equality() -> None:
+    candidate = pd.bdate_range("2024-01-02", periods=5)
+    wig = candidate.insert(0, pd.Timestamp("2023-12-29")).append(pd.DatetimeIndex([pd.Timestamp("2024-01-09")]))
+    official = candidate[1:]
+    proof = assert_calendar_provenance(candidate, wig, official, official)
+    assert proof["status"] == "PASS"
+    assert proof["candidate_calendar_count"] == 5
+    assert proof["candidate_calendar_hash"] == proof["validated_wig_candidate_range_hash"]
+    assert proof["official_membership_calendar_hash"] == proof["market_state_calendar_hash"]
+
+    with pytest.raises(ValueError, match="validated WIG"):
+        assert_calendar_provenance(candidate, wig.delete(3), official, official)
+    with pytest.raises(ValueError, match="market-state"):
+        assert_calendar_provenance(candidate, wig, official, official[:-1])
 
 
 def test_structural_run_validator_rejects_schema_free_self_consistent_artifact(tmp_path: Path) -> None:

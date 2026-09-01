@@ -97,7 +97,7 @@ class D1ExecutionGuard:
             registry = json.loads(FIXTURE_REGISTRY.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as exc:
             raise AuthorizationError(f"cannot load the D1 fixture registry: {exc}") from exc
-        if registry.get("schema_version") != "ats.phase_d1.fixture_registry.v1":
+        if registry.get("schema_version") != "ats.phase_d1.fixture_registry.v2":
             raise AuthorizationError("unexpected D1 fixture-registry schema")
         self._fixture_registry = registry
         self._fixture_registry_sha256 = sha256_file(FIXTURE_REGISTRY)

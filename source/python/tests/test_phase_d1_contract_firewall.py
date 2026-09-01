@@ -8,7 +8,7 @@ import pytest
 
 from ats_ml.contracts import ContractError, load_frozen_d0_contract, resolve_pinned_inputs
 from ats_ml.guard import AuthorizationError, DatasetIdentity, ExecutionClass, ExecutionContext, Operation, pinned_real_context, pinned_real_predictive_context
-from ats_ml.matrices import MatrixContractError, ModelMatrix, load_authorized_model_fixture, validate_predictor_frame
+from ats_ml.matrices import MatrixContractError, ModelMatrix, build_semantic_row_ledger, load_authorized_model_fixture, validate_predictor_frame
 from phase_d1_helpers import d1_contract_guard_context
 
 
@@ -73,8 +73,14 @@ def test_bare_dataframe_cannot_claim_to_be_a_sealed_matrix() -> None:
     assert isinstance(sealed, ModelMatrix)
     assert target is not None
     frame = pd.DataFrame(np.zeros((2, len(expected))), columns=expected)
+    ledger = build_semantic_row_ledger(pd.DataFrame({
+        "candidate_run_id": "fixture",
+        "contract_version": contract.config["contract_version"],
+        "decision_session": ["2024-01-02", "2024-01-02"],
+        "security_id": ["S00", "S01"],
+    }))
     with pytest.raises(MatrixContractError, match="factory"):
-        ModelMatrix(frame, context, expected, "x", data_hash="0" * 64, fixture_id="phase-d1-fixture-linear-train", suite_id="linear", fixture_registry_sha256=guard.fixture_registry_sha256, _token=object())
+        ModelMatrix(frame, context, expected, "x", data_hash="0" * 64, fixture_id="phase-d1-fixture-linear-train", suite_id="linear", fixture_registry_sha256=guard.fixture_registry_sha256, row_ledger=ledger, _token=object())
 
 
 def test_context_and_partial_real_identity_cannot_be_forged_or_authorized() -> None:

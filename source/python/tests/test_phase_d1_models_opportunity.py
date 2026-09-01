@@ -8,6 +8,7 @@ from ats_ml.guard import AuthorizationError, Operation, pinned_real_context
 from ats_ml.matrices import (
     MatrixContractError,
     ModelMatrix,
+    build_semantic_row_ledger,
     build_four_cell_matrices,
     cell_feature_allowlists,
     load_authorized_model_fixture,
@@ -31,6 +32,8 @@ def test_four_frozen_cells_share_mask_rows_and_exact_allowlists() -> None:
         "decision_session": np.repeat(pd.bdate_range("2024-01-02", periods=2), 60),
         "security_id": [f"S{i:02d}" for _ in range(2) for i in range(60)],
         "model_score_eligible": [True] * 117 + [False] * 3,
+        "candidate_run_id": "phase-d1-fixture-core",
+        "contract_version": contract.config["contract_version"],
     })
     for name in contract.registry_order:
         observations[name] = rng.normal(size=rows)
@@ -39,6 +42,8 @@ def test_four_frozen_cells_share_mask_rows_and_exact_allowlists() -> None:
     assert set(matrices) == {"C_LINEAR", "C_LIGHTGBM", "RICH_LINEAR", "RICH_LIGHTGBM"}
     assert {len(value.frame) for value in matrices.values()} == {117}
     assert {value.provenance_hash for value in matrices.values()}.__len__() == 1
+    assert {value.semantic_row_hash for value in matrices.values()}.__len__() == 1
+    assert all(tuple(value.semantic_rows.columns) == ("candidate_run_id", "contract_version", "decision_session", "security_id") for value in matrices.values())
     assert {key: value.feature_names for key, value in matrices.items()} == expected
 
 
@@ -52,18 +57,58 @@ def test_four_cell_numeric_matrices_ignore_identity_reassignment_and_row_order()
         "model_score_eligible": True,
         "ticker": [f"T{i:02d}" for _ in range(2) for i in range(60)],
         "selected_source": "fixture-a",
+        "candidate_run_id": "phase-d1-fixture-core",
+        "contract_version": contract.config["contract_version"],
     })
     for name in contract.registry_order:
         observations[name] = rng.normal(size=rows)
     first = build_four_cell_matrices(observations, contract, context, guard)
-    renamed = observations.sample(frac=1.0, random_state=8).reset_index(drop=True)
+    reordered = observations.sample(frac=1.0, random_state=8).reset_index(drop=True)
+    repeated = build_four_cell_matrices(reordered, contract, context, guard)
+    for cell_id in first:
+        assert first[cell_id].semantic_row_hash == repeated[cell_id].semantic_row_hash
+        assert first[cell_id].semantic_rows.equals(repeated[cell_id].semantic_rows)
+        assert np.array_equal(first[cell_id].frame, repeated[cell_id].frame)
+    renamed = reordered.copy()
     renamed["security_id"] = [f"RENAMED{i:03d}" for i in range(rows)]
     renamed["ticker"] = "CHANGED"
     renamed["selected_source"] = "fixture-b"
     second = build_four_cell_matrices(renamed, contract, context, guard)
     for cell_id in first:
-        assert first[cell_id].provenance_hash == second[cell_id].provenance_hash
+        assert first[cell_id].semantic_row_hash != second[cell_id].semantic_row_hash
+        assert first[cell_id].provenance_hash != second[cell_id].provenance_hash
         assert np.array_equal(first[cell_id].frame, second[cell_id].frame)
+
+
+def test_matrix_target_and_scores_share_immutable_ordered_semantic_rows() -> None:
+    contract, guard, _ = d1_contract_guard_context()
+    names = contract.feature_blocks["C"]
+    matrix, target = load_authorized_model_fixture("phase-d1-fixture-linear-train", names, contract, guard)
+    assert target is not None
+    scores = RidgeAdapter(guard).fit(matrix, target).predict(matrix)
+    assert matrix.semantic_row_hash == target.semantic_row_hash == scores.semantic_row_hash
+    assert matrix.semantic_rows.equals(target.semantic_rows)
+    assert matrix.semantic_rows.equals(scores.semantic_rows)
+    assert tuple(matrix.bound_frame.columns[:4]) == ("candidate_run_id", "contract_version", "decision_session", "security_id")
+    assert tuple(target.bound_frame.columns[-1:]) == ("target",)
+    assert tuple(scores.bound_frame.columns[-1:]) == ("model_score",)
+
+    reversed_ledger = build_semantic_row_ledger(target.semantic_rows.iloc[::-1].reset_index(drop=True))
+    object.__setattr__(target, "row_ledger", reversed_ledger)
+    with pytest.raises(MatrixContractError, match="semantic row binding"):
+        RidgeAdapter(guard).fit(matrix, target)
+
+
+def test_score_use_rejects_a_substituted_semantic_row_ledger() -> None:
+    contract, guard, _ = d1_contract_guard_context()
+    names = contract.feature_blocks["C"]
+    train, target = load_authorized_model_fixture("phase-d1-fixture-linear-train", names, contract, guard)
+    evaluation, _ = load_authorized_model_fixture("phase-d1-fixture-linear-eval", names, contract, guard)
+    assert target is not None
+    scores = RidgeAdapter(guard).fit(train, target).predict(evaluation)
+    object.__setattr__(scores, "row_ledger", build_semantic_row_ledger(scores.semantic_rows.iloc[::-1].reset_index(drop=True)))
+    with pytest.raises(MatrixContractError, match="authorized evaluation matrix and semantic rows"):
+        calibration_threshold(scores, guard)
 
 
 def test_ridge_exact_fold_local_preprocessing_and_determinism() -> None:
@@ -139,11 +184,13 @@ def test_arbitrary_or_four_cell_matrix_cannot_reach_model_adapter() -> None:
     names = contract.feature_blocks["C"]
     frame, _ = _synthetic_matrix(10, names)
     with pytest.raises(MatrixContractError, match="factory"):
-        ModelMatrix(frame, context, names, "forged", data_hash="0" * 64, fixture_id="phase-d1-fixture-linear-train", suite_id="linear", fixture_registry_sha256=guard.fixture_registry_sha256, _token=object())
+        ModelMatrix(frame, context, names, "forged", data_hash="0" * 64, fixture_id="phase-d1-fixture-linear-train", suite_id="linear", fixture_registry_sha256=guard.fixture_registry_sha256, row_ledger=build_semantic_row_ledger(pd.DataFrame({"candidate_run_id": "fixture", "contract_version": contract.config["contract_version"], "decision_session": pd.Timestamp("2024-01-02"), "security_id": [f"S{i:02d}" for i in range(10)]})), _token=object())
     observations = pd.DataFrame({
         "decision_session": np.repeat(pd.Timestamp("2024-01-02"), 60),
         "security_id": [f"S{i:02d}" for i in range(60)],
         "model_score_eligible": True,
+        "candidate_run_id": "phase-d1-fixture-core",
+        "contract_version": contract.config["contract_version"],
     })
     rng = np.random.default_rng(77)
     for name in contract.registry_order:

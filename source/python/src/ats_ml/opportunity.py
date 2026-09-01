@@ -5,8 +5,8 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from ats_ml.guard import D1ExecutionGuard, Operation
-from ats_ml.models import ModelScores
+from ats_ml.guard import D1ExecutionGuard
+from ats_ml.models import ModelScores, validate_model_scores
 from ats_research.hashing import content_hash
 
 
@@ -32,7 +32,7 @@ class CalibrationThreshold:
 def calibration_threshold(scores: ModelScores, guard: D1ExecutionGuard) -> CalibrationThreshold:
     if not isinstance(scores, ModelScores):
         raise ValueError("calibration requires provenance-bearing synthetic model scores")
-    guard.require(Operation.PREDICT, scores.context)
+    validate_model_scores(scores, guard)
     values = scores.values
     finite = values[np.isfinite(values)]
     if len(finite) == 0:
@@ -45,7 +45,7 @@ def calibration_threshold(scores: ModelScores, guard: D1ExecutionGuard) -> Calib
 def qualifies(scores: ModelScores, threshold: CalibrationThreshold, guard: D1ExecutionGuard) -> np.ndarray:
     if not isinstance(scores, ModelScores) or not isinstance(threshold, CalibrationThreshold):
         raise ValueError("qualification requires sealed scores and a frozen calibration threshold")
-    guard.require(Operation.PREDICT, scores.context)
+    validate_model_scores(scores, guard)
     if scores.suite_id != threshold.suite_id:
         raise ValueError("qualification score suite differs from calibration")
     values = scores.values

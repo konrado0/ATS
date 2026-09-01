@@ -11,7 +11,7 @@ pooled-ML swing-opportunity experiment—justify further engineering.
 
 ## Current checkpoint
 
-Status as of 2026-09-01:
+Status as of 2026-08-31:
 
 - The architecture study and local storage/query/backtester benchmarks are
   complete.
@@ -35,20 +35,18 @@ Status as of 2026-09-01:
   numerical context block is ready with caveats; historical association is
   mixed, pairwise correlation is the only frozen block variable meeting the
   descriptive heterogeneity flag, and no market ON/OFF rule is authorized.
-- Phase D1 is complete and fixture/structural readiness is PASS. The minimal
-  `ats_ml` workbench proves the frozen observation/features/label endpoints,
-  chronology, preprocessing, fixed synthetic model plumbing and real-execution
-  firewall. No real Phase D model has been trained and no predictive result has
-  been inspected.
+- The Phase D charter and roadmap are the frozen planning baseline. No Phase D
+  model has been trained and no real predictive result has been inspected.
 - Phase D0 v2 is frozen in an owner-reviewable plan, machine-readable reference
   configuration, 30-feature C/P/X/M registry, provenance manifest and
-  requirement audit. D1 preserved these bytes exactly and authorizes no real
-  predictive execution by itself.
+  requirement audit. It authorizes neither D1 nor real predictive execution.
 
-The next gate is **owner review of Phase D1 readiness**. The immutable structural
-run retains all eight P variables and freezes purge/bin boundaries and complete
-implementation/environment fingerprints. Phase D2 may inspect real model
-performance only after separate owner authorization; it is not authorized now.
+The next gate is **owner review of Phase D0**. If separately authorized, Phase D1
+may implement only the minimal fixture-tested workbench and compute registered,
+label-inaccessible predictor values solely for the frozen structural resolution.
+It must stop before any real fit, prediction, validation score, or performance
+calculation. Phase D2 may inspect real model performance only after another owner
+review.
 
 Authoritative current documents:
 
@@ -57,7 +55,6 @@ Authoritative current documents:
 - [Phase D pooled-ML charter](RESEARCH/PHASE_D_POOLED_ML_RESEARCH_CHARTER.md)
 - [Phase D0 experiment plan](RESEARCH/PHASE_D0_EXPERIMENT_PLAN.md)
 - [Phase D0 30-feature owner-review table](RESEARCH/PHASE_D0_FEATURE_REGISTRY_TABLE.md)
-- [Phase D1 readiness](RESEARCH/PHASE_D1_READINESS.md)
 - [controlling market-state checkpoint](RESEARCH/PRE_PHASE_D_MARKET_STATE_DIAGNOSTIC.md)
 - [recommended architecture](RESEARCH/RECOMMENDED_ARCHITECTURE.md)
 
@@ -114,8 +111,7 @@ The boundaries matter:
 
 The Python package metadata and CLI entry points are in
 [`source/python/pyproject.toml`](source/python/pyproject.toml). The installed
-commands are `ats-research`, `ats-data`, `ats-portfolio`, and the D1-bounded
-`ats-ml` structural command.
+commands are `ats-research`, `ats-data`, and `ats-portfolio`.
 
 ## Data and artifact locations
 
@@ -132,7 +128,7 @@ D:\Stock\data\
     phase_a_v2_research\runs\          Phase A v2 evidence
     phase_a_v2_strategy_test\runs\     bounded strategy translations
     pre_phase_d_market_state\runs\     market-state diagnostic evidence
-    phase_d_ml\structural_runs\         immutable D1 structural evidence only
+    phase_d_ml\                         reserved for future Phase D outputs
 ```
 
 Do not modify vendor observations or accepted run/version directories. New data,
@@ -193,8 +189,8 @@ Reference run/validation commands and accepted manifest conventions are kept in:
 | Phase C | Implemented and repaired | Deterministic daily portfolio accounting and independent ledger reconstruction. |
 | Phase A v2 / proximity | Bounded test passed its frozen hurdles | Retained conventional benchmark only; one later bounded validation remains, with no parameter optimization. |
 | Pre-Phase D market state | Complete | Carry the compact numerical block as context; do not turn it into a timing strategy. |
-| Phase D0 | v2 frozen and preserved | Exact C/P/X/M features, folds, purge, models, opportunity gate, evaluation thresholds and stop rule are machine-readable and hashed; D1 independently pins the accepted bytes. |
-| Phase D1 | Complete — PASS | Minimal `ats_ml`, 64 focused tests, 171 full regressions and immutable structural run `phase-d1-structural-f6856e5c5f485c002b4b`; no real labels, fits, predictions or performance. |
+| Phase D0 | v2 frozen; renewed owner review pending | Exact C/P/X/M features, folds, purge, models, opportunity gate, evaluation thresholds and stop rule are machine-readable and hashed; decisive rank/stability gates compare rich with both conventional cells and score ties are identity-neutral. |
+| Phase D1 | Not authorized | If separately approved, build `ats_ml` minimally and validate it on synthetic/hand-calculated fixtures without inspecting real predictive performance. |
 | Phase D2/D3 | Not authorized | Execute the locked study once, then stop or authorize only one bounded portfolio translation. |
 | Phase E/F | Trigger-driven / later | Optimize measured pain and add richer reporting only when the completed vertical slice demonstrates a need. |
 
