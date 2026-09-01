@@ -1,0 +1,22 @@
+{
+  "schema_version": "ats.phase_d1.fixture_registry.v3",
+  "contract_version": "phase-d0-20260901-v3",
+  "fixtures": {
+    "phase-d1-v3-walkforward": {
+      "kind": "walkforward",
+      "suite_id": "phase-d1-v3-prequential",
+      "fixture_logical_hash": "8e57ce8c95f5fb5a00ca90525a01370f749b05d2fe30aba42f7229d9b7e883b6",
+      "calendar_start": "2019-01-02",
+      "calendar_end": "2026-08-18",
+      "securities": 8,
+      "seed": 20260901,
+      "outer_calendar_half": "2025H1",
+      "purpose": "synthetic chronology, prequential calibration, final-refit separation and four-cell plumbing only"
+    }
+  },
+  "authorization": {
+    "synthetic_only": true,
+    "real_identity_markers_forbidden": true,
+    "real_labels_fits_scores_outcomes": false
+  }
+}

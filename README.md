@@ -35,32 +35,45 @@ Status as of 2026-09-01:
   numerical context block is ready with caveats; historical association is
   mixed, pairwise correlation is the only frozen block variable meeting the
   descriptive heterogeneity flag, and no market ON/OFF rule is authorized.
-- Phase D1 is complete and its superseding fixture/structural readiness v2 is
-  PASS. The minimal `ats_ml` workbench proves the frozen observation, feature,
-  label-endpoint, chronology, preprocessing and fixed synthetic-model plumbing;
-  matrices, targets and scores share an immutable semantic row ledger, and the
-  two controlling calendar equalities are asserted. No real Phase D model has
-  been trained and no predictive result has been inspected.
-- Phase D0 v2 is frozen in an owner-reviewable plan, machine-readable reference
-  configuration, 30-feature C/P/X/M registry, provenance manifest and
-  requirement audit. D1 preserves and checks the four authoritative D0 byte
-  anchors. Historical whole-repository D0 validation is replayed at its accepted
-  checkpoint rather than constraining current project guidance.
+- The final pre-D2 D0/D1 v3 chronology amendment is complete and structurally
+  PASS. The locked object is now a deterministic January/July refit procedure:
+  each model uses the trailing 36 calendar months, calibrates from exactly three
+  prior six-month out-of-fit score blocks, refits on all label-mature rows and
+  scores the next six-month block. Decisive evidence uses complete blocks only;
+  partial 2026 H2 through 2026-08-18 is monitoring only.
+- D1 v3 fixture-proves exact endpoint purging, prequential fit/score order,
+  threshold/final-refit separation, shared four-cell semantic populations and
+  the locked prediction-generation firewall. Immutable structural run
+  `phase-d1-v3-structural-ed315ee058c7e0e7ce51` resolves every outer/inner
+  boundary and frozen minimum. No real Phase D label value, fit, prediction,
+  score, metric, outcome or model-family result was accessed.
+- Accepted D0 v2, rejected/accepted D1 v1/v2 publications and immutable D1 v2
+  run `phase-d1-structural-b4fb9bbc480c2026e423` remain preserved historical
+  evidence. The unchanged 30-feature registry and all eight P survivors are
+  carried forward by hash, not silently rewritten.
 
-The next gate is **owner review of Phase D1 readiness v2**. The immutable
-structural run retains all eight P variables and freezes purge/bin boundaries,
-calendar provenance and complete implementation/environment fingerprints. Phase
-D2 may inspect real model performance only after separate owner authorization;
-it is not authorized now.
+The owner repair instruction dated 2026-09-01 adds a separate automatic Phase
+D2 authorization overlay. Authorization activates only when the focused v3
+baseline is committed and every named post-commit validation and preservation
+condition passes. The repair itself does not execute D2, and the historical D1
+artifacts correctly retain their disabled-during-construction state.
+
+The next gate is **commit and post-commit verification of the repaired Phase D1
+v3 baseline**. A PASS automatically authorizes one separately executed, frozen
+Phase D2 study under the overlay; no real predictive result may be inspected by
+this repair task.
 
 Authoritative current documents:
 
 - [research operating policy](RESEARCH/RESEARCH_OPERATING_POLICY.md)
 - [implementation roadmap](RESEARCH/IMPLEMENTATION_ROADMAP.md)
 - [Phase D pooled-ML charter](RESEARCH/PHASE_D_POOLED_ML_RESEARCH_CHARTER.md)
-- [Phase D0 experiment plan](RESEARCH/PHASE_D0_EXPERIMENT_PLAN.md)
+- [Phase D0 v3 experiment plan](RESEARCH/PHASE_D0_EXPERIMENT_PLAN_v3.md)
+- [preserved Phase D0 v2 experiment plan](RESEARCH/PHASE_D0_EXPERIMENT_PLAN.md)
 - [Phase D0 30-feature owner-review table](RESEARCH/PHASE_D0_FEATURE_REGISTRY_TABLE.md)
-- [Phase D1 readiness v2](RESEARCH/PHASE_D1_READINESS_v2.md)
+- [Phase D1 readiness v3](RESEARCH/PHASE_D1_READINESS_v3.md)
+- [Phase D2 authorization overlay](RESEARCH/PHASE_D2_AUTHORIZATION_OVERLAY.md)
+- [preserved Phase D1 readiness v2](RESEARCH/PHASE_D1_READINESS_v2.md)
 - [controlling market-state checkpoint](RESEARCH/PRE_PHASE_D_MARKET_STATE_DIAGNOSTIC.md)
 - [recommended architecture](RESEARCH/RECOMMENDED_ARCHITECTURE.md)
 
@@ -196,9 +209,9 @@ Reference run/validation commands and accepted manifest conventions are kept in:
 | Phase C | Implemented and repaired | Deterministic daily portfolio accounting and independent ledger reconstruction. |
 | Phase A v2 / proximity | Bounded test passed its frozen hurdles | Retained conventional benchmark only; one later bounded validation remains, with no parameter optimization. |
 | Pre-Phase D market state | Complete | Carry the compact numerical block as context; do not turn it into a timing strategy. |
-| Phase D0 | v2 frozen and preserved | Exact C/P/X/M features, folds, purge, models, opportunity gate, evaluation thresholds and stop rule are machine-readable and hashed; D1 independently checks the four authoritative accepted byte anchors. |
-| Phase D1 | Complete — PASS | Superseding v2 readiness: minimal `ats_ml`, 67 focused tests, 174 full regressions and immutable structural run `phase-d1-structural-b4fb9bbc480c2026e423`; semantic row binding and calendar provenance pass, with no real labels, fits, predictions or performance. |
-| Phase D2/D3 | Not authorized | Execute the locked study once, then stop or authorize only one bounded portfolio translation. |
+| Phase D0 | v3 frozen; v2 preserved | Final chronology amendment locks January/July refits, trailing 36-month windows, three-block prequential calibration, complete-block evidence mappings and unchanged scientific definitions. |
+| Phase D1 | v3 complete — PASS | 80 focused tests, 187 full regressions and immutable structural run `phase-d1-v3-structural-ed315ee058c7e0e7ce51`; every structural minimum passes and no real predictive operation occurred. Accepted v2 evidence remains unchanged. |
+| Phase D2/D3 | Conditional automatic D2 authorization / D3 not authorized | The committed repaired v3 baseline plus clean post-commit verification activates one frozen D2 study. Generate/fingerprint the locked sequence before attaching outcomes. D3 and portfolio translation remain separate decisions. |
 | Phase E/F | Trigger-driven / later | Optimize measured pain and add richer reporting only when the completed vertical slice demonstrates a need. |
 
 Phase D is a pooled learner but not an always-invested portfolio. It evaluates

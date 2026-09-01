@@ -1,0 +1,116 @@
+{
+  "schema_version": "ats.phase_d1.manifest.v3",
+  "phase": "D1",
+  "status": "PASS",
+  "assessment_date": "2026-09-01",
+  "decision": "The repaired semiannual procedure is structurally PASS. D2 remained disabled during construction; a separate owner overlay activates one D2 execution only after this baseline is committed and passes clean post-commit verification.",
+  "parents": {
+    "accepted_d0_v2_commit": "cbddb4ff13f4452aa37f427f0f3c09a3f3da1ae4",
+    "accepted_d1_v2_checkpoint": "724971466dacfba05ff0fa7e92cd68c4628008c7",
+    "accepted_d1_v2_run": "phase-d1-structural-b4fb9bbc480c2026e423",
+    "accepted_d1_v2_run_files": {
+      "manifest.json": "b9e015a0cdf4dc57b8a1f5dc7d0dbe3abf4e5120a09a609e7a119a6e2f43ba34",
+      "permitted_read_audit.json": "7b48361fb082c305374d04dacfc2a50653b3c2616fd7dcf71aae2bd3c652a717",
+      "structural_resolution.json": "6801c396932a7200960dfedd72b9454088e8f7875c9af9ef402ef212005a599b"
+    }
+  },
+  "d0_v3_artifact_sha256": {
+    "RESEARCH/PHASE_D0_EXPERIMENT_PLAN_v3.md": "ee9f0c2943bacae432c117a40f6855ae9d8a947588d320bb1d32da713e708568",
+    "RESEARCH/PHASE_D0_REQUIREMENT_AUDIT_v3.json": "3a62af122d55d5fcda02b84ddf68e82adc71530bf1e8cd38264d04d466cac8de",
+    "RESEARCH/PHASE_D0_MANIFEST_v3.json": "56471a29f8969301b89710d2f7c9036cc50f81129fc36b1c44a3d88dedda3d01",
+    "source/python/configs/phase_d0_reference_v3.json": "b41022103c5a0e7f49bed04c04ab77b8149fe449f0a153b3721b1541c123f91a",
+    "source/python/configs/phase_d0_feature_registry.json": "733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6"
+  },
+  "structural_run": {
+    "run_id": "phase-d1-v3-structural-ed315ee058c7e0e7ce51",
+    "logical_hash": "ed315ee058c7e0e7ce51066dde60800652d25fed0bdbe7e8d239cbe01aca05eb",
+    "path": "D:/Stock/data/ATS/phase_d_ml/structural_runs/phase-d1-v3-structural-ed315ee058c7e0e7ce51",
+    "files": {
+      "permitted_read_audit.json": "6f9ef97e917b1ce6fdb43c6b52bde2f1b3546442e7a36e64883239d3c4b4822b",
+      "structural_resolution.json": "85d5fa5c873183531a17601a3aaa94793b8735d0c4ee640560ce9dffaea2054a"
+    },
+    "manifest_sha256": "13c4efabf78b0b87ba27efd7ef7a9a062871f2c10f1039497406716d1101977c",
+    "repeated_resolution_identical": true,
+    "outer_block_count": 8,
+    "inner_score_block_count": 24,
+    "all_structural_minimums": "PASS",
+    "partial_2026_h2": "NON_GATING_PARTIAL"
+  },
+  "scientific_invariants": {
+    "unchanged_feature_registry_sha256": "733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6",
+    "p_survivor_count": 8,
+    "primary_label": "label__open_to_open__20",
+    "model_cells": ["C_LINEAR", "C_LIGHTGBM", "RICH_LINEAR", "RICH_LIGHTGBM"],
+    "threshold": "max(0.010000, linear empirical q90 of exactly three pooled inner out-of-fit score blocks)",
+    "qualification": "score > threshold",
+    "phase_d2_authorized_during_structural_construction": false
+  },
+  "structural_summary": {
+    "candidate_rows": 130204,
+    "official_member_rows": 99780,
+    "official_decision_sessions": 1663,
+    "official_denominator_min": 60,
+    "official_denominator_max": 60,
+    "core_score_eligible_rows": 98419,
+    "final_fit_label_mature_session_range": [727, 734],
+    "final_fit_structural_row_range": [43120, 43485],
+    "inner_fit_label_mature_session_range_by_history": {"18_month": [354, 359], "24_month": [478, 483], "30_month": [602, 610]},
+    "inner_score_expected_session_range": [123, 128],
+    "complete_outer_expected_session_range": [123, 126],
+    "partial_2026_h2_sessions": 35,
+    "partial_2026_h2_structurally_outcome_available": 15,
+    "partial_2026_h2_right_censored": 20
+  },
+  "verification": {
+    "d0_v3_validator": "PASS",
+    "d1_v3_validator": "PASS",
+    "focused_phase_d1": "80 passed",
+    "full_source_python": "187 passed",
+    "pre_phase_d_market_state": "10 passed",
+    "structural_cli": "PASS",
+    "independent_structural_reproduction": "PASS_IDENTICAL",
+    "manifest_logical_and_physical_hashes": "PASS",
+    "accepted_v1_v2_preservation": "PASS",
+    "git_diff_check": "PASS"
+  },
+  "authorization": {
+    "synthetic_fixture_fit_predict": true,
+    "real_structural_calendar_endpoint_and_label_blind_eligibility_only": true,
+    "real_label_values": false,
+    "real_model_fit": false,
+    "real_prediction_or_score": false,
+    "real_predictive_metric_outcome_or_model_comparison": false,
+    "phase_d2_during_structural_construction": false
+  },
+  "post_readiness_authorization_overlay": {
+    "path": "RESEARCH/PHASE_D2_AUTHORIZATION_OVERLAY.md",
+    "activation": "AUTOMATIC_AFTER_COMMIT_AND_POST_COMMIT_PASS",
+    "repair_task_executes_d2": false,
+    "phase_d3_authorized": false
+  },
+  "artifacts": [
+    {"path": "README.md", "bytes": 14994, "sha256": "a1f958488b9060c46d151d78c3adbc925f5b7d5d9328540b4b278d62fce55ed2"},
+    {"path": "RESEARCH/IMPLEMENTATION_ROADMAP.md", "bytes": 30091, "sha256": "7d0f77f741e401d0feeeb745fd9fd8596e873e2451ea1101c0e603076c18c7d4"},
+    {"path": "RESEARCH/PHASE_D0_EXPERIMENT_PLAN_v3.md", "bytes": 11744, "sha256": "ee9f0c2943bacae432c117a40f6855ae9d8a947588d320bb1d32da713e708568"},
+    {"path": "RESEARCH/PHASE_D0_REQUIREMENT_AUDIT_v3.json", "bytes": 8256, "sha256": "3a62af122d55d5fcda02b84ddf68e82adc71530bf1e8cd38264d04d466cac8de"},
+    {"path": "RESEARCH/PHASE_D0_MANIFEST_v3.json", "bytes": 4762, "sha256": "56471a29f8969301b89710d2f7c9036cc50f81129fc36b1c44a3d88dedda3d01"},
+    {"path": "source/python/configs/phase_d0_reference_v3.json", "bytes": 9134, "sha256": "b41022103c5a0e7f49bed04c04ab77b8149fe449f0a153b3721b1541c123f91a"},
+    {"path": "RESEARCH/prototypes/phase_d0/validate_phase_d0_v3.py", "bytes": 9113, "sha256": "1dbc6dd451c7ddc693866589796ca404323890c26d156d8a809c940b90ef44b1"},
+    {"path": "RESEARCH/PHASE_D1_READINESS_v3.md", "bytes": 8625, "sha256": "3411c7172df822ec33a62d0458d77a01f9fe14b5b4d3ec560b259b29dd03041c"},
+    {"path": "RESEARCH/PHASE_D1_REQUIREMENT_AUDIT_v3.json", "bytes": 11439, "sha256": "fdc74c77778850542b078ac2b08aec79ab662032ff71f441dfb1840afb6e80ae"},
+    {"path": "RESEARCH/PHASE_D2_AUTHORIZATION_OVERLAY.md", "bytes": 3022, "sha256": "cfd548930a6f8f533cd336c4346a167b3560cf8f71eea58db9bf04d41ea0b09a"},
+    {"path": "source/python/configs/phase_d1_fixture_registry_v3.json", "bytes": 759, "sha256": "18ecbf386f76e6e05b5d99f16d3e668167775b3c627450703e5b83cde5238fbe"},
+    {"path": "source/python/configs/phase_d1_structural_resolution_v3.json", "bytes": 71763, "sha256": "85d5fa5c873183531a17601a3aaa94793b8735d0c4ee640560ce9dffaea2054a"}
+  ],
+  "code": [
+    {"path": "source/python/src/ats_ml/guard.py", "bytes": 9499, "sha256": "df7daa78ba2d502ca5e1b5d5d4ade706c976744210b7a733f5a71216f3066541"},
+    {"path": "source/python/src/ats_ml/contracts_v3.py", "bytes": 12795, "sha256": "db9b6aca470ffd6faf294e79f90cc1b1ff32efa4b5695a253f235ef135dcddc4"},
+    {"path": "source/python/src/ats_ml/walkforward.py", "bytes": 32933, "sha256": "5669442e8ee3dc80116ca2d3c8655256d94e465a2d2e7cd703a0443a7d6c8c4d"},
+    {"path": "source/python/src/ats_ml/structural_v3.py", "bytes": 24656, "sha256": "775094f885664ff5512c327aa88a9c34f9e8d1da7c3e5ec1d8c9986cb3c97895"},
+    {"path": "source/python/src/ats_ml/cli.py", "bytes": 1626, "sha256": "17c893f2531646862a7dcd3adadc14cb4bcf5a8bd2a738bd08245d1ce3b79f81"},
+    {"path": "source/python/tests/test_phase_d1_v3_walkforward.py", "bytes": 11361, "sha256": "fb7e8f8479a3e479ad6bdcb4d49b702695b2f96bf11e29457a71ab881de7182f"},
+    {"path": "RESEARCH/prototypes/phase_d1/validate_phase_d1_v3.py", "bytes": 11609, "sha256": "d83001feed4e3df4275c360c2b63ef241cc876ca894c8201d34837da3768ec07"},
+    {"path": "RESEARCH/prototypes/phase_d1/reproduce_phase_d1_v3.py", "bytes": 9825, "sha256": "66f9ee0bf238ef91d6ece7551719a60ae62ffbec0ca4546e43d199f569d9d754"}
+  ],
+  "mutable_latest_pointer": false
+}

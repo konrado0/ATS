@@ -1,0 +1,158 @@
+{
+  "schema_version": "ats.phase_d0.reference.v3",
+  "contract_version": "phase-d0-20260901-v3",
+  "frozen_on": "2026-09-01",
+  "classification": "final pre-D2 decision-grade chronology and calibration amendment; not predictive evidence or deployment validation",
+  "parents": {
+    "phase_d0_contract_version": "phase-d0-20260831-v2",
+    "phase_d0_accepted_commit": "cbddb4ff13f4452aa37f427f0f3c09a3f3da1ae4",
+    "phase_d1_checkpoint": "724971466dacfba05ff0fa7e92cd68c4628008c7",
+    "phase_d1_readiness": "RESEARCH/PHASE_D1_READINESS_v2.md"
+  },
+  "decision": "Can ATS deterministically construct and structurally prove the frozen trailing-36-calendar-month, January/July refit procedure, including exact availability purging, three-block prequential calibration, final refit separation and next-half-year scoring, before D2 obtains real predictive access?",
+  "scientific_change": [
+    "replace expanding annual folds with January/July outer refits",
+    "use one month-aligned trailing 36-calendar-month estimator window per outer refit",
+    "calibrate each cell threshold from exactly three chronologically prior six-month out-of-fit score blocks inside that window",
+    "refit the final estimator on all label-mature rows in the window and score only the next six-month block",
+    "map selection, confirmation, locked and partial-monitoring populations to fixed half-year blocks"
+  ],
+  "unchanged_parent_contract": {
+    "input_and_return_semantics": true,
+    "observation_pit_and_missing_state_semantics": true,
+    "feature_registry_path": "source/python/configs/phase_d0_feature_registry.json",
+    "registered_feature_count": 30,
+    "p_survivors": [
+      "stock_log_return_20",
+      "stock_log_return_60",
+      "stock_path_efficiency_20",
+      "stock_positive_return_share_20",
+      "stock_drawdown_depth_60",
+      "stock_recovery_from_low_60",
+      "stock_volatility_ratio_20_60",
+      "stock_close_location_value_20"
+    ],
+    "primary_label": "label__open_to_open__20",
+    "decision_time": "08:45:00 Europe/Warsaw",
+    "models_features_parameters_cells": true,
+    "opportunity_threshold_formula": "max(0.010000, numpy linear empirical q90 of finite pooled inner out-of-fit scores), separately by cell and outer refit",
+    "qualification": "score > threshold",
+    "quota": null,
+    "zero_candidate_session_valid": true,
+    "metrics_and_numerical_materiality_thresholds": true,
+    "comparators_required_separately": ["C_LINEAR", "C_LIGHTGBM"],
+    "price_basis_and_live_availability_caveats": true
+  },
+  "outer_walk_forward": {
+    "refit_months": [1, 7],
+    "refit_session_rule": "first official WIG decision session in the refit month",
+    "window_months": 36,
+    "calendar_alignment": "the lower calendar boundary is the first calendar day of the refit month minus 36 months; map it to the first official WIG decision session on or after that date",
+    "window_upper_rule": "final official WIG decision session strictly before the refit decision timestamp",
+    "feature_warmup_before_window_allowed": true,
+    "feature_warmup_rows_forbidden_from_model_fit": true,
+    "fit_availability_rule": "label_endpoint_ts < relevant refit_or_inner_score_start_decision_ts",
+    "hard_coded_horizon_row_subtraction_forbidden": true,
+    "preprocessing_and_estimator_recreated_each_fit": true,
+    "final_fit_rule": "all outcome-eligible label-mature model rows in the trailing window",
+    "outer_score_rule": "score only the following calendar half-year block"
+  },
+  "inner_prequential_calibration": {
+    "initial_fit_months": 18,
+    "score_block_months": 6,
+    "score_block_count": 3,
+    "fit_history_months_by_score_block": [18, 24, 30],
+    "fit_scope": "strictly earlier rows within the same outer 36-month window after exact endpoint availability purge",
+    "score_scope": "every common-score-mask row in the score block",
+    "score_block_labels_consulted": false,
+    "pooling": "pool finite out-of-fit scores from all three permitted blocks separately for each model cell",
+    "threshold_quantile": 0.9,
+    "threshold_quantile_method": "linear",
+    "absolute_hurdle": 0.01,
+    "failed_block_replacement": false,
+    "pool_fewer_than_three_blocks": false,
+    "final_refit_may_recalculate_threshold": false,
+    "score_rescaling_or_rescue_rule": false
+  },
+  "evidence_blocks": [
+    {"block_id": "MODEL_SELECTION_2023_H1", "calendar_half": "2023H1", "role": "model_family_selection", "complete": true},
+    {"block_id": "MODEL_SELECTION_2023_H2", "calendar_half": "2023H2", "role": "model_family_selection", "complete": true},
+    {"block_id": "DEVELOPMENT_2024_H1", "calendar_half": "2024H1", "role": "development_confirmation", "complete": true},
+    {"block_id": "DEVELOPMENT_2024_H2", "calendar_half": "2024H2", "role": "development_confirmation", "complete": true},
+    {"block_id": "LOCKED_2025_H1", "calendar_half": "2025H1", "role": "locked_test", "complete": true},
+    {"block_id": "LOCKED_2025_H2", "calendar_half": "2025H2", "role": "locked_test", "complete": true},
+    {"block_id": "LOCKED_2026_H1", "calendar_half": "2026H1", "role": "locked_test", "complete": true},
+    {"block_id": "MONITORING_2026_H2_PARTIAL", "calendar_half": "2026H2", "role": "partial_monitoring", "complete": false, "observation_end": "2026-08-18"}
+  ],
+  "evidence_mapping": {
+    "model_family_selection": ["MODEL_SELECTION_2023_H1", "MODEL_SELECTION_2023_H2"],
+    "selection_pooling": "equal session weighting across both 2023 half-years",
+    "ridge_tie_preference_absolute_difference_lte": 0.002,
+    "selection_supplies_confirmation_threshold_or_ci": false,
+    "development_confirmation_pooled": ["DEVELOPMENT_2024_H1", "DEVELOPMENT_2024_H2"],
+    "development_stability_blocks": ["DEVELOPMENT_2024_H1", "DEVELOPMENT_2024_H2"],
+    "locked_evidence_pooled": ["LOCKED_2025_H1", "LOCKED_2025_H2", "LOCKED_2026_H1"],
+    "locked_stability_blocks": ["LOCKED_2025_H1", "LOCKED_2025_H2", "LOCKED_2026_H1"],
+    "complete_decisive_years": [2024, 2025],
+    "positive_year_fraction_denominator": 2,
+    "partial_monitoring_excluded_from_every_decisive_gate": true,
+    "pooled_result_cannot_hide_required_block_failure": true,
+    "favorable_block_cannot_rescue_failed_pooled_gate": true
+  },
+  "minimums": {
+    "qualifying_session_minimum_rows": 45,
+    "complete_outer_block": {
+      "minimum_qualifying_session_fraction": 0.8,
+      "minimum_rows_formula": "ceil(0.80 * expected_official_sessions) * 45"
+    },
+    "final_outer_fit": {
+      "absolute_qualifying_sessions_floor": 230,
+      "absolute_model_rows_floor": 10000,
+      "minimum_structurally_expected_label_mature_session_fraction": 0.8,
+      "d1_enforcement": "calendar endpoints and label-blind structural eligibility only",
+      "d2_additional_enforcement": "actual outcome-eligible fit population"
+    },
+    "inner_fit": {
+      "histories_months": [18, 24, 30],
+      "minimum_qualifying_sessions_formula": "max(120, ceil(0.80 * expected_sessions_after_exact_endpoint_boundary_removal))",
+      "minimum_rows_formula": "max(5400, 45 * minimum_qualifying_sessions)",
+      "absolute_rows_floor": 5400
+    },
+    "inner_score_block": {
+      "required_block_count": 3,
+      "minimum_common_score_mask_session_fraction": 0.8,
+      "finite_threshold_required": true
+    },
+    "failure_behavior": "fail the affected cell or gate; never shorten a block, reduce the denominator, replace a score block or relax a minimum"
+  },
+  "locked_sequential_generation": {
+    "prediction_order": ["LOCKED_2025_H1", "LOCKED_2025_H2", "LOCKED_2026_H1"],
+    "later_refit_may_use_earlier_locked_labels": "only when exact label availability timestamps strictly precede that later refit",
+    "stage_1": "generate the complete locked prediction sequence and immutable fingerprint without calculating, aggregating, displaying, logging or inspecting outcome metrics",
+    "stage_2": "attach outcomes and evaluate only after stage_1 is complete and fingerprinted",
+    "procedure_change_between_refits": false
+  },
+  "structural_derivations": [
+    "outer half-year and refit boundaries",
+    "trailing 36-calendar-month estimator windows",
+    "18/24/30-month inner fit and three score-block boundaries",
+    "exact endpoint purge boundaries for every inner and final fit",
+    "expected official-session counts and frozen minima",
+    "label-blind structural score-mask coverage",
+    "decisive-population chronological concentration bins",
+    "partial and right-censoring states",
+    "input, implementation, environment, logical and physical hashes"
+  ],
+  "authorization": {
+    "phase_d0_v3_contract": true,
+    "phase_d1_v3_fixture_and_structural_execution": true,
+    "synthetic_fit_predict": true,
+    "real_label_values": false,
+    "real_model_fit": false,
+    "real_prediction_or_score": false,
+    "real_predictive_metrics_or_outcomes": false,
+    "phase_d2": false
+  },
+  "final_design_amendment_before_d2": true,
+  "post_d2_change_policy": "chronology, window length, refit cadence, calibration, models, features and gates remain frozen except for a demonstrated implementation bug handled by a versioned correction"
+}

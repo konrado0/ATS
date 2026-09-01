@@ -1,0 +1,1620 @@
+{
+  "authorization": {
+    "phase_d2": false,
+    "real_label_values": false,
+    "real_model_fit": false,
+    "real_prediction_or_score": false,
+    "real_predictive_metrics_or_outcomes": false,
+    "real_structural_calendar_endpoint_and_label_blind_eligibility_only": true,
+    "synthetic_fixture_fit_predict": true
+  },
+  "calendar_provenance": {
+    "candidate_calendar_count": 1915,
+    "candidate_calendar_end": "2026-08-18",
+    "candidate_calendar_hash": "5b88b3a54bf496304de16dc18029aedbca602921e10077248711112336f7c7eb",
+    "candidate_calendar_start": "2018-12-17",
+    "candidate_vs_validated_wig_equal": true,
+    "market_state_calendar_count": 1663,
+    "market_state_calendar_hash": "466b76b5f932364e97144121b99e48a143a024e778c5e886a5be1770dbe71d45",
+    "official_membership_calendar_count": 1663,
+    "official_membership_calendar_hash": "466b76b5f932364e97144121b99e48a143a024e778c5e886a5be1770dbe71d45",
+    "official_membership_vs_market_state_equal": true,
+    "status": "PASS",
+    "validated_wig_candidate_range_count": 1915,
+    "validated_wig_candidate_range_hash": "5b88b3a54bf496304de16dc18029aedbca602921e10077248711112336f7c7eb"
+  },
+  "chronological_concentration_bins": {
+    "DEVELOPMENT_CONFIRMATION_2024": [
+      {
+        "bin": 1,
+        "first_session": "2024-01-02",
+        "last_session": "2024-03-28",
+        "session_count": 63
+      },
+      {
+        "bin": 2,
+        "first_session": "2024-04-02",
+        "last_session": "2024-07-01",
+        "session_count": 62
+      },
+      {
+        "bin": 3,
+        "first_session": "2024-07-02",
+        "last_session": "2024-09-26",
+        "session_count": 62
+      },
+      {
+        "bin": 4,
+        "first_session": "2024-09-27",
+        "last_session": "2024-12-30",
+        "session_count": 62
+      }
+    ],
+    "LOCKED_COMPLETE_2025_2026H1": [
+      {
+        "bin": 1,
+        "first_session": "2025-01-02",
+        "last_session": "2025-05-16",
+        "session_count": 93
+      },
+      {
+        "bin": 2,
+        "first_session": "2025-05-19",
+        "last_session": "2025-09-26",
+        "session_count": 93
+      },
+      {
+        "bin": 3,
+        "first_session": "2025-09-29",
+        "last_session": "2026-02-13",
+        "session_count": 93
+      },
+      {
+        "bin": 4,
+        "first_session": "2026-02-16",
+        "last_session": "2026-06-30",
+        "session_count": 93
+      }
+    ],
+    "MODEL_SELECTION_2023": [
+      {
+        "bin": 1,
+        "first_session": "2023-01-02",
+        "last_session": "2023-03-30",
+        "session_count": 63
+      },
+      {
+        "bin": 2,
+        "first_session": "2023-03-31",
+        "last_session": "2023-07-04",
+        "session_count": 63
+      },
+      {
+        "bin": 3,
+        "first_session": "2023-07-05",
+        "last_session": "2023-09-29",
+        "session_count": 62
+      },
+      {
+        "bin": 4,
+        "first_session": "2023-10-02",
+        "last_session": "2023-12-29",
+        "session_count": 62
+      }
+    ]
+  },
+  "d0_contract_version": "phase-d0-20260901-v3",
+  "implementation_and_environment": {
+    "d0_v3_reference_sha256": "b41022103c5a0e7f49bed04c04ab77b8149fe449f0a153b3721b1541c123f91a",
+    "environment_lock": {
+      "path": "RESEARCH/environment/environment.yml",
+      "sha256": "290334a1c972e3780b354acfc607c076ce4ae6a77b0905eb41dfb5aa45e48a6d"
+    },
+    "files": {
+      "source/python/src/ats_ml/__init__.py": "c33dea0816876d799504b72c208ab9dad78ccad54eeac45a8565790a85aaa55d",
+      "source/python/src/ats_ml/__main__.py": "0475bb12e348cc85d95413d40fc8d0ceffe0aa87e4a7a976f543c7bfe2d16cd4",
+      "source/python/src/ats_ml/chronology.py": "8cef5ca2822685c6585290516168a6d0ae354999f6bfdf0396b02d1c010fe328",
+      "source/python/src/ats_ml/cli.py": "17c893f2531646862a7dcd3adadc14cb4bcf5a8bd2a738bd08245d1ce3b79f81",
+      "source/python/src/ats_ml/contracts.py": "6ba8c67baee3d31ef9e6bde0408eef83cb4e30d2632738ac69d586f142d2dd70",
+      "source/python/src/ats_ml/contracts_v3.py": "db9b6aca470ffd6faf294e79f90cc1b1ff32efa4b5695a253f235ef135dcddc4",
+      "source/python/src/ats_ml/duplicates.py": "6bd2c1808d8a8db4d36922f5e79633b8bfb090294b05b5a19a9724bde92b0c78",
+      "source/python/src/ats_ml/features.py": "4e7a506ab5e85245fc196cb91da8ab9c66fe49236313a1b847d16f307c7d50d1",
+      "source/python/src/ats_ml/guard.py": "df7daa78ba2d502ca5e1b5d5d4ade706c976744210b7a733f5a71216f3066541",
+      "source/python/src/ats_ml/labels.py": "ce72633bb926b61697f8540906e7c42dc6365c849968437f025a9e3afe3ac396",
+      "source/python/src/ats_ml/matrices.py": "69c72d22eef366c052a7bd17144501b4b61b050c36bc9bc08911538b4b4ab587",
+      "source/python/src/ats_ml/models.py": "3a8a30cfbb21e111418826090afd2290ef50dfa2b3e3eccedb1e17445212457a",
+      "source/python/src/ats_ml/observations.py": "b928b0d6fd532b1d5e7bc8e7916dc87ff7281421c2192b17a0d6136ab5ba2156",
+      "source/python/src/ats_ml/opportunity.py": "53f4ff0eb51770cf76751f5fc26dbab0aee904554608b6c834d169cb586bfc99",
+      "source/python/src/ats_ml/structural.py": "128260406413b7be8e567e37eb5a2b5a6dc8c9a2195e5c683a2ba574eb5d14eb",
+      "source/python/src/ats_ml/structural_v3.py": "775094f885664ff5512c327aa88a9c34f9e8d1da7c3e5ec1d8c9986cb3c97895",
+      "source/python/src/ats_ml/walkforward.py": "5669442e8ee3dc80116ca2d3c8655256d94e465a2d2e7cd703a0443a7d6c8c4d"
+    },
+    "fixture_registry_v3_sha256": "18ecbf386f76e6e05b5d99f16d3e668167775b3c627450703e5b83cde5238fbe",
+    "lightgbm_parameters": {
+      "boosting_type": "gbdt",
+      "colsample_bytree": 1.0,
+      "deterministic": true,
+      "force_col_wise": true,
+      "learning_rate": 0.03,
+      "max_depth": 4,
+      "min_child_samples": 100,
+      "n_estimators": 300,
+      "n_jobs": 1,
+      "num_leaves": 15,
+      "objective": "regression_l2",
+      "random_state": 20260831,
+      "reg_alpha": 0.1,
+      "reg_lambda": 1.0,
+      "subsample": 1.0,
+      "verbosity": -1
+    },
+    "packages": {
+      "PyYAML": "6.0.3",
+      "duckdb": "1.5.5",
+      "lightgbm": "4.7.0",
+      "numpy": "1.26.4",
+      "pandas": "3.0.5",
+      "polars": "1.43.2",
+      "pyarrow": "25.0.0",
+      "pydantic": "2.13.4",
+      "pytest": "9.1.1",
+      "scikit-learn": "1.9.0"
+    },
+    "platform": "Windows-11-10.0.26100-SP0",
+    "python": "3.12.13",
+    "ridge_parameters": {
+      "alpha": 1.0,
+      "fit_intercept": true,
+      "max_iter": 10000,
+      "solver": "lsqr",
+      "tol": 1e-06
+    },
+    "unchanged_feature_registry_sha256": "733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6"
+  },
+  "locked_sequence_firewall_proof": {
+    "complete_sequence_fingerprint": "1a39db5c63676937431d5a5ab62154b7549b9e815f762082eb5d0c25f62e1826",
+    "evaluation_inaccessible_before_complete_fingerprint": true,
+    "expected_bindings": {
+      "LOCKED_2025_H1": {
+        "availability_proof_hash": "51243f87521a7347aac7fa3b8ac0ce89b2d68f222776675190982cf7c45538db",
+        "expected_refit_session": "2025-01-02"
+      },
+      "LOCKED_2025_H2": {
+        "availability_proof_hash": "3e7d7ee6de5ca71e5fc5ad464d51bef307fd5299beff638ab97a1a7c0809db02",
+        "expected_refit_session": "2025-07-01"
+      },
+      "LOCKED_2026_H1": {
+        "availability_proof_hash": "895b7cb2b63de109a5a1629a6b4421f482540a4faa2beaeebde3f7b07e17728b",
+        "expected_refit_session": "2026-01-02"
+      }
+    },
+    "ordered_blocks": [
+      "LOCKED_2025_H1",
+      "LOCKED_2025_H2",
+      "LOCKED_2026_H1"
+    ],
+    "outcomes_or_metrics_computed": false,
+    "records": [
+      {
+        "availability_proof_hash": "51243f87521a7347aac7fa3b8ac0ce89b2d68f222776675190982cf7c45538db",
+        "block_id": "LOCKED_2025_H1",
+        "prediction_hash": "be959fa76d845b06175703984a606e8f425c9da9c3546c3f5e378551ff8a9a52",
+        "refit_session": "2025-01-02"
+      },
+      {
+        "availability_proof_hash": "3e7d7ee6de5ca71e5fc5ad464d51bef307fd5299beff638ab97a1a7c0809db02",
+        "block_id": "LOCKED_2025_H2",
+        "prediction_hash": "74be4a88187221ed62705a925f43216db759a78084cc1c7777440e942f60f644",
+        "refit_session": "2025-07-01"
+      },
+      {
+        "availability_proof_hash": "895b7cb2b63de109a5a1629a6b4421f482540a4faa2beaeebde3f7b07e17728b",
+        "block_id": "LOCKED_2026_H1",
+        "prediction_hash": "9a27fc37ce9cd6ba8c5a01d3ca56408ccdf60ed95c0983323797e28373f644df",
+        "refit_session": "2026-01-02"
+      }
+    ],
+    "schema_version": "ats.phase_d1.locked_firewall_proof.v3",
+    "status": "PASS",
+    "synthetic_only": true
+  },
+  "logical_hash": "ed315ee058c7e0e7ce51066dde60800652d25fed0bdbe7e8d239cbe01aca05eb",
+  "p_duplicate_resolution": {
+    "decisions": [],
+    "parent_resolution_sha256": "6801c396932a7200960dfedd72b9454088e8f7875c9af9ef402ef212005a599b",
+    "source": "accepted D1 v2 structural resolution; chronology amendment does not change its already-frozen label-blind population through 2024-12-30",
+    "status": "PRESERVED",
+    "survivor_count": 8,
+    "survivors": [
+      "stock_log_return_20",
+      "stock_log_return_60",
+      "stock_path_efficiency_20",
+      "stock_positive_return_share_20",
+      "stock_drawdown_depth_60",
+      "stock_recovery_from_low_60",
+      "stock_volatility_ratio_20_60",
+      "stock_close_location_value_20"
+    ]
+  },
+  "parents": {
+    "d0_v2_artifacts": {
+      "RESEARCH/PHASE_D0_EXPERIMENT_PLAN.md": "10645dd41f1aea1f74c9f137a2f0dfd34e0a0f41f6355854c0cf9ed4b9ba0baa",
+      "RESEARCH/PHASE_D0_MANIFEST.json": "7fe34d679511eb4d75b269f5a908c6ac5e624d624aa067645286576f0f9e918c",
+      "source/python/configs/phase_d0_feature_registry.json": "733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6",
+      "source/python/configs/phase_d0_reference.json": "ef5a7f0fa76a104ff86cae7c2ad520867a0720e1c6e508558ef31316e7e153ae"
+    },
+    "d1_v2_checkpoint": "724971466dacfba05ff0fa7e92cd68c4628008c7",
+    "d1_v2_structural_resolution_sha256": "6801c396932a7200960dfedd72b9454088e8f7875c9af9ef402ef212005a599b",
+    "d1_v2_structural_run_id": "phase-d1-structural-b4fb9bbc480c2026e423"
+  },
+  "physical_hashes": {
+    "candidate_manifest": "e77ce37cb51c3a1e5608b4b2c9b112abe51635bdae1ce64db0b5aa7d4780331a",
+    "candidate_panel": "c23ffbfc6aaab8bafd466bd980f906ec4476fd051aebcc8c0fa3b7e57a9f8c15",
+    "implementation_files": {
+      "source/python/src/ats_ml/__init__.py": "c33dea0816876d799504b72c208ab9dad78ccad54eeac45a8565790a85aaa55d",
+      "source/python/src/ats_ml/__main__.py": "0475bb12e348cc85d95413d40fc8d0ceffe0aa87e4a7a976f543c7bfe2d16cd4",
+      "source/python/src/ats_ml/chronology.py": "8cef5ca2822685c6585290516168a6d0ae354999f6bfdf0396b02d1c010fe328",
+      "source/python/src/ats_ml/cli.py": "17c893f2531646862a7dcd3adadc14cb4bcf5a8bd2a738bd08245d1ce3b79f81",
+      "source/python/src/ats_ml/contracts.py": "6ba8c67baee3d31ef9e6bde0408eef83cb4e30d2632738ac69d586f142d2dd70",
+      "source/python/src/ats_ml/contracts_v3.py": "db9b6aca470ffd6faf294e79f90cc1b1ff32efa4b5695a253f235ef135dcddc4",
+      "source/python/src/ats_ml/duplicates.py": "6bd2c1808d8a8db4d36922f5e79633b8bfb090294b05b5a19a9724bde92b0c78",
+      "source/python/src/ats_ml/features.py": "4e7a506ab5e85245fc196cb91da8ab9c66fe49236313a1b847d16f307c7d50d1",
+      "source/python/src/ats_ml/guard.py": "df7daa78ba2d502ca5e1b5d5d4ade706c976744210b7a733f5a71216f3066541",
+      "source/python/src/ats_ml/labels.py": "ce72633bb926b61697f8540906e7c42dc6365c849968437f025a9e3afe3ac396",
+      "source/python/src/ats_ml/matrices.py": "69c72d22eef366c052a7bd17144501b4b61b050c36bc9bc08911538b4b4ab587",
+      "source/python/src/ats_ml/models.py": "3a8a30cfbb21e111418826090afd2290ef50dfa2b3e3eccedb1e17445212457a",
+      "source/python/src/ats_ml/observations.py": "b928b0d6fd532b1d5e7bc8e7916dc87ff7281421c2192b17a0d6136ab5ba2156",
+      "source/python/src/ats_ml/opportunity.py": "53f4ff0eb51770cf76751f5fc26dbab0aee904554608b6c834d169cb586bfc99",
+      "source/python/src/ats_ml/structural.py": "128260406413b7be8e567e37eb5a2b5a6dc8c9a2195e5c683a2ba574eb5d14eb",
+      "source/python/src/ats_ml/structural_v3.py": "775094f885664ff5512c327aa88a9c34f9e8d1da7c3e5ec1d8c9986cb3c97895",
+      "source/python/src/ats_ml/walkforward.py": "5669442e8ee3dc80116ca2d3c8655256d94e465a2d2e7cd703a0443a7d6c8c4d"
+    },
+    "market_state_feature_artifact": "582f6e4731ec8e9816b5f4148e38ee33ec8b2bf11439aef5942653463457273c",
+    "market_state_manifest": "82a1f3108e7eb23a38bb16ac37111c53f9b11291f2a16b0aeecef24543a86553",
+    "parent_d1_v2_resolution": "6801c396932a7200960dfedd72b9454088e8f7875c9af9ef402ef212005a599b",
+    "validated_wig": "bb212f40c10d3491a8f4645c63f91c32846df115f7e0614563cd40f14d1ce056"
+  },
+  "pinned_inputs": {
+    "candidate_data_basis_version": "gpw_split_adjusted_price_candidate.v1",
+    "candidate_logical_hash": "447fbadaac4418c04b257bd46bf8daa81b24b2546ac40b0f3ff89763ed9fdd4e",
+    "candidate_manifest_sha256": "e77ce37cb51c3a1e5608b4b2c9b112abe51635bdae1ce64db0b5aa7d4780331a",
+    "candidate_panel_sha256": "c23ffbfc6aaab8bafd466bd980f906ec4476fd051aebcc8c0fa3b7e57a9f8c15",
+    "candidate_run_id": "gpw-split-normalization-20260826-v4",
+    "market_state_feature_artifact_sha256": "582f6e4731ec8e9816b5f4148e38ee33ec8b2bf11439aef5942653463457273c",
+    "market_state_manifest_sha256": "82a1f3108e7eb23a38bb16ac37111c53f9b11291f2a16b0aeecef24543a86553",
+    "validated_wig_sha256": "bb212f40c10d3491a8f4645c63f91c32846df115f7e0614563cd40f14d1ce056"
+  },
+  "read_audit": {
+    "artifacts_opened": [
+      "D:\\Stock\\data\\ATS\\gpw_split_normalization\\runs\\gpw-split-normalization-20260826-v4\\manifest.json",
+      "D:\\Stock\\data\\ATS\\gpw_split_normalization\\runs\\gpw-split-normalization-20260826-v4\\candidate_panel.parquet",
+      "D:\\Stock\\data\\ATS\\pre_phase_d_market_state\\runs\\pre-phase-d-market-state-20260830-v2\\manifest.json",
+      "D:\\Stock\\data\\ATS\\pre_phase_d_market_state\\runs\\pre-phase-d-market-state-20260830-v2\\tables\\market_state_features.parquet",
+      "D:\\Stock\\data\\ATS\\pre_phase_d_market_state\\runs\\pre-phase-d-market-state-20260830-v2\\tables\\validated_wig.parquet"
+    ],
+    "calendar_key_columns_loaded": {
+      "market_state_feature_artifact": [
+        "decision_session"
+      ],
+      "validated_wig": [
+        "session_date"
+      ]
+    },
+    "candidate_parquet_metadata_rows": 130204,
+    "candidate_schema_columns": [
+      "security_id",
+      "isin",
+      "session_date",
+      "vendor_stock_split",
+      "selected_source",
+      "source_priority",
+      "source_series_version",
+      "data_basis",
+      "native_open",
+      "native_high",
+      "native_low",
+      "native_close",
+      "native_volume",
+      "volume_basis",
+      "volume_precision_state",
+      "volume_usable_for_relative_volume",
+      "volume_ineligibility_reason",
+      "source_lineage",
+      "source_hash",
+      "missing_state",
+      "cumulative_price_factor",
+      "cumulative_volume_factor",
+      "split_adjusted_open",
+      "split_adjusted_high",
+      "split_adjusted_low",
+      "split_adjusted_close",
+      "split_adjusted_volume",
+      "applied_event_ids",
+      "source_treatment_state",
+      "factor_version",
+      "derived_data_basis",
+      "cash_distributions_included",
+      "cash_dividend_price_gaps_preserved",
+      "source_index",
+      "official_membership",
+      "expected_trading",
+      "nontrading_reason",
+      "nontrading_evidence_reference",
+      "coverage_result",
+      "unresolved_or_missing_state",
+      "price_usable_for_features",
+      "data_basis_version"
+    ],
+    "candidate_value_columns_loaded": [
+      "security_id",
+      "session_date",
+      "split_adjusted_close",
+      "split_adjusted_high",
+      "official_membership",
+      "price_usable_for_features",
+      "source_treatment_state",
+      "factor_version",
+      "missing_state",
+      "nontrading_reason",
+      "coverage_result",
+      "data_basis_version"
+    ],
+    "feature_label_correlations_or_ic_computed": false,
+    "forbidden_columns": [
+      "split_adjusted_open",
+      "label__open_to_open__20",
+      "realized_forward_return",
+      "model_score",
+      "rank_ic",
+      "tail_outcome",
+      "economic_result"
+    ],
+    "market_state_feature_values_loaded": false,
+    "real_model_fit_prediction_or_score": false,
+    "realized_label_values_loaded_or_derived": false,
+    "synthetic_fixture_fit_predict_only": true,
+    "tail_outcomes_economics_or_model_family_results_computed": false
+  },
+  "run_id": "phase-d1-v3-structural-ed315ee058c7e0e7ce51",
+  "schema_version": "ats.phase_d1.structural_resolution.v3",
+  "structural_counts": {
+    "calendar_sessions": 1915,
+    "candidate_rows": 130204,
+    "core_score_eligibility_session_count": 1663,
+    "core_score_eligible_rows_total": 98419,
+    "official_member_rows": 99780,
+    "official_session_count_max": 60,
+    "official_session_count_min": 60
+  },
+  "synthetic_prequential_proof": {
+    "all_cells_share_inner_score_ledgers": true,
+    "cell_count": 4,
+    "cells": {
+      "C_LIGHTGBM": {
+        "final_fit_rows": 6096,
+        "final_fit_semantic_row_hash": "734f9cfd8eeb3bf5a0a0a1492c6c9d6db7d76f55c62ba2b9245db7a88c8fa40f",
+        "final_fit_uses_all_label_mature_window_rows": true,
+        "inner_stage_count": 3,
+        "inner_stages": [
+          {
+            "fit_end": "2023-06-02",
+            "fit_rows": 2960,
+            "fit_strictly_earlier_than_score": true,
+            "matrix_target_semantic_row_hash": "598b728cdac7a435356c6002008085db6e2745cfb82cae724bbf814764ee32cb",
+            "score_block_number": 1,
+            "score_rows": 1040,
+            "score_semantic_row_hash": "29ae6cda547e0549e3bf99ffac32eb71ac32f2c86497620dabe4dd09131446c5",
+            "score_start": "2023-07-03"
+          },
+          {
+            "fit_end": "2023-12-01",
+            "fit_rows": 4000,
+            "fit_strictly_earlier_than_score": true,
+            "matrix_target_semantic_row_hash": "3257e087387e2e5f304fb4b94675533e8e7fb157940edc0d928afd470a95f86a",
+            "score_block_number": 2,
+            "score_rows": 1040,
+            "score_semantic_row_hash": "09416cb732d00dde4e8acd67b27364539aafa49ae3074caed4298e6ab4110235",
+            "score_start": "2024-01-01"
+          },
+          {
+            "fit_end": "2024-05-31",
+            "fit_rows": 5040,
+            "fit_strictly_earlier_than_score": true,
+            "matrix_target_semantic_row_hash": "41f6dc66ec180934f30ef0c5e0e448cdabc9b35cc93436c13ab84ad0a2cdaecb",
+            "score_block_number": 3,
+            "score_rows": 1056,
+            "score_semantic_row_hash": "90b4fd85b42f184eba2da9eab8a77678b42821eb29cf7e31b39dbfd7954fbc5f",
+            "score_start": "2024-07-01"
+          }
+        ],
+        "model": "LIGHTGBM",
+        "outer_labels_used_for_threshold": false,
+        "outer_score_rows": 1032,
+        "outer_score_semantic_row_hash": "5ec264fcac3005cb1293b294eb6c359b0a016c53556d66e017394ca5024dc8b8",
+        "pooled_score_block_count": 3,
+        "pooled_score_count": 3136,
+        "pooled_score_ledger_hash": "3b10568e314773259defcb67d3bd3d06e35c115ab40be44599abb468bb3971ba",
+        "preprocessing_and_estimator_recreated": true,
+        "threshold_frozen_before_final_refit": true,
+        "threshold_provenance_hash": "c1df4b2f3ee73a92ff878e33bcf44ca918d75b99488be54835e65f9e8d2367e6"
+      },
+      "C_LINEAR": {
+        "final_fit_rows": 6096,
+        "final_fit_semantic_row_hash": "734f9cfd8eeb3bf5a0a0a1492c6c9d6db7d76f55c62ba2b9245db7a88c8fa40f",
+        "final_fit_uses_all_label_mature_window_rows": true,
+        "inner_stage_count": 3,
+        "inner_stages": [
+          {
+            "fit_end": "2023-06-02",
+            "fit_rows": 2960,
+            "fit_strictly_earlier_than_score": true,
+            "matrix_target_semantic_row_hash": "598b728cdac7a435356c6002008085db6e2745cfb82cae724bbf814764ee32cb",
+            "score_block_number": 1,
+            "score_rows": 1040,
+            "score_semantic_row_hash": "29ae6cda547e0549e3bf99ffac32eb71ac32f2c86497620dabe4dd09131446c5",
+            "score_start": "2023-07-03"
+          },
+          {
+            "fit_end": "2023-12-01",
+            "fit_rows": 4000,
+            "fit_strictly_earlier_than_score": true,
+            "matrix_target_semantic_row_hash": "3257e087387e2e5f304fb4b94675533e8e7fb157940edc0d928afd470a95f86a",
+            "score_block_number": 2,
+            "score_rows": 1040,
+            "score_semantic_row_hash": "09416cb732d00dde4e8acd67b27364539aafa49ae3074caed4298e6ab4110235",
+            "score_start": "2024-01-01"
+          },
+          {
+            "fit_end": "2024-05-31",
+            "fit_rows": 5040,
+            "fit_strictly_earlier_than_score": true,
+            "matrix_target_semantic_row_hash": "41f6dc66ec180934f30ef0c5e0e448cdabc9b35cc93436c13ab84ad0a2cdaecb",
+            "score_block_number": 3,
+            "score_rows": 1056,
+            "score_semantic_row_hash": "90b4fd85b42f184eba2da9eab8a77678b42821eb29cf7e31b39dbfd7954fbc5f",
+            "score_start": "2024-07-01"
+          }
+        ],
+        "model": "RIDGE",
+        "outer_labels_used_for_threshold": false,
+        "outer_score_rows": 1032,
+        "outer_score_semantic_row_hash": "5ec264fcac3005cb1293b294eb6c359b0a016c53556d66e017394ca5024dc8b8",
+        "pooled_score_block_count": 3,
+        "pooled_score_count": 3136,
+        "pooled_score_ledger_hash": "3b10568e314773259defcb67d3bd3d06e35c115ab40be44599abb468bb3971ba",
+        "preprocessing_and_estimator_recreated": true,
+        "threshold_frozen_before_final_refit": true,
+        "threshold_provenance_hash": "f9b1fcb188cca1b6696ed8e1927d5bd92d30ea2550a5ebd849e9f84195bc8d8a"
+      },
+      "RICH_LIGHTGBM": {
+        "final_fit_rows": 6096,
+        "final_fit_semantic_row_hash": "734f9cfd8eeb3bf5a0a0a1492c6c9d6db7d76f55c62ba2b9245db7a88c8fa40f",
+        "final_fit_uses_all_label_mature_window_rows": true,
+        "inner_stage_count": 3,
+        "inner_stages": [
+          {
+            "fit_end": "2023-06-02",
+            "fit_rows": 2960,
+            "fit_strictly_earlier_than_score": true,
+            "matrix_target_semantic_row_hash": "598b728cdac7a435356c6002008085db6e2745cfb82cae724bbf814764ee32cb",
+            "score_block_number": 1,
+            "score_rows": 1040,
+            "score_semantic_row_hash": "29ae6cda547e0549e3bf99ffac32eb71ac32f2c86497620dabe4dd09131446c5",
+            "score_start": "2023-07-03"
+          },
+          {
+            "fit_end": "2023-12-01",
+            "fit_rows": 4000,
+            "fit_strictly_earlier_than_score": true,
+            "matrix_target_semantic_row_hash": "3257e087387e2e5f304fb4b94675533e8e7fb157940edc0d928afd470a95f86a",
+            "score_block_number": 2,
+            "score_rows": 1040,
+            "score_semantic_row_hash": "09416cb732d00dde4e8acd67b27364539aafa49ae3074caed4298e6ab4110235",
+            "score_start": "2024-01-01"
+          },
+          {
+            "fit_end": "2024-05-31",
+            "fit_rows": 5040,
+            "fit_strictly_earlier_than_score": true,
+            "matrix_target_semantic_row_hash": "41f6dc66ec180934f30ef0c5e0e448cdabc9b35cc93436c13ab84ad0a2cdaecb",
+            "score_block_number": 3,
+            "score_rows": 1056,
+            "score_semantic_row_hash": "90b4fd85b42f184eba2da9eab8a77678b42821eb29cf7e31b39dbfd7954fbc5f",
+            "score_start": "2024-07-01"
+          }
+        ],
+        "model": "LIGHTGBM",
+        "outer_labels_used_for_threshold": false,
+        "outer_score_rows": 1032,
+        "outer_score_semantic_row_hash": "5ec264fcac3005cb1293b294eb6c359b0a016c53556d66e017394ca5024dc8b8",
+        "pooled_score_block_count": 3,
+        "pooled_score_count": 3136,
+        "pooled_score_ledger_hash": "3b10568e314773259defcb67d3bd3d06e35c115ab40be44599abb468bb3971ba",
+        "preprocessing_and_estimator_recreated": true,
+        "threshold_frozen_before_final_refit": true,
+        "threshold_provenance_hash": "830d4e8521aa0d1070412549b109129325a8c9d484f093b857c7992c41d38d31"
+      },
+      "RICH_LINEAR": {
+        "final_fit_rows": 6096,
+        "final_fit_semantic_row_hash": "734f9cfd8eeb3bf5a0a0a1492c6c9d6db7d76f55c62ba2b9245db7a88c8fa40f",
+        "final_fit_uses_all_label_mature_window_rows": true,
+        "inner_stage_count": 3,
+        "inner_stages": [
+          {
+            "fit_end": "2023-06-02",
+            "fit_rows": 2960,
+            "fit_strictly_earlier_than_score": true,
+            "matrix_target_semantic_row_hash": "598b728cdac7a435356c6002008085db6e2745cfb82cae724bbf814764ee32cb",
+            "score_block_number": 1,
+            "score_rows": 1040,
+            "score_semantic_row_hash": "29ae6cda547e0549e3bf99ffac32eb71ac32f2c86497620dabe4dd09131446c5",
+            "score_start": "2023-07-03"
+          },
+          {
+            "fit_end": "2023-12-01",
+            "fit_rows": 4000,
+            "fit_strictly_earlier_than_score": true,
+            "matrix_target_semantic_row_hash": "3257e087387e2e5f304fb4b94675533e8e7fb157940edc0d928afd470a95f86a",
+            "score_block_number": 2,
+            "score_rows": 1040,
+            "score_semantic_row_hash": "09416cb732d00dde4e8acd67b27364539aafa49ae3074caed4298e6ab4110235",
+            "score_start": "2024-01-01"
+          },
+          {
+            "fit_end": "2024-05-31",
+            "fit_rows": 5040,
+            "fit_strictly_earlier_than_score": true,
+            "matrix_target_semantic_row_hash": "41f6dc66ec180934f30ef0c5e0e448cdabc9b35cc93436c13ab84ad0a2cdaecb",
+            "score_block_number": 3,
+            "score_rows": 1056,
+            "score_semantic_row_hash": "90b4fd85b42f184eba2da9eab8a77678b42821eb29cf7e31b39dbfd7954fbc5f",
+            "score_start": "2024-07-01"
+          }
+        ],
+        "model": "RIDGE",
+        "outer_labels_used_for_threshold": false,
+        "outer_score_rows": 1032,
+        "outer_score_semantic_row_hash": "5ec264fcac3005cb1293b294eb6c359b0a016c53556d66e017394ca5024dc8b8",
+        "pooled_score_block_count": 3,
+        "pooled_score_count": 3136,
+        "pooled_score_ledger_hash": "3b10568e314773259defcb67d3bd3d06e35c115ab40be44599abb468bb3971ba",
+        "preprocessing_and_estimator_recreated": true,
+        "threshold_frozen_before_final_refit": true,
+        "threshold_provenance_hash": "d03dd9985230a6fbb3b452319ccbcfb7423766649ccebb350b76455295c24fc2"
+      }
+    },
+    "fixture_id": "phase-d1-v3-walkforward",
+    "outer_block": "LOCKED_2025_H1",
+    "proof_hash": "a7031df9b29eabe91d6274592c024a4a0cf023afd2d05010c32c648a6fc8e7b6",
+    "schema_version": "ats.phase_d1.synthetic_prequential_proof.v3",
+    "synthetic_only_not_model_quality": true,
+    "test_labels_can_affect_threshold": false
+  },
+  "walk_forward_resolution": {
+    "block_count": 8,
+    "blocks": [
+      {
+        "block_id": "MODEL_SELECTION_2023_H1",
+        "calendar_half": "2023H1",
+        "complete": true,
+        "decisive": true,
+        "estimator_window_end": "2022-12-30",
+        "estimator_window_sessions_hash": "19a71796c9e844267fced2ad1e00775da7e240b1a2e6ff5ae8ee225225a9d362",
+        "estimator_window_start": "2020-01-02",
+        "evaluation_end": "2023-06-30",
+        "evaluation_expected_sessions": 124,
+        "evaluation_minimum_qualifying_sessions": 100,
+        "evaluation_minimum_rows": 4500,
+        "evaluation_minimum_status": "PASS",
+        "evaluation_right_censored_sessions": 0,
+        "evaluation_sessions_hash": "4f67b2b456a64a6ee4acd15e8a812f79bf99fbefe224b1f01a644261ce323e9f",
+        "evaluation_start": "2023-01-02",
+        "evaluation_structurally_outcome_available_sessions": 124,
+        "final_fit": {
+          "availability": {
+            "candidate_sessions": 754,
+            "first_purged_session": "2022-12-02",
+            "last_retained_session": "2022-12-01",
+            "purged_sessions": 20,
+            "retained_sessions": 734
+          },
+          "boundary_session": "2023-01-02",
+          "minimum_model_rows": 26460,
+          "minimum_qualifying_sessions": 588,
+          "minimum_status": "PASS",
+          "retained_sessions_hash": "284d5f4130d90cc1b6dded490e44f982750d68a49f4fa25f3dbc6864ce500db0",
+          "structural_model_rows": 43120,
+          "structural_qualifying_sessions": 734
+        },
+        "inner_score_blocks": [
+          {
+            "fit_availability": {
+              "candidate_sessions": 375,
+              "first_purged_session": "2021-06-02",
+              "last_retained_session": "2021-06-01",
+              "purged_sessions": 20,
+              "retained_sessions": 355
+            },
+            "fit_boundary_session": "2021-07-01",
+            "fit_end_candidate": "2021-06-30",
+            "fit_history_months": 18,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "0ba805d8772161e8d9a5144f9a4d8a4081b937dabf669e19d71906fd8a008808",
+            "fit_start": "2020-01-02",
+            "minimum_model_rows": 12780,
+            "minimum_qualifying_sessions": 284,
+            "score_block_number": 1,
+            "score_end": "2021-12-30",
+            "score_expected_sessions": 128,
+            "score_minimum_qualifying_sessions": 103,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "67b29fd9aa225adc4eccbf33fbc9e138c9078663e814bf1ccddc1a16a1961444",
+            "score_start": "2021-07-01",
+            "structural_fit_rows": 20868,
+            "structural_qualifying_fit_sessions": 355,
+            "structural_qualifying_score_sessions": 128
+          },
+          {
+            "fit_availability": {
+              "candidate_sessions": 503,
+              "first_purged_session": "2021-12-02",
+              "last_retained_session": "2021-12-01",
+              "purged_sessions": 20,
+              "retained_sessions": 483
+            },
+            "fit_boundary_session": "2022-01-03",
+            "fit_end_candidate": "2021-12-30",
+            "fit_history_months": 24,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "0fd31c81f1892460931a9228e06ef43869709adfd3d5fad0d4ea7a06bc11d7dc",
+            "fit_start": "2020-01-02",
+            "minimum_model_rows": 17415,
+            "minimum_qualifying_sessions": 387,
+            "score_block_number": 2,
+            "score_end": "2022-06-30",
+            "score_expected_sessions": 124,
+            "score_minimum_qualifying_sessions": 100,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "c58318ea9956f53ab125f46ef4e0bf132ab89fd873659c5735164ef8f7e65d6e",
+            "score_start": "2022-01-03",
+            "structural_fit_rows": 28401,
+            "structural_qualifying_fit_sessions": 483,
+            "structural_qualifying_score_sessions": 124
+          },
+          {
+            "fit_availability": {
+              "candidate_sessions": 627,
+              "first_purged_session": "2022-06-02",
+              "last_retained_session": "2022-06-01",
+              "purged_sessions": 20,
+              "retained_sessions": 607
+            },
+            "fit_boundary_session": "2022-07-01",
+            "fit_end_candidate": "2022-06-30",
+            "fit_history_months": 30,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "194b505eb421b191c38434834dbdd57efa610f7204635d7e4659ce7c1f897c39",
+            "fit_start": "2020-01-02",
+            "minimum_model_rows": 21870,
+            "minimum_qualifying_sessions": 486,
+            "score_block_number": 3,
+            "score_end": "2022-12-30",
+            "score_expected_sessions": 127,
+            "score_minimum_qualifying_sessions": 102,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "333eb1f7e6d2e35dbd0395433b48dfb0150a1e420903306b5f963983a34676b9",
+            "score_start": "2022-07-01",
+            "structural_fit_rows": 35677,
+            "structural_qualifying_fit_sessions": 607,
+            "structural_qualifying_score_sessions": 127
+          }
+        ],
+        "refit_session": "2023-01-02",
+        "role": "model_family_selection",
+        "structural_evaluation_rows": 7440,
+        "structural_qualifying_evaluation_sessions": 124,
+        "window_lower_calendar_boundary": "2020-01-01"
+      },
+      {
+        "block_id": "MODEL_SELECTION_2023_H2",
+        "calendar_half": "2023H2",
+        "complete": true,
+        "decisive": true,
+        "estimator_window_end": "2023-06-30",
+        "estimator_window_sessions_hash": "d096dad94d29ef6ae6981027a48b3ae5bfb6681e194e4f76521f9c01f2a64f9f",
+        "estimator_window_start": "2020-07-01",
+        "evaluation_end": "2023-12-29",
+        "evaluation_expected_sessions": 126,
+        "evaluation_minimum_qualifying_sessions": 101,
+        "evaluation_minimum_rows": 4545,
+        "evaluation_minimum_status": "PASS",
+        "evaluation_right_censored_sessions": 0,
+        "evaluation_sessions_hash": "d775b2894e72334c261ee101ca8b18443b6939e25bd55a7b40bb7d64cc9b2dfc",
+        "evaluation_start": "2023-07-03",
+        "evaluation_structurally_outcome_available_sessions": 126,
+        "final_fit": {
+          "availability": {
+            "candidate_sessions": 754,
+            "first_purged_session": "2023-06-02",
+            "last_retained_session": "2023-06-01",
+            "purged_sessions": 20,
+            "retained_sessions": 734
+          },
+          "boundary_session": "2023-07-03",
+          "minimum_model_rows": 26460,
+          "minimum_qualifying_sessions": 588,
+          "minimum_status": "PASS",
+          "retained_sessions_hash": "5a52228cda72b9da3317092cae993c96e6f71232d871aaf52b9b90601f533792",
+          "structural_model_rows": 43246,
+          "structural_qualifying_sessions": 734
+        },
+        "inner_score_blocks": [
+          {
+            "fit_availability": {
+              "candidate_sessions": 379,
+              "first_purged_session": "2021-12-02",
+              "last_retained_session": "2021-12-01",
+              "purged_sessions": 20,
+              "retained_sessions": 359
+            },
+            "fit_boundary_session": "2022-01-03",
+            "fit_end_candidate": "2021-12-30",
+            "fit_history_months": 18,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "b4c8b4a22c77625c389fbc167bc85c2b9bd1745597e82fe23cc159d9b387dad2",
+            "fit_start": "2020-07-01",
+            "minimum_model_rows": 12960,
+            "minimum_qualifying_sessions": 288,
+            "score_block_number": 1,
+            "score_end": "2022-06-30",
+            "score_expected_sessions": 124,
+            "score_minimum_qualifying_sessions": 100,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "c58318ea9956f53ab125f46ef4e0bf132ab89fd873659c5735164ef8f7e65d6e",
+            "score_start": "2022-01-03",
+            "structural_fit_rows": 21106,
+            "structural_qualifying_fit_sessions": 359,
+            "structural_qualifying_score_sessions": 124
+          },
+          {
+            "fit_availability": {
+              "candidate_sessions": 503,
+              "first_purged_session": "2022-06-02",
+              "last_retained_session": "2022-06-01",
+              "purged_sessions": 20,
+              "retained_sessions": 483
+            },
+            "fit_boundary_session": "2022-07-01",
+            "fit_end_candidate": "2022-06-30",
+            "fit_history_months": 24,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "dcbb091701e990589e13863bf4c6d70d9a83c894f7a776910012bbde9c52b771",
+            "fit_start": "2020-07-01",
+            "minimum_model_rows": 17415,
+            "minimum_qualifying_sessions": 387,
+            "score_block_number": 2,
+            "score_end": "2022-12-30",
+            "score_expected_sessions": 127,
+            "score_minimum_qualifying_sessions": 102,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "333eb1f7e6d2e35dbd0395433b48dfb0150a1e420903306b5f963983a34676b9",
+            "score_start": "2022-07-01",
+            "structural_fit_rows": 28382,
+            "structural_qualifying_fit_sessions": 483,
+            "structural_qualifying_score_sessions": 127
+          },
+          {
+            "fit_availability": {
+              "candidate_sessions": 630,
+              "first_purged_session": "2022-12-02",
+              "last_retained_session": "2022-12-01",
+              "purged_sessions": 20,
+              "retained_sessions": 610
+            },
+            "fit_boundary_session": "2023-01-02",
+            "fit_end_candidate": "2022-12-30",
+            "fit_history_months": 30,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "d59772da74b861124e9562727b9935a137b5791f62c653741d5cff292c2a51f8",
+            "fit_start": "2020-07-01",
+            "minimum_model_rows": 21960,
+            "minimum_qualifying_sessions": 488,
+            "score_block_number": 3,
+            "score_end": "2023-06-30",
+            "score_expected_sessions": 124,
+            "score_minimum_qualifying_sessions": 100,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "4f67b2b456a64a6ee4acd15e8a812f79bf99fbefe224b1f01a644261ce323e9f",
+            "score_start": "2023-01-02",
+            "structural_fit_rows": 35825,
+            "structural_qualifying_fit_sessions": 610,
+            "structural_qualifying_score_sessions": 124
+          }
+        ],
+        "refit_session": "2023-07-03",
+        "role": "model_family_selection",
+        "structural_evaluation_rows": 7555,
+        "structural_qualifying_evaluation_sessions": 126,
+        "window_lower_calendar_boundary": "2020-07-01"
+      },
+      {
+        "block_id": "DEVELOPMENT_2024_H1",
+        "calendar_half": "2024H1",
+        "complete": true,
+        "decisive": true,
+        "estimator_window_end": "2023-12-29",
+        "estimator_window_sessions_hash": "d6e397ffcd999b3246e048b65ee175ddadad4d714778054bbcaa6a6b336fe1b0",
+        "estimator_window_start": "2021-01-04",
+        "evaluation_end": "2024-06-28",
+        "evaluation_expected_sessions": 124,
+        "evaluation_minimum_qualifying_sessions": 100,
+        "evaluation_minimum_rows": 4500,
+        "evaluation_minimum_status": "PASS",
+        "evaluation_right_censored_sessions": 0,
+        "evaluation_sessions_hash": "3dbf9f7e487109f41c1619482ea7ed4a0b17483d2a3a2d2d9f126d934d2702e2",
+        "evaluation_start": "2024-01-02",
+        "evaluation_structurally_outcome_available_sessions": 124,
+        "final_fit": {
+          "availability": {
+            "candidate_sessions": 752,
+            "first_purged_session": "2023-11-30",
+            "last_retained_session": "2023-11-29",
+            "purged_sessions": 20,
+            "retained_sessions": 732
+          },
+          "boundary_session": "2024-01-02",
+          "minimum_model_rows": 26370,
+          "minimum_qualifying_sessions": 586,
+          "minimum_status": "PASS",
+          "retained_sessions_hash": "a4ba2a1083457f02d4d8aab62ae86754bbcc3253c87d9d54c92798853ba348fd",
+          "structural_model_rows": 43302,
+          "structural_qualifying_sessions": 732
+        },
+        "inner_score_blocks": [
+          {
+            "fit_availability": {
+              "candidate_sessions": 375,
+              "first_purged_session": "2022-06-02",
+              "last_retained_session": "2022-06-01",
+              "purged_sessions": 20,
+              "retained_sessions": 355
+            },
+            "fit_boundary_session": "2022-07-01",
+            "fit_end_candidate": "2022-06-30",
+            "fit_history_months": 18,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "1573a8565c30d656d67e09cc6243be0e1ff5369bc52d7b285292caea7a680032",
+            "fit_start": "2021-01-04",
+            "minimum_model_rows": 12780,
+            "minimum_qualifying_sessions": 284,
+            "score_block_number": 1,
+            "score_end": "2022-12-30",
+            "score_expected_sessions": 127,
+            "score_minimum_qualifying_sessions": 102,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "333eb1f7e6d2e35dbd0395433b48dfb0150a1e420903306b5f963983a34676b9",
+            "score_start": "2022-07-01",
+            "structural_fit_rows": 20883,
+            "structural_qualifying_fit_sessions": 355,
+            "structural_qualifying_score_sessions": 127
+          },
+          {
+            "fit_availability": {
+              "candidate_sessions": 502,
+              "first_purged_session": "2022-12-02",
+              "last_retained_session": "2022-12-01",
+              "purged_sessions": 20,
+              "retained_sessions": 482
+            },
+            "fit_boundary_session": "2023-01-02",
+            "fit_end_candidate": "2022-12-30",
+            "fit_history_months": 24,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "e6928843c145bca0ffa46ce6bee9f65fb7adb805ab03137ef34e9f73559ce931",
+            "fit_start": "2021-01-04",
+            "minimum_model_rows": 17370,
+            "minimum_qualifying_sessions": 386,
+            "score_block_number": 2,
+            "score_end": "2023-06-30",
+            "score_expected_sessions": 124,
+            "score_minimum_qualifying_sessions": 100,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "4f67b2b456a64a6ee4acd15e8a812f79bf99fbefe224b1f01a644261ce323e9f",
+            "score_start": "2023-01-02",
+            "structural_fit_rows": 28326,
+            "structural_qualifying_fit_sessions": 482,
+            "structural_qualifying_score_sessions": 124
+          },
+          {
+            "fit_availability": {
+              "candidate_sessions": 626,
+              "first_purged_session": "2023-06-02",
+              "last_retained_session": "2023-06-01",
+              "purged_sessions": 20,
+              "retained_sessions": 606
+            },
+            "fit_boundary_session": "2023-07-03",
+            "fit_end_candidate": "2023-06-30",
+            "fit_history_months": 30,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "1dbf154196030fb0baefa828707abbfdc64b7ffea96e46433c22aab9ce7c16b8",
+            "fit_start": "2021-01-04",
+            "minimum_model_rows": 21825,
+            "minimum_qualifying_sessions": 485,
+            "score_block_number": 3,
+            "score_end": "2023-12-29",
+            "score_expected_sessions": 126,
+            "score_minimum_qualifying_sessions": 101,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "d775b2894e72334c261ee101ca8b18443b6939e25bd55a7b40bb7d64cc9b2dfc",
+            "score_start": "2023-07-03",
+            "structural_fit_rows": 35747,
+            "structural_qualifying_fit_sessions": 606,
+            "structural_qualifying_score_sessions": 126
+          }
+        ],
+        "refit_session": "2024-01-02",
+        "role": "development_confirmation",
+        "structural_evaluation_rows": 7436,
+        "structural_qualifying_evaluation_sessions": 124,
+        "window_lower_calendar_boundary": "2021-01-01"
+      },
+      {
+        "block_id": "DEVELOPMENT_2024_H2",
+        "calendar_half": "2024H2",
+        "complete": true,
+        "decisive": true,
+        "estimator_window_end": "2024-06-28",
+        "estimator_window_sessions_hash": "f9bbc47e13de6c58d6c726ee938430065afd83873cc4bb0ab77ca62e93bba283",
+        "estimator_window_start": "2021-07-01",
+        "evaluation_end": "2024-12-30",
+        "evaluation_expected_sessions": 125,
+        "evaluation_minimum_qualifying_sessions": 100,
+        "evaluation_minimum_rows": 4500,
+        "evaluation_minimum_status": "PASS",
+        "evaluation_right_censored_sessions": 0,
+        "evaluation_sessions_hash": "58800b066dd1e9d7d510e294702be0c4402582a316a9f4662bdfc3a4d51b3fc0",
+        "evaluation_start": "2024-07-01",
+        "evaluation_structurally_outcome_available_sessions": 125,
+        "final_fit": {
+          "availability": {
+            "candidate_sessions": 753,
+            "first_purged_session": "2024-06-03",
+            "last_retained_session": "2024-05-31",
+            "purged_sessions": 20,
+            "retained_sessions": 733
+          },
+          "boundary_session": "2024-07-01",
+          "minimum_model_rows": 26415,
+          "minimum_qualifying_sessions": 587,
+          "minimum_status": "PASS",
+          "retained_sessions_hash": "4753c503060e20342e71f07bb69566f036be514bd623fc561ab203e6f99ed303",
+          "structural_model_rows": 43485,
+          "structural_qualifying_sessions": 733
+        },
+        "inner_score_blocks": [
+          {
+            "fit_availability": {
+              "candidate_sessions": 379,
+              "first_purged_session": "2022-12-02",
+              "last_retained_session": "2022-12-01",
+              "purged_sessions": 20,
+              "retained_sessions": 359
+            },
+            "fit_boundary_session": "2023-01-02",
+            "fit_end_candidate": "2022-12-30",
+            "fit_history_months": 18,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "3e12a9c44ae915fab1ea415ec2264e1d716f09d71b76cb970b46554dbdfee28d",
+            "fit_start": "2021-07-01",
+            "minimum_model_rows": 12960,
+            "minimum_qualifying_sessions": 288,
+            "score_block_number": 1,
+            "score_end": "2023-06-30",
+            "score_expected_sessions": 124,
+            "score_minimum_qualifying_sessions": 100,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "4f67b2b456a64a6ee4acd15e8a812f79bf99fbefe224b1f01a644261ce323e9f",
+            "score_start": "2023-01-02",
+            "structural_fit_rows": 21073,
+            "structural_qualifying_fit_sessions": 359,
+            "structural_qualifying_score_sessions": 124
+          },
+          {
+            "fit_availability": {
+              "candidate_sessions": 503,
+              "first_purged_session": "2023-06-02",
+              "last_retained_session": "2023-06-01",
+              "purged_sessions": 20,
+              "retained_sessions": 483
+            },
+            "fit_boundary_session": "2023-07-03",
+            "fit_end_candidate": "2023-06-30",
+            "fit_history_months": 24,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "384eb258f69cdcafa392c0dcaa98d798b9c0b4c5f86985d6c1aaa5940eb7c82d",
+            "fit_start": "2021-07-01",
+            "minimum_model_rows": 17415,
+            "minimum_qualifying_sessions": 387,
+            "score_block_number": 2,
+            "score_end": "2023-12-29",
+            "score_expected_sessions": 126,
+            "score_minimum_qualifying_sessions": 101,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "d775b2894e72334c261ee101ca8b18443b6939e25bd55a7b40bb7d64cc9b2dfc",
+            "score_start": "2023-07-03",
+            "structural_fit_rows": 28494,
+            "structural_qualifying_fit_sessions": 483,
+            "structural_qualifying_score_sessions": 126
+          },
+          {
+            "fit_availability": {
+              "candidate_sessions": 629,
+              "first_purged_session": "2023-11-30",
+              "last_retained_session": "2023-11-29",
+              "purged_sessions": 20,
+              "retained_sessions": 609
+            },
+            "fit_boundary_session": "2024-01-02",
+            "fit_end_candidate": "2023-12-29",
+            "fit_history_months": 30,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "75f2b7f3ab63c0ac18b402bf658e40242bca43124b1d375d0915cfa29361ddc4",
+            "fit_start": "2021-07-01",
+            "minimum_model_rows": 21960,
+            "minimum_qualifying_sessions": 488,
+            "score_block_number": 3,
+            "score_end": "2024-06-28",
+            "score_expected_sessions": 124,
+            "score_minimum_qualifying_sessions": 100,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "3dbf9f7e487109f41c1619482ea7ed4a0b17483d2a3a2d2d9f126d934d2702e2",
+            "score_start": "2024-01-02",
+            "structural_fit_rows": 36049,
+            "structural_qualifying_fit_sessions": 609,
+            "structural_qualifying_score_sessions": 124
+          }
+        ],
+        "refit_session": "2024-07-01",
+        "role": "development_confirmation",
+        "structural_evaluation_rows": 7458,
+        "structural_qualifying_evaluation_sessions": 125,
+        "window_lower_calendar_boundary": "2021-07-01"
+      },
+      {
+        "block_id": "LOCKED_2025_H1",
+        "calendar_half": "2025H1",
+        "complete": true,
+        "decisive": true,
+        "estimator_window_end": "2024-12-30",
+        "estimator_window_sessions_hash": "7f9640674718cc4de8a1bb9169ad7e1c810713c89ee298dca5aba9896afb9010",
+        "estimator_window_start": "2022-01-03",
+        "evaluation_end": "2025-06-30",
+        "evaluation_expected_sessions": 123,
+        "evaluation_minimum_qualifying_sessions": 99,
+        "evaluation_minimum_rows": 4455,
+        "evaluation_minimum_status": "PASS",
+        "evaluation_right_censored_sessions": 0,
+        "evaluation_sessions_hash": "b5516e8a7b7a18e8ed0206bb152d5ff94f91a2514fbdafb7cbb6e5ee9a7d65b2",
+        "evaluation_start": "2025-01-02",
+        "evaluation_structurally_outcome_available_sessions": 123,
+        "final_fit": {
+          "availability": {
+            "candidate_sessions": 750,
+            "first_purged_session": "2024-11-28",
+            "last_retained_session": "2024-11-27",
+            "purged_sessions": 20,
+            "retained_sessions": 730
+          },
+          "boundary_session": "2025-01-02",
+          "minimum_model_rows": 26280,
+          "minimum_qualifying_sessions": 584,
+          "minimum_status": "PASS",
+          "retained_sessions_hash": "e7941e7ee17f4969c7b4dadb3f20a135cc64624c919ca4afe32bc64989c19171",
+          "structural_model_rows": 43438,
+          "structural_qualifying_sessions": 730
+        },
+        "inner_score_blocks": [
+          {
+            "fit_availability": {
+              "candidate_sessions": 375,
+              "first_purged_session": "2023-06-02",
+              "last_retained_session": "2023-06-01",
+              "purged_sessions": 20,
+              "retained_sessions": 355
+            },
+            "fit_boundary_session": "2023-07-03",
+            "fit_end_candidate": "2023-06-30",
+            "fit_history_months": 18,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "0a3210a843b0f6712df70549d0a370a7a3778a8a730dc4a28c90ed3195da90a9",
+            "fit_start": "2022-01-03",
+            "minimum_model_rows": 12780,
+            "minimum_qualifying_sessions": 284,
+            "score_block_number": 1,
+            "score_end": "2023-12-29",
+            "score_expected_sessions": 126,
+            "score_minimum_qualifying_sessions": 101,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "d775b2894e72334c261ee101ca8b18443b6939e25bd55a7b40bb7d64cc9b2dfc",
+            "score_start": "2023-07-03",
+            "structural_fit_rows": 20968,
+            "structural_qualifying_fit_sessions": 355,
+            "structural_qualifying_score_sessions": 126
+          },
+          {
+            "fit_availability": {
+              "candidate_sessions": 501,
+              "first_purged_session": "2023-11-30",
+              "last_retained_session": "2023-11-29",
+              "purged_sessions": 20,
+              "retained_sessions": 481
+            },
+            "fit_boundary_session": "2024-01-02",
+            "fit_end_candidate": "2023-12-29",
+            "fit_history_months": 24,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "24f12153a371b2a2f952649caa6f2e1c262bdc3633de3f0858518bd01c54c5fc",
+            "fit_start": "2022-01-03",
+            "minimum_model_rows": 17325,
+            "minimum_qualifying_sessions": 385,
+            "score_block_number": 2,
+            "score_end": "2024-06-28",
+            "score_expected_sessions": 124,
+            "score_minimum_qualifying_sessions": 100,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "3dbf9f7e487109f41c1619482ea7ed4a0b17483d2a3a2d2d9f126d934d2702e2",
+            "score_start": "2024-01-02",
+            "structural_fit_rows": 28523,
+            "structural_qualifying_fit_sessions": 481,
+            "structural_qualifying_score_sessions": 124
+          },
+          {
+            "fit_availability": {
+              "candidate_sessions": 625,
+              "first_purged_session": "2024-06-03",
+              "last_retained_session": "2024-05-31",
+              "purged_sessions": 20,
+              "retained_sessions": 605
+            },
+            "fit_boundary_session": "2024-07-01",
+            "fit_end_candidate": "2024-06-28",
+            "fit_history_months": 30,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "721ada21cdf764c8f414494fe03eebabc55f8248e4a4319dfa11cccb5d3ad2e0",
+            "fit_start": "2022-01-03",
+            "minimum_model_rows": 21780,
+            "minimum_qualifying_sessions": 484,
+            "score_block_number": 3,
+            "score_end": "2024-12-30",
+            "score_expected_sessions": 125,
+            "score_minimum_qualifying_sessions": 100,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "58800b066dd1e9d7d510e294702be0c4402582a316a9f4662bdfc3a4d51b3fc0",
+            "score_start": "2024-07-01",
+            "structural_fit_rows": 35959,
+            "structural_qualifying_fit_sessions": 605,
+            "structural_qualifying_score_sessions": 125
+          }
+        ],
+        "refit_session": "2025-01-02",
+        "role": "locked_test",
+        "structural_evaluation_rows": 7254,
+        "structural_qualifying_evaluation_sessions": 123,
+        "window_lower_calendar_boundary": "2022-01-01"
+      },
+      {
+        "block_id": "LOCKED_2025_H2",
+        "calendar_half": "2025H2",
+        "complete": true,
+        "decisive": true,
+        "estimator_window_end": "2025-06-30",
+        "estimator_window_sessions_hash": "77e901ac8986840274b48a4af68a106583aea172a872d5da5eab456a4b615a96",
+        "estimator_window_start": "2022-07-01",
+        "evaluation_end": "2025-12-30",
+        "evaluation_expected_sessions": 126,
+        "evaluation_minimum_qualifying_sessions": 101,
+        "evaluation_minimum_rows": 4545,
+        "evaluation_minimum_status": "PASS",
+        "evaluation_right_censored_sessions": 0,
+        "evaluation_sessions_hash": "4465d89c17c3e5a4a18d315c30a481d20586ecf1750cff3b8c2fb2eecdc9abde",
+        "evaluation_start": "2025-07-01",
+        "evaluation_structurally_outcome_available_sessions": 126,
+        "final_fit": {
+          "availability": {
+            "candidate_sessions": 749,
+            "first_purged_session": "2025-06-02",
+            "last_retained_session": "2025-05-30",
+            "purged_sessions": 20,
+            "retained_sessions": 729
+          },
+          "boundary_session": "2025-07-01",
+          "minimum_model_rows": 26280,
+          "minimum_qualifying_sessions": 584,
+          "minimum_status": "PASS",
+          "retained_sessions_hash": "3dfb23b5f4feefd095727eda515fcb4f555846ccd704ec06723034a7d7429ede",
+          "structural_model_rows": 43396,
+          "structural_qualifying_sessions": 729
+        },
+        "inner_score_blocks": [
+          {
+            "fit_availability": {
+              "candidate_sessions": 377,
+              "first_purged_session": "2023-11-30",
+              "last_retained_session": "2023-11-29",
+              "purged_sessions": 20,
+              "retained_sessions": 357
+            },
+            "fit_boundary_session": "2024-01-02",
+            "fit_end_candidate": "2023-12-29",
+            "fit_history_months": 18,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "ff157105fa849c00d9733bb78249b12befe4568331c3964c8ed312409ab3a6ff",
+            "fit_start": "2022-07-01",
+            "minimum_model_rows": 12870,
+            "minimum_qualifying_sessions": 286,
+            "score_block_number": 1,
+            "score_end": "2024-06-28",
+            "score_expected_sessions": 124,
+            "score_minimum_qualifying_sessions": 100,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "3dbf9f7e487109f41c1619482ea7ed4a0b17483d2a3a2d2d9f126d934d2702e2",
+            "score_start": "2024-01-02",
+            "structural_fit_rows": 21228,
+            "structural_qualifying_fit_sessions": 357,
+            "structural_qualifying_score_sessions": 124
+          },
+          {
+            "fit_availability": {
+              "candidate_sessions": 501,
+              "first_purged_session": "2024-06-03",
+              "last_retained_session": "2024-05-31",
+              "purged_sessions": 20,
+              "retained_sessions": 481
+            },
+            "fit_boundary_session": "2024-07-01",
+            "fit_end_candidate": "2024-06-28",
+            "fit_history_months": 24,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "db1a12f27a93f3480a9e558f2b1657e6eb1bdbc0e055abb3a087fcade28f1044",
+            "fit_start": "2022-07-01",
+            "minimum_model_rows": 17325,
+            "minimum_qualifying_sessions": 385,
+            "score_block_number": 2,
+            "score_end": "2024-12-30",
+            "score_expected_sessions": 125,
+            "score_minimum_qualifying_sessions": 100,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "58800b066dd1e9d7d510e294702be0c4402582a316a9f4662bdfc3a4d51b3fc0",
+            "score_start": "2024-07-01",
+            "structural_fit_rows": 28664,
+            "structural_qualifying_fit_sessions": 481,
+            "structural_qualifying_score_sessions": 125
+          },
+          {
+            "fit_availability": {
+              "candidate_sessions": 626,
+              "first_purged_session": "2024-11-28",
+              "last_retained_session": "2024-11-27",
+              "purged_sessions": 20,
+              "retained_sessions": 606
+            },
+            "fit_boundary_session": "2025-01-02",
+            "fit_end_candidate": "2024-12-30",
+            "fit_history_months": 30,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "bd4fbf9877d6948c9085d211b311445cf42a750b215a0f47388a13313788ddeb",
+            "fit_start": "2022-07-01",
+            "minimum_model_rows": 21825,
+            "minimum_qualifying_sessions": 485,
+            "score_block_number": 3,
+            "score_end": "2025-06-30",
+            "score_expected_sessions": 123,
+            "score_minimum_qualifying_sessions": 99,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "b5516e8a7b7a18e8ed0206bb152d5ff94f91a2514fbdafb7cbb6e5ee9a7d65b2",
+            "score_start": "2025-01-02",
+            "structural_fit_rows": 36143,
+            "structural_qualifying_fit_sessions": 606,
+            "structural_qualifying_score_sessions": 123
+          }
+        ],
+        "refit_session": "2025-07-01",
+        "role": "locked_test",
+        "structural_evaluation_rows": 7410,
+        "structural_qualifying_evaluation_sessions": 126,
+        "window_lower_calendar_boundary": "2022-07-01"
+      },
+      {
+        "block_id": "LOCKED_2026_H1",
+        "calendar_half": "2026H1",
+        "complete": true,
+        "decisive": true,
+        "estimator_window_end": "2025-12-30",
+        "estimator_window_sessions_hash": "4bc75b5b9d95ec7ed6802359e3b715565759e2a6532119957c862c4f14a35b29",
+        "estimator_window_start": "2023-01-02",
+        "evaluation_end": "2026-06-30",
+        "evaluation_expected_sessions": 123,
+        "evaluation_minimum_qualifying_sessions": 99,
+        "evaluation_minimum_rows": 4455,
+        "evaluation_minimum_status": "PASS",
+        "evaluation_right_censored_sessions": 0,
+        "evaluation_sessions_hash": "f739bee64a5056642df3da6603fc27a51b60e3555211390904fefe405b608667",
+        "evaluation_start": "2026-01-02",
+        "evaluation_structurally_outcome_available_sessions": 123,
+        "final_fit": {
+          "availability": {
+            "candidate_sessions": 748,
+            "first_purged_session": "2025-11-28",
+            "last_retained_session": "2025-11-27",
+            "purged_sessions": 20,
+            "retained_sessions": 728
+          },
+          "boundary_session": "2026-01-02",
+          "minimum_model_rows": 26235,
+          "minimum_qualifying_sessions": 583,
+          "minimum_status": "PASS",
+          "retained_sessions_hash": "792c6132266cb8623853bddd9b8dbdbe4d1875310ec0dddc8213b4a953359c9b",
+          "structural_model_rows": 43373,
+          "structural_qualifying_sessions": 728
+        },
+        "inner_score_blocks": [
+          {
+            "fit_availability": {
+              "candidate_sessions": 374,
+              "first_purged_session": "2024-06-03",
+              "last_retained_session": "2024-05-31",
+              "purged_sessions": 20,
+              "retained_sessions": 354
+            },
+            "fit_boundary_session": "2024-07-01",
+            "fit_end_candidate": "2024-06-28",
+            "fit_history_months": 18,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "ff692d57b7c191131578e6326c8cd0f65b9919442ccc1e3a8b1a811852a6ceda",
+            "fit_start": "2023-01-02",
+            "minimum_model_rows": 12780,
+            "minimum_qualifying_sessions": 284,
+            "score_block_number": 1,
+            "score_end": "2024-12-30",
+            "score_expected_sessions": 125,
+            "score_minimum_qualifying_sessions": 100,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "58800b066dd1e9d7d510e294702be0c4402582a316a9f4662bdfc3a4d51b3fc0",
+            "score_start": "2024-07-01",
+            "structural_fit_rows": 21231,
+            "structural_qualifying_fit_sessions": 354,
+            "structural_qualifying_score_sessions": 125
+          },
+          {
+            "fit_availability": {
+              "candidate_sessions": 499,
+              "first_purged_session": "2024-11-28",
+              "last_retained_session": "2024-11-27",
+              "purged_sessions": 20,
+              "retained_sessions": 479
+            },
+            "fit_boundary_session": "2025-01-02",
+            "fit_end_candidate": "2024-12-30",
+            "fit_history_months": 24,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "cb6d976b5dcb69735162c0422890db651fd735ff932ad92bc15f8d4442986e4e",
+            "fit_start": "2023-01-02",
+            "minimum_model_rows": 17280,
+            "minimum_qualifying_sessions": 384,
+            "score_block_number": 2,
+            "score_end": "2025-06-30",
+            "score_expected_sessions": 123,
+            "score_minimum_qualifying_sessions": 99,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "b5516e8a7b7a18e8ed0206bb152d5ff94f91a2514fbdafb7cbb6e5ee9a7d65b2",
+            "score_start": "2025-01-02",
+            "structural_fit_rows": 28710,
+            "structural_qualifying_fit_sessions": 479,
+            "structural_qualifying_score_sessions": 123
+          },
+          {
+            "fit_availability": {
+              "candidate_sessions": 622,
+              "first_purged_session": "2025-06-02",
+              "last_retained_session": "2025-05-30",
+              "purged_sessions": 20,
+              "retained_sessions": 602
+            },
+            "fit_boundary_session": "2025-07-01",
+            "fit_end_candidate": "2025-06-30",
+            "fit_history_months": 30,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "11275629c90e1b6b1ab787cb86d21b110725b225730c1ff26a8d620df19226ea",
+            "fit_start": "2023-01-02",
+            "minimum_model_rows": 21690,
+            "minimum_qualifying_sessions": 482,
+            "score_block_number": 3,
+            "score_end": "2025-12-30",
+            "score_expected_sessions": 126,
+            "score_minimum_qualifying_sessions": 101,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "4465d89c17c3e5a4a18d315c30a481d20586ecf1750cff3b8c2fb2eecdc9abde",
+            "score_start": "2025-07-01",
+            "structural_fit_rows": 35963,
+            "structural_qualifying_fit_sessions": 602,
+            "structural_qualifying_score_sessions": 126
+          }
+        ],
+        "refit_session": "2026-01-02",
+        "role": "locked_test",
+        "structural_evaluation_rows": 7349,
+        "structural_qualifying_evaluation_sessions": 123,
+        "window_lower_calendar_boundary": "2023-01-01"
+      },
+      {
+        "block_id": "MONITORING_2026_H2_PARTIAL",
+        "calendar_half": "2026H2",
+        "complete": false,
+        "decisive": false,
+        "estimator_window_end": "2026-06-30",
+        "estimator_window_sessions_hash": "5ef5cc42039d24c656529da07dafd3452ba5667d5bf93dd44b1a10426cd63f44",
+        "estimator_window_start": "2023-07-03",
+        "evaluation_end": "2026-08-18",
+        "evaluation_expected_sessions": 35,
+        "evaluation_minimum_qualifying_sessions": 0,
+        "evaluation_minimum_rows": 0,
+        "evaluation_minimum_status": "NON_GATING_PARTIAL",
+        "evaluation_right_censored_sessions": 20,
+        "evaluation_sessions_hash": "75cde4347caaa5b220eb8b259417c7444155e8fba29bc6a952680b07e6574d42",
+        "evaluation_start": "2026-07-01",
+        "evaluation_structurally_outcome_available_sessions": 15,
+        "final_fit": {
+          "availability": {
+            "candidate_sessions": 747,
+            "first_purged_session": "2026-06-02",
+            "last_retained_session": "2026-06-01",
+            "purged_sessions": 20,
+            "retained_sessions": 727
+          },
+          "boundary_session": "2026-07-01",
+          "minimum_model_rows": 26190,
+          "minimum_qualifying_sessions": 582,
+          "minimum_status": "PASS",
+          "retained_sessions_hash": "01b3bd91389afb9cf691dd51bff0e86e9d8d64ba7ed05adba8d52b6e3d8b08f3",
+          "structural_model_rows": 43263,
+          "structural_qualifying_sessions": 727
+        },
+        "inner_score_blocks": [
+          {
+            "fit_availability": {
+              "candidate_sessions": 375,
+              "first_purged_session": "2024-11-28",
+              "last_retained_session": "2024-11-27",
+              "purged_sessions": 20,
+              "retained_sessions": 355
+            },
+            "fit_boundary_session": "2025-01-02",
+            "fit_end_candidate": "2024-12-30",
+            "fit_history_months": 18,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "a2b4fb4fb45f4b72ddabc998b595e7dc7ff98a1d009cc17c9cb4bf05a42b8eea",
+            "fit_start": "2023-07-03",
+            "minimum_model_rows": 12780,
+            "minimum_qualifying_sessions": 284,
+            "score_block_number": 1,
+            "score_end": "2025-06-30",
+            "score_expected_sessions": 123,
+            "score_minimum_qualifying_sessions": 99,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "b5516e8a7b7a18e8ed0206bb152d5ff94f91a2514fbdafb7cbb6e5ee9a7d65b2",
+            "score_start": "2025-01-02",
+            "structural_fit_rows": 21270,
+            "structural_qualifying_fit_sessions": 355,
+            "structural_qualifying_score_sessions": 123
+          },
+          {
+            "fit_availability": {
+              "candidate_sessions": 498,
+              "first_purged_session": "2025-06-02",
+              "last_retained_session": "2025-05-30",
+              "purged_sessions": 20,
+              "retained_sessions": 478
+            },
+            "fit_boundary_session": "2025-07-01",
+            "fit_end_candidate": "2025-06-30",
+            "fit_history_months": 24,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "45802ea0392223d6f710f1ce642ca83890da2f19b1d5dd4f2ad78432c578d74b",
+            "fit_start": "2023-07-03",
+            "minimum_model_rows": 17235,
+            "minimum_qualifying_sessions": 383,
+            "score_block_number": 2,
+            "score_end": "2025-12-30",
+            "score_expected_sessions": 126,
+            "score_minimum_qualifying_sessions": 101,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "4465d89c17c3e5a4a18d315c30a481d20586ecf1750cff3b8c2fb2eecdc9abde",
+            "score_start": "2025-07-01",
+            "structural_fit_rows": 28523,
+            "structural_qualifying_fit_sessions": 478,
+            "structural_qualifying_score_sessions": 126
+          },
+          {
+            "fit_availability": {
+              "candidate_sessions": 624,
+              "first_purged_session": "2025-11-28",
+              "last_retained_session": "2025-11-27",
+              "purged_sessions": 20,
+              "retained_sessions": 604
+            },
+            "fit_boundary_session": "2026-01-02",
+            "fit_end_candidate": "2025-12-30",
+            "fit_history_months": 30,
+            "fit_minimum_status": "PASS",
+            "fit_retained_sessions_hash": "5f083508eb44754ee8321992d33e98bfa0c4f6755260556ec7c54641ff84b45d",
+            "fit_start": "2023-07-03",
+            "minimum_model_rows": 21780,
+            "minimum_qualifying_sessions": 484,
+            "score_block_number": 3,
+            "score_end": "2026-06-30",
+            "score_expected_sessions": 123,
+            "score_minimum_qualifying_sessions": 99,
+            "score_minimum_status": "PASS",
+            "score_sessions_hash": "f739bee64a5056642df3da6603fc27a51b60e3555211390904fefe405b608667",
+            "score_start": "2026-01-02",
+            "structural_fit_rows": 35933,
+            "structural_qualifying_fit_sessions": 604,
+            "structural_qualifying_score_sessions": 123
+          }
+        ],
+        "refit_session": "2026-07-01",
+        "role": "partial_monitoring",
+        "structural_evaluation_rows": 2100,
+        "structural_qualifying_evaluation_sessions": 35,
+        "window_lower_calendar_boundary": "2023-07-01"
+      }
+    ],
+    "calendar_end": "2026-08-18",
+    "calendar_hash": "5b88b3a54bf496304de16dc18029aedbca602921e10077248711112336f7c7eb",
+    "calendar_start": "2018-12-17",
+    "contract_version": "phase-d0-20260901-v3",
+    "evidence_mapping": {
+      "complete_decisive_years": [
+        2024,
+        2025
+      ],
+      "development_confirmation_pooled": [
+        "DEVELOPMENT_2024_H1",
+        "DEVELOPMENT_2024_H2"
+      ],
+      "development_stability_blocks": [
+        "DEVELOPMENT_2024_H1",
+        "DEVELOPMENT_2024_H2"
+      ],
+      "favorable_block_cannot_rescue_failed_pooled_gate": true,
+      "locked_evidence_pooled": [
+        "LOCKED_2025_H1",
+        "LOCKED_2025_H2",
+        "LOCKED_2026_H1"
+      ],
+      "locked_stability_blocks": [
+        "LOCKED_2025_H1",
+        "LOCKED_2025_H2",
+        "LOCKED_2026_H1"
+      ],
+      "model_family_selection": [
+        "MODEL_SELECTION_2023_H1",
+        "MODEL_SELECTION_2023_H2"
+      ],
+      "partial_monitoring_excluded_from_every_decisive_gate": true,
+      "pooled_result_cannot_hide_required_block_failure": true,
+      "positive_year_fraction_denominator": 2,
+      "ridge_tie_preference_absolute_difference_lte": 0.002,
+      "selection_pooling": "equal session weighting across both 2023 half-years",
+      "selection_supplies_confirmation_threshold_or_ci": false
+    },
+    "locked_prediction_order": [
+      "LOCKED_2025_H1",
+      "LOCKED_2025_H2",
+      "LOCKED_2026_H1"
+    ],
+    "minimums_status": "PASS",
+    "schema_version": "ats.phase_d1.walk_forward_plan.v3"
+  }
+}

@@ -34,6 +34,7 @@ class Operation(str, Enum):
 
 _CONTEXT_SEAL = object()
 FIXTURE_REGISTRY = REPOSITORY_ROOT / "source/python/configs/phase_d1_fixture_registry.json"
+FIXTURE_REGISTRY_V3 = REPOSITORY_ROOT / "source/python/configs/phase_d1_fixture_registry_v3.json"
 
 
 @dataclass(frozen=True, init=False)
@@ -91,16 +92,17 @@ class D1ExecutionGuard:
         Operation.RESOLVE_FINGERPRINTS,
     }
 
-    def __init__(self, contract: FrozenD0Contract):
+    def __init__(self, contract: FrozenD0Contract, fixture_registry: Path = FIXTURE_REGISTRY):
         self._pinned = contract.pinned_identity
+        self._fixture_registry_path = fixture_registry
         try:
-            registry = json.loads(FIXTURE_REGISTRY.read_text(encoding="utf-8"))
+            registry = json.loads(fixture_registry.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as exc:
             raise AuthorizationError(f"cannot load the D1 fixture registry: {exc}") from exc
-        if registry.get("schema_version") != "ats.phase_d1.fixture_registry.v2":
+        if registry.get("schema_version") not in {"ats.phase_d1.fixture_registry.v2", "ats.phase_d1.fixture_registry.v3"}:
             raise AuthorizationError("unexpected D1 fixture-registry schema")
         self._fixture_registry = registry
-        self._fixture_registry_sha256 = sha256_file(FIXTURE_REGISTRY)
+        self._fixture_registry_sha256 = sha256_file(fixture_registry)
 
     def matches_any_pinned_real_marker(self, identity: DatasetIdentity) -> bool:
         comparisons = (
@@ -125,6 +127,10 @@ class D1ExecutionGuard:
     @property
     def fixture_registry_sha256(self) -> str:
         return self._fixture_registry_sha256
+
+    @property
+    def fixture_registry_path(self) -> Path:
+        return self._fixture_registry_path
 
     def fixture_entry(self, fixture_id: str) -> dict[str, object]:
         entry = self._fixture_registry.get("fixtures", {}).get(fixture_id)

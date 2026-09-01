@@ -1,0 +1,66 @@
+{
+  "schema_version": "ats.phase_d0.manifest.v3",
+  "contract_version": "phase-d0-20260901-v3",
+  "status": "PASS",
+  "created_date": "2026-09-01",
+  "purpose": "Freeze the final pre-D2 trailing-36-month semiannual chronology and prequential-calibration amendment without predictive execution.",
+  "parents": {
+    "accepted_phase_d0_v2_commit": "cbddb4ff13f4452aa37f427f0f3c09a3f3da1ae4",
+    "accepted_phase_d1_v2_checkpoint": "724971466dacfba05ff0fa7e92cd68c4628008c7",
+    "accepted_d0_v2_artifact_sha256": {
+      "RESEARCH/PHASE_D0_EXPERIMENT_PLAN.md": "10645dd41f1aea1f74c9f137a2f0dfd34e0a0f41f6355854c0cf9ed4b9ba0baa",
+      "RESEARCH/PHASE_D0_REQUIREMENT_AUDIT.json": "f34202158f8b19cd903fd7dd00717ea529e9146fe2a94e790694892ec63559ed",
+      "RESEARCH/PHASE_D0_MANIFEST.json": "7fe34d679511eb4d75b269f5a908c6ac5e624d624aa067645286576f0f9e918c",
+      "source/python/configs/phase_d0_reference.json": "ef5a7f0fa76a104ff86cae7c2ad520867a0720e1c6e508558ef31316e7e153ae",
+      "source/python/configs/phase_d0_feature_registry.json": "733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6"
+    },
+    "accepted_d1_v2_artifact_sha256": {
+      "RESEARCH/PHASE_D1_READINESS_v2.md": "197a285acbea97c6bedf8435ca8264f69c7f781f1d4368dc8cabb6b7c286766a",
+      "RESEARCH/PHASE_D1_REQUIREMENT_AUDIT_v2.json": "657ef92d6b092968813594e9b43a61fd9135a75aff92f9da3172e77a0f2f18fa",
+      "RESEARCH/PHASE_D1_MANIFEST_v2.json": "0fcbc705c013e1dffd7f1b19184b9d7b72e4156f450fc7a152f2a47b6aa5d8aa",
+      "source/python/configs/phase_d1_structural_resolution.json": "6801c396932a7200960dfedd72b9454088e8f7875c9af9ef402ef212005a599b"
+    },
+    "accepted_d1_v2_structural_run": "phase-d1-structural-b4fb9bbc480c2026e423"
+  },
+  "amendment": {
+    "scientific_changes": [
+      "month-aligned trailing 36-calendar-month estimator windows",
+      "January and July refits with following-half-year scoring",
+      "three internal six-month prequential score blocks after 18, 24 and 30 months of history",
+      "final-refit separation and complete/partial evidence-period mappings",
+      "calendar-derived outer, final-fit, inner-fit and inner-score minimums",
+      "explicit half-year replacement of obsolete v2 evidence references in every composed comparison, evaluation and decision gate"
+    ],
+    "unchanged": "pinned inputs, 30 feature definitions, eight P survivors, primary target, 08:45 timing, models and parameters, four cells, identity blindness, row ledgers, opportunity rule, metrics, numerical gates, price basis, caveats and Phase A/B/C evidence",
+    "metadata_only_changes": "v3 file names, schemas, parent pointers, hashes and current-guidance links",
+    "final_design_amendment_before_d2": true,
+    "predictive_result_inspection": false,
+    "real_label_value_access": false,
+    "real_fit_prediction_score_or_metric": false,
+    "phase_d2_started": false
+  },
+  "request_sha256": "2bd00dcf4c244f647ae3f1e593d8bdfca6d05b327d0e0b5a92f8274f7d9d05a4",
+  "artifacts": [
+    {"path": "RESEARCH/PHASE_D0_EXPERIMENT_PLAN_v3.md", "bytes": 11744, "sha256": "ee9f0c2943bacae432c117a40f6855ae9d8a947588d320bb1d32da713e708568"},
+    {"path": "RESEARCH/PHASE_D0_REQUIREMENT_AUDIT_v3.json", "bytes": 8256, "sha256": "3a62af122d55d5fcda02b84ddf68e82adc71530bf1e8cd38264d04d466cac8de"},
+    {"path": "source/python/configs/phase_d0_reference_v3.json", "bytes": 9134, "sha256": "b41022103c5a0e7f49bed04c04ab77b8149fe449f0a153b3721b1541c123f91a"},
+    {"path": "source/python/configs/phase_d0_feature_registry.json", "bytes": 29614, "sha256": "733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6"},
+    {"path": "README.md", "bytes": 14994, "sha256": "a1f958488b9060c46d151d78c3adbc925f5b7d5d9328540b4b278d62fce55ed2"},
+    {"path": "RESEARCH/IMPLEMENTATION_ROADMAP.md", "bytes": 30091, "sha256": "7d0f77f741e401d0feeeb745fd9fd8596e873e2451ea1101c0e603076c18c7d4"},
+    {"path": "RESEARCH/PHASE_D2_AUTHORIZATION_OVERLAY.md", "bytes": 3022, "sha256": "cfd548930a6f8f533cd336c4346a167b3560cf8f71eea58db9bf04d41ea0b09a"}
+  ],
+  "code": [
+    {"path": "RESEARCH/prototypes/phase_d0/validate_phase_d0_v3.py", "bytes": 9113, "sha256": "1dbc6dd451c7ddc693866589796ca404323890c26d156d8a809c940b90ef44b1"},
+    {"path": "source/python/src/ats_ml/contracts_v3.py", "bytes": 12795, "sha256": "db9b6aca470ffd6faf294e79f90cc1b1ff32efa4b5695a253f235ef135dcddc4"}
+  ],
+  "authorization": {
+    "d0_v3_contract": true,
+    "d1_v3_structural_and_synthetic": true,
+    "real_label_values": false,
+    "real_model_fit_prediction_score_metric_or_outcome": false,
+    "phase_d2_during_d0_d1_construction": false,
+    "post_readiness_overlay": "AUTOMATIC_AFTER_COMMIT_AND_POST_COMMIT_PASS",
+    "repair_task_executes_d2": false
+  },
+  "mutable_latest_pointer": false
+}

@@ -178,6 +178,29 @@ short-selling branch.
 
 ### Phase D0 — Freeze the scientific contract
 
+**Final pre-D2 amendment, 2026-09-01:** D0 v3 replaces the accepted expanding
+annual chronology with a locked January/July procedure. The model at each refit
+uses the immediately preceding, month-aligned 36 calendar months. Inside that
+window it fits/scores three consecutive prequential six-month calibration blocks
+after 18, 24 and 30 months of history, freezes the unchanged `max(1%, linear
+q90)` cell threshold, refits on every label-mature row in the window and scores
+only the next calendar half-year. The locked object is this deterministic
+procedure, not one permanently frozen fitted estimator.
+
+Selection uses complete 2023 H1/H2 blocks, development confirmation uses complete
+2024 H1/H2 blocks, and locked evidence uses complete 2025 H1/H2 plus 2026 H1.
+Annual stability includes only complete decisive years 2024 and 2025. Partial
+2026 H2 through 2026-08-18 is monitoring only and cannot enter selection,
+confirmation, locked, annual, concentration or verdict gates.
+
+The v3 authority is `PHASE_D0_EXPERIMENT_PLAN_v3.md` and
+`source/python/configs/phase_d0_reference_v3.json`. The accepted D0 v2 plan,
+manifest, audit and unchanged 30-feature registry remain preserved parents.
+Chronology/calibration and their population/minimum mappings are the only
+scientific changes; models, features, target, thresholds, metrics, numerical
+gates, price basis and caveats are unchanged. This is the final major design
+amendment before D2.
+
 The Phase D0 experiment plan and machine-readable contracts are frozen at
 `PHASE_D0_EXPERIMENT_PLAN.md`, `source/python/configs/phase_d0_reference.json`,
 and `source/python/configs/phase_d0_feature_registry.json`. They define four
@@ -237,14 +260,20 @@ approximately ties either conventional model fails the incremental-value objecti
 
 ### Phase D1 — Build only the minimum workbench
 
-**Checkpoint 2026-09-01: complete — PASS.** The superseding implementation and
-evidence are recorded in `PHASE_D1_READINESS_v2.md`,
-`PHASE_D1_REQUIREMENT_AUDIT_v2.json`, `PHASE_D1_MANIFEST_v2.json` and immutable
-run `phase-d1-structural-b4fb9bbc480c2026e423`. The focused D1 suite has 67
-passing tests and the supported complete suite has 174. All eight P features
-survive; semantic matrix/target/score row binding and both calendar-provenance
-equalities pass. No real label, fit, prediction, performance result or D2
-execution machinery was created.
+**Checkpoint 2026-09-01: v3 complete — PASS.** The controlling evidence is
+`PHASE_D1_READINESS_v3.md`, `PHASE_D1_REQUIREMENT_AUDIT_v3.json`,
+`PHASE_D1_MANIFEST_v3.json` and immutable run
+`phase-d1-v3-structural-ed315ee058c7e0e7ce51`. The focused D1 suite has 80
+passing tests and the supported complete suite has 187. All eight P features
+remain preserved; every outer, inner-fit, inner-score and final-fit structural
+minimum passes. No real label value, fit, prediction, score, performance result
+or D2 execution occurred.
+
+Accepted D1 v2 readiness and immutable run
+`phase-d1-structural-b4fb9bbc480c2026e423` remain preserved as the parent
+checkpoint. V3 adds only the semiannual splitter, label-blind minimum resolution,
+synthetic prequential separation and locked-generation firewall required by the
+final chronology amendment.
 
 Add a small `ats_ml` boundary for:
 
@@ -279,15 +308,19 @@ are opened by a model in D1.
 
 ### Phase D0/D1 acceptance checkpoint
 
-**D0/D1 checkpoint result: PASS for requesting separate owner review of D2;
+**D0/D1 v3 checkpoint result: PASS for requesting separate owner review of D2;
 Phase D2 remains unauthorized.**
 
 - The owner-approved plan is frozen and hashed before any real model result.
 - The primary label is unchanged and inaccessible to feature computation.
-- No session is divided across train, validation or test.
+- No session is divided across fit, inner score or outer evaluation blocks.
+- Every January/July refit uses only its trailing 36-calendar-month estimator
+  window; feature warm-up before the window cannot become a model row.
 - Training feature/label information intervals do not cross a validation or test
   decision boundary; purge is derived from those intervals rather than hard-coded
   merely as a horizon number.
+- Exactly three chronologically prior out-of-fit score blocks determine each
+  cell threshold, and the final refit cannot recalculate it.
 - Every fitted transformation uses training dates only; same-session
   cross-sectional transforms are explicit and deterministic.
 - Official denominator 60, eligible count and every excluded-member state remain
@@ -305,10 +338,30 @@ Phase D2 remains unauthorized.**
   or notebook state, and the real structural resolution is immutable.
 - A requirement-by-requirement audit is `PASS`, `FAIL` or `NOT PROVEN`; owner
   approval is required before Phase D2 may inspect real predictive results.
+- Locked D2 generation must proceed 2025 H1, 2025 H2 and 2026 H1 in simulated
+  historical time and be completely fingerprinted before outcomes or metrics are
+  accessible.
+
+### Phase D2 automatic authorization overlay — 2026-09-01
+
+The owner's focused-repair instruction supersedes the remaining manual-review
+gate without rewriting the historical D1 state. Under
+`PHASE_D2_AUTHORIZATION_OVERLAY.md`, Phase D2 becomes authorized automatically
+only after the repaired v3 baseline is committed and clean post-commit checks
+pass for the composed half-year gate mappings, refit/availability firewall
+bindings, regenerated manifests, D0/D1 validators, independent reproduction,
+focused/full/regression suites and accepted-parent preservation.
+
+The repair task stops after that durable baseline and does not execute D2. Once
+activated, authorization covers one separately pinned execution of the frozen
+D2 study, with prediction generation/fingerprinting mechanically preceding
+outcome attachment/evaluation. Phase D3, portfolio translation, optimization,
+deployment and design changes remain unauthorized.
 
 ### Phase D2 — Execute the frozen historical study
 
-Only after D0/D1 acceptance, run the four frozen cells and predefined feature
+Only after the automatic authorization overlay activates on a committed and
+post-commit-validated D1 v3 baseline, run the four frozen cells and predefined feature
 block ablations. Cross-sectional rank IC, paired incremental IC and quantile
 monotonicity remain diagnostics of general information content. The primary
 actionability evidence is the frozen opportunity tail: conditional forward
@@ -320,9 +373,11 @@ frequency-matched operating points so additional selectivity is not mistaken for
 better prediction. The within-proximity-Q5 ranking check is diagnostic only and
 cannot become an alternative optimization target.
 
-The locked historical test is opened once after representation, preprocessing,
-model parameters and selection logic are frozen. True forward evidence begins
-after 2026-08-18.
+The locked historical prediction sequence is generated and fingerprinted first,
+with later refits allowed to use only earlier locked labels whose exact
+availability precedes the refit. Outcome attachment and evaluation are a second
+mechanically separated stage. The procedure cannot change between refits. True
+forward evidence begins after 2026-08-18.
 
 ### Phase D3 — Stop or continue
 
