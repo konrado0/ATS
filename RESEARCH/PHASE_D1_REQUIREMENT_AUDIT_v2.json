@@ -3,14 +3,15 @@
   "phase": "D1",
   "status": "PASS",
   "assessment_date": "2026-09-01",
-  "decision": "The narrow D1 correctness repair closes the rejected publication, semantic-row-alignment, CLI reproduction and calendar-provenance findings. It is safe only to request a separate owner decision about D2; D2 remains unauthorized.",
+  "decision": "The narrow D1 correctness and governance repair closes the rejected publication, semantic-row-alignment, CLI reproduction, calendar-provenance and current-guidance findings. It is safe only to request a separate owner decision about D2; D2 remains unauthorized.",
   "supersedes": {
     "rejected_commit": "be3cacd6fab9b67e98dc7e1e05b00ebac002c193",
+    "unaccepted_repair_commit": "89e74c20d4a5de58e848a2aab9f183909bdf6177",
     "prior_audit": "RESEARCH/PHASE_D1_REQUIREMENT_AUDIT.json",
     "prior_manifest": "RESEARCH/PHASE_D1_MANIFEST.json",
-    "reason": "The v1 publication claimed a passing D0 validator when the documented command failed, published an invalid structural CLI command, and did not prove semantic matrix-target-score row alignment. Calendar equality was confirmed but not asserted."
+    "reason": "The v1 publication claimed a passing D0 validator when the documented command failed, published an invalid structural CLI command, and did not prove semantic matrix-target-score row alignment. Calendar equality was confirmed but not asserted. The first repair then rolled current guidance back to make the historical whole-repository D0 manifest pass."
   },
-  "acceptance_rule": "All reopened and new gating requirements must be PASS, the 30 unaffected v1 PASS requirements must remain covered by the complete regression suite, and every real predictive operation remains forbidden.",
+  "acceptance_rule": "All reopened and new gating requirements must be PASS, the 30 unaffected v1 PASS requirements must remain covered by the complete regression suite, the historical D0 validator must pass at its accepted checkpoint while the four authoritative D0 anchors remain unchanged in the current tree, current guidance must state the D1-v2/D2 boundary, and every real predictive operation remains forbidden.",
   "carried_forward_pass_ids": [
     "starting_commit_verified",
     "pinned_inputs",
@@ -45,10 +46,10 @@
   ],
   "reopened_and_new_requirements": [
     {
-      "id": "d0_bytes_and_current_validator",
+      "id": "d0_immutable_anchors_and_historical_validator",
       "classification": "PASS",
       "gating": true,
-      "evidence": "The authoritative D0 plan, reference, registry and manifest retain their accepted hashes. README.md and RESEARCH/IMPLEMENTATION_ROADMAP.md were restored byte-for-byte to the D0-pinned versions, and the documented Phase D0 validator now returns PASS."
+      "evidence": "The authoritative D0 plan, reference, registry and manifest retain their accepted hashes in the current tree. The D1 validator reconstructs exact Git blobs at accepted D0 checkpoint cbddb4ff13f4452aa37f427f0f3c09a3f3da1ae4 and requires that checkpoint's D0 validator to return PASS. The historical whole-repository manifest is not applied to mutable current guidance."
     },
     {
       "id": "semantic_matrix_target_score_binding",
@@ -72,13 +73,19 @@
       "id": "full_regression_after_repair",
       "classification": "PASS",
       "gating": true,
-      "evidence": "Focused D1: 67 passed; supported source/python suite: 174 passed; pre-Phase-D market-state: 10 passed; Phase D0 validator: PASS; corrected structural CLI: PASS; structural-resolve repeated with identical logical and physical identities."
+      "evidence": "Focused D1: 67 passed; supported source/python suite: 174 passed; pre-Phase-D market-state: 10 passed; historical Phase D0 validator at cbddb4ff13f4452aa37f427f0f3c09a3f3da1ae4: PASS; corrected structural CLI: PASS; the accepted structural run retains identical logical and physical identities."
     },
     {
       "id": "published_evidence_consistency",
       "classification": "PASS",
       "gating": true,
-      "evidence": "The versioned v2 readiness, audit and manifest preserve the rejected v1 evidence as superseded, pin every v2 artifact, require the current D0 validator and corrected structural CLI to execute successfully, and report no result contradicted by those commands."
+      "evidence": "The versioned v2 readiness, audit and manifest preserve the rejected v1 evidence as superseded, disclose the unaccepted first repair, pin every v2 artifact, require historical D0 replay and the corrected structural CLI to execute successfully, and report no result contradicted by those commands."
+    },
+    {
+      "id": "current_project_guidance",
+      "classification": "PASS",
+      "gating": true,
+      "evidence": "README.md and RESEARCH/IMPLEMENTATION_ROADMAP.md state that D1-v2 is complete, D2 is unauthorized pending separate owner review, and predictive evaluation, comparisons, uncertainty, opportunity tails, episode/concentration analysis, ablations and verdict generation remain D2 work. Both files are pinned by the D1-v2 manifest rather than rolled back to historical D0 bytes."
     }
   ],
   "not_proven": [
@@ -104,7 +111,7 @@
     "final_stop_continue_verdict"
   ],
   "effective_summary_counts": {
-    "PASS": 36,
+    "PASS": 37,
     "FAIL": 0,
     "NOT PROVEN": 2,
     "DEFERRED BY CONTRACT": 6

@@ -13,35 +13,30 @@ model-family selection.
 ## Supersession
 
 This report supersedes the rejected Phase D1 publication at commit
-`be3cacd6fab9b67e98dc7e1e05b00ebac002c193`. The original
+`be3cacd6fab9b67e98dc7e1e05b00ebac002c193` and the unaccepted repair
+checkpoint at commit `89e74c20d4a5de58e848a2aab9f183909bdf6177`. The original
 `PHASE_D1_READINESS.md`, `PHASE_D1_REQUIREMENT_AUDIT.json` and
 `PHASE_D1_MANIFEST.json` remain preserved as v1 evidence; they are not accepted
 readiness evidence.
 
-The owner review identified four bounded defects:
+The owner reviews identified five bounded defects:
 
 1. the v1 report and manifest claimed a passing D0 validator although D1 had
    changed two D0-pinned documentation files;
 2. matrices, targets and scores did not carry an ordered semantic row ledger;
 3. the published structural validation command used the wrong CLI syntax; and
 4. the observed candidate/WIG and membership/market-state calendar equalities
-   were not asserted by code.
+   were not asserted by code; and
+5. the first repair made the historical D0 validator pass by rolling current
+   `README.md` and `RESEARCH/IMPLEMENTATION_ROADMAP.md` guidance back to the D0
+   checkpoint.
 
 No feature formula, label definition, fold, purge rule, model family, parameter,
 threshold, D0 scientific contract or real predictive result was reopened.
 
-## Repair 1 — validation evidence is executable and consistent
+## Repair 1 — historical D0 evidence is separated from current guidance
 
-`README.md` and `RESEARCH/IMPLEMENTATION_ROADMAP.md` were restored byte-for-byte
-to the versions pinned by the unchanged D0 manifest. Their current hashes are:
-
-| Artifact | SHA-256 |
-|---|---|
-| `README.md` | `a9ee08501e45e86d583fe1f92de128fb9f7f37f21d3f0456dfa770ccb70195bd` |
-| `RESEARCH/IMPLEMENTATION_ROADMAP.md` | `2b3a5eadc1605daf21b2b825d18b0952cd70840172c610b0155b573b6666f67b` |
-
-The documented Phase D0 validator now returns PASS in the repaired tree. The four
-authoritative D0 anchors also remain unchanged:
+The four authoritative D0 anchors remain unchanged in the current tree:
 
 | Artifact | SHA-256 |
 |---|---|
@@ -50,9 +45,18 @@ authoritative D0 anchors also remain unchanged:
 | `source/python/configs/phase_d0_feature_registry.json` | `733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6` |
 | `RESEARCH/PHASE_D0_MANIFEST.json` | `7fe34d679511eb4d75b269f5a908c6ac5e624d624aa067645286576f0f9e918c` |
 
-The v2 D1 validator runs the D0 validator as a subprocess and requires both exit
-code zero and JSON status PASS. A future documentation/hash contradiction can no
-longer pass the D1 publication validator.
+The v2 D1 validator archives the exact Git blobs at accepted D0 checkpoint
+`cbddb4ff13f4452aa37f427f0f3c09a3f3da1ae4` with checkout line-ending
+conversion disabled, extracts them to an isolated temporary tree, runs that
+checkpoint's D0 validator as a subprocess, and requires both exit code zero and
+JSON status PASS. This prevents Windows checkout conversion from changing the
+historical byte hashes.
+
+The historical D0 whole-repository manifest is not applied to the current tree.
+It pins contemporaneous project guidance and therefore is not a valid invariant
+after a later phase changes that guidance. Current D1-v2 validation instead
+checks the four immutable D0 scientific anchors above and pins the current
+guidance as D1-v2 artifacts.
 
 ## Repair 2 — immutable semantic row binding
 
@@ -119,6 +123,18 @@ The controlling run records:
 
 No market-state feature value was loaded for this assertion.
 
+## Repair 5 — controlling guidance reflects the current phase boundary
+
+`README.md` and `RESEARCH/IMPLEMENTATION_ROADMAP.md` now state that D1-v2 is
+complete, D2 remains unauthorized, and a separate owner decision is the next
+gate. The roadmap limits D1 to fixture-tested plumbing and the four label-blind
+structural resolutions. Predictive evaluation, paired comparisons, uncertainty,
+opportunity-tail analysis, episode/concentration work, ablations and verdict
+generation remain explicitly deferred to D2.
+
+Both guidance files are pinned by `PHASE_D1_MANIFEST_v2.json`. They are not
+rolled back to satisfy hashes from the historical D0 whole-repository manifest.
+
 ## Superseding structural evidence
 
 Immutable directory:
@@ -143,17 +159,20 @@ economics were neither loaded nor derived.
 
 Final repaired results:
 
-- Focused Phase D1 suite: **67 passed in 48.03s**.
-- Supported complete `source/python` suite: **174 passed in 84.61s**.
-- Pre-Phase-D market-state regression: **10 passed in 3.40s**.
-- Phase D0 validator: **PASS**.
+- Focused Phase D1 suite: **67 passed in 56.92s**.
+- Supported complete `source/python` suite: **174 passed in 94.29s**.
+- Pre-Phase-D market-state regression: **10 passed in 3.92s**.
+- Historical Phase D0 validator at
+  `cbddb4ff13f4452aa37f427f0f3c09a3f3da1ae4`: **PASS**.
 - Correct structural CLI: **PASS**.
 - Structural publication replay: **PASS**, identical identity and bytes.
 
 The superseding v2 validator additionally checks every v2 manifest artifact,
-the requirement audit, D0 subprocess result, corrected CLI subprocess result,
-calendar proof, structural authorization state and absence of real predictive
-execution.
+the requirement audit, historical D0 subprocess result, current four-anchor D0
+integrity, corrected CLI subprocess result, calendar proof, structural
+authorization state and absence of real predictive execution. The historical D0
+validator against the current working tree is deliberately not a D1 gate because
+its manifest includes mutable guidance from an earlier phase.
 
 ## Residual uncertainty and boundary
 

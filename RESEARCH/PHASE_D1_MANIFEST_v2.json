@@ -6,13 +6,15 @@
   "decision": "Safe only to request a separate owner decision about Phase D2; Phase D2 remains unauthorized.",
   "supersedes": {
     "rejected_commit": "be3cacd6fab9b67e98dc7e1e05b00ebac002c193",
+    "unaccepted_repair_commit": "89e74c20d4a5de58e848a2aab9f183909bdf6177",
+    "unaccepted_repair_reason": "Current README and roadmap guidance was rolled back to historical D0 state to make a whole-repository validator pass.",
     "prior_readiness_sha256": "8f75986c6115016ca7f71fabecbb3db45449b36bf50ff5f9b182d6cad15d4b74",
     "prior_audit_sha256": "617de2c54d017c69e8e8c4fd4eeaa16444bbf48f86548674b348f74843c1b434",
     "prior_manifest_sha256": "8c5e6473d50f8c9e337291d016f789f31fb42eac31aac4136f07297114a3b49c",
     "prior_status": "REJECTED"
   },
   "repository_state": {
-    "repair_parent_commit": "be3cacd6fab9b67e98dc7e1e05b00ebac002c193",
+    "repair_parent_commit": "89e74c20d4a5de58e848a2aab9f183909bdf6177",
     "commit_policy": "The focused repair commit is reported after creation; embedding its hash would recursively alter the commit.",
     "unrelated_untracked_preserved": [
       "RESEARCH/environments/",
@@ -26,9 +28,20 @@
     "source/python/configs/phase_d0_feature_registry.json": "733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6",
     "RESEARCH/PHASE_D0_MANIFEST.json": "7fe34d679511eb4d75b269f5a908c6ac5e624d624aa067645286576f0f9e918c"
   },
-  "d0_pinned_repository_documents": {
-    "README.md": "a9ee08501e45e86d583fe1f92de128fb9f7f37f21d3f0456dfa770ccb70195bd",
-    "RESEARCH/IMPLEMENTATION_ROADMAP.md": "2b3a5eadc1605daf21b2b825d18b0952cd70840172c610b0155b573b6666f67b"
+  "historical_d0_validation": {
+    "commit": "cbddb4ff13f4452aa37f427f0f3c09a3f3da1ae4",
+    "validator": "RESEARCH/prototypes/phase_d0/validate_phase_d0.py",
+    "status": "PASS",
+    "replay_method": "Reconstruct exact Git blob bytes in an isolated temporary tree and execute the checkpoint validator.",
+    "current_tree_validator_applicable": false,
+    "rationale": "The historical whole-repository manifest includes mutable project guidance; current-tree D1 validation separately checks immutable D0 anchors and current D1-v2 guidance."
+  },
+  "current_project_guidance": {
+    "phase_d1_state": "complete — PASS",
+    "next_gate": "separate owner review of Phase D1 readiness v2",
+    "phase_d2_authorized": false,
+    "README.md": "c90f4ca84ba0243722a6fa3180373f790a56273f719cf17601ad7c3c28ee7b53",
+    "RESEARCH/IMPLEMENTATION_ROADMAP.md": "259256d4656feb95a0c4665e4bd605de91650a81cf93b1cd593330b2d3060085"
   },
   "semantic_row_binding": {
     "fields": ["candidate_run_id", "contract_version", "decision_session", "security_id"],
@@ -59,10 +72,11 @@
     }
   },
   "verification": {
-    "phase_d0_validator": "PASS",
-    "focused_phase_d1": "67 passed in 48.03s",
-    "full_source_python": "174 passed in 84.61s",
-    "pre_phase_d_market_state": "10 passed in 3.40s",
+    "historical_phase_d0_validator": "PASS",
+    "current_tree_historical_d0_validator": "NOT_APPLICABLE",
+    "focused_phase_d1": "67 passed in 56.92s",
+    "full_source_python": "174 passed in 94.29s",
+    "pre_phase_d_market_state": "10 passed in 3.92s",
     "correct_structural_cli": "PASS",
     "structural_resolve_reproduction": "PASS"
   },
@@ -81,14 +95,14 @@
     "Live operational data/feed availability at the 08:45 decision timestamp."
   ],
   "artifacts": [
-    {"path": "README.md", "bytes": 13252, "sha256": "a9ee08501e45e86d583fe1f92de128fb9f7f37f21d3f0456dfa770ccb70195bd"},
-    {"path": "RESEARCH/IMPLEMENTATION_ROADMAP.md", "bytes": 25633, "sha256": "2b3a5eadc1605daf21b2b825d18b0952cd70840172c610b0155b573b6666f67b"},
+    {"path": "README.md", "bytes": 13977, "sha256": "c90f4ca84ba0243722a6fa3180373f790a56273f719cf17601ad7c3c28ee7b53"},
+    {"path": "RESEARCH/IMPLEMENTATION_ROADMAP.md", "bytes": 26695, "sha256": "259256d4656feb95a0c4665e4bd605de91650a81cf93b1cd593330b2d3060085"},
     {"path": "RESEARCH/PHASE_D1_READINESS.md", "bytes": 9735, "sha256": "8f75986c6115016ca7f71fabecbb3db45449b36bf50ff5f9b182d6cad15d4b74"},
     {"path": "RESEARCH/PHASE_D1_REQUIREMENT_AUDIT.json", "bytes": 11128, "sha256": "617de2c54d017c69e8e8c4fd4eeaa16444bbf48f86548674b348f74843c1b434"},
     {"path": "RESEARCH/PHASE_D1_MANIFEST.json", "bytes": 8478, "sha256": "8c5e6473d50f8c9e337291d016f789f31fb42eac31aac4136f07297114a3b49c"},
-    {"path": "RESEARCH/PHASE_D1_READINESS_v2.md", "bytes": 7508, "sha256": "417cca1b87fdd3fa48e09567691057028d0c5f0b8b05383ec89fb83ae4d4dcd8"},
-    {"path": "RESEARCH/PHASE_D1_REQUIREMENT_AUDIT_v2.json", "bytes": 5554, "sha256": "3747d010c304809201d22d215db67c7901096a4f44cb1ed56e96df330fa6f17a"},
-    {"path": "RESEARCH/prototypes/phase_d1/validate_phase_d1.py", "bytes": 6864, "sha256": "81b999cbf7d65c2d23c702d80ba3808de0989103c6a9219150bfe3c9a8483bde"},
+    {"path": "RESEARCH/PHASE_D1_READINESS_v2.md", "bytes": 8808, "sha256": "197a285acbea97c6bedf8435ca8264f69c7f781f1d4368dc8cabb6b7c286766a"},
+    {"path": "RESEARCH/PHASE_D1_REQUIREMENT_AUDIT_v2.json", "bytes": 6696, "sha256": "657ef92d6b092968813594e9b43a61fd9135a75aff92f9da3172e77a0f2f18fa"},
+    {"path": "RESEARCH/prototypes/phase_d1/validate_phase_d1.py", "bytes": 11051, "sha256": "df6fe5680ab93204d2b4247c604bfa1b785f1c9e4e16fdd34a2b32670d2d1bc5"},
     {"path": "source/python/configs/phase_d1_fixture_registry.json", "bytes": 4384, "sha256": "91e37cd8b8a2354316d83840e86422665329d3c2a6442b8f0c8d41cfeee522fa"},
     {"path": "source/python/configs/phase_d1_structural_resolution.json", "bytes": 32248, "sha256": "6801c396932a7200960dfedd72b9454088e8f7875c9af9ef402ef212005a599b"},
     {"path": "source/python/pyproject.toml", "bytes": 868, "sha256": "906d4bf4933600f0651790d35c693b583deeeb8e051144fc2f8859fdd22fd729"},

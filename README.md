@@ -11,7 +11,7 @@ pooled-ML swing-opportunity experiment—justify further engineering.
 
 ## Current checkpoint
 
-Status as of 2026-08-31:
+Status as of 2026-09-01:
 
 - The architecture study and local storage/query/backtester benchmarks are
   complete.
@@ -35,18 +35,23 @@ Status as of 2026-08-31:
   numerical context block is ready with caveats; historical association is
   mixed, pairwise correlation is the only frozen block variable meeting the
   descriptive heterogeneity flag, and no market ON/OFF rule is authorized.
-- The Phase D charter and roadmap are the frozen planning baseline. No Phase D
-  model has been trained and no real predictive result has been inspected.
+- Phase D1 is complete and its superseding fixture/structural readiness v2 is
+  PASS. The minimal `ats_ml` workbench proves the frozen observation, feature,
+  label-endpoint, chronology, preprocessing and fixed synthetic-model plumbing;
+  matrices, targets and scores share an immutable semantic row ledger, and the
+  two controlling calendar equalities are asserted. No real Phase D model has
+  been trained and no predictive result has been inspected.
 - Phase D0 v2 is frozen in an owner-reviewable plan, machine-readable reference
   configuration, 30-feature C/P/X/M registry, provenance manifest and
-  requirement audit. It authorizes neither D1 nor real predictive execution.
+  requirement audit. D1 preserves and checks the four authoritative D0 byte
+  anchors. Historical whole-repository D0 validation is replayed at its accepted
+  checkpoint rather than constraining current project guidance.
 
-The next gate is **owner review of Phase D0**. If separately authorized, Phase D1
-may implement only the minimal fixture-tested workbench and compute registered,
-label-inaccessible predictor values solely for the frozen structural resolution.
-It must stop before any real fit, prediction, validation score, or performance
-calculation. Phase D2 may inspect real model performance only after another owner
-review.
+The next gate is **owner review of Phase D1 readiness v2**. The immutable
+structural run retains all eight P variables and freezes purge/bin boundaries,
+calendar provenance and complete implementation/environment fingerprints. Phase
+D2 may inspect real model performance only after separate owner authorization;
+it is not authorized now.
 
 Authoritative current documents:
 
@@ -55,6 +60,7 @@ Authoritative current documents:
 - [Phase D pooled-ML charter](RESEARCH/PHASE_D_POOLED_ML_RESEARCH_CHARTER.md)
 - [Phase D0 experiment plan](RESEARCH/PHASE_D0_EXPERIMENT_PLAN.md)
 - [Phase D0 30-feature owner-review table](RESEARCH/PHASE_D0_FEATURE_REGISTRY_TABLE.md)
+- [Phase D1 readiness v2](RESEARCH/PHASE_D1_READINESS_v2.md)
 - [controlling market-state checkpoint](RESEARCH/PRE_PHASE_D_MARKET_STATE_DIAGNOSTIC.md)
 - [recommended architecture](RESEARCH/RECOMMENDED_ARCHITECTURE.md)
 
@@ -111,7 +117,8 @@ The boundaries matter:
 
 The Python package metadata and CLI entry points are in
 [`source/python/pyproject.toml`](source/python/pyproject.toml). The installed
-commands are `ats-research`, `ats-data`, and `ats-portfolio`.
+commands are `ats-research`, `ats-data`, `ats-portfolio`, and the D1-bounded
+`ats-ml` structural command.
 
 ## Data and artifact locations
 
@@ -128,7 +135,7 @@ D:\Stock\data\
     phase_a_v2_research\runs\          Phase A v2 evidence
     phase_a_v2_strategy_test\runs\     bounded strategy translations
     pre_phase_d_market_state\runs\     market-state diagnostic evidence
-    phase_d_ml\                         reserved for future Phase D outputs
+    phase_d_ml\structural_runs\         immutable D1 structural evidence only
 ```
 
 Do not modify vendor observations or accepted run/version directories. New data,
@@ -189,8 +196,8 @@ Reference run/validation commands and accepted manifest conventions are kept in:
 | Phase C | Implemented and repaired | Deterministic daily portfolio accounting and independent ledger reconstruction. |
 | Phase A v2 / proximity | Bounded test passed its frozen hurdles | Retained conventional benchmark only; one later bounded validation remains, with no parameter optimization. |
 | Pre-Phase D market state | Complete | Carry the compact numerical block as context; do not turn it into a timing strategy. |
-| Phase D0 | v2 frozen; renewed owner review pending | Exact C/P/X/M features, folds, purge, models, opportunity gate, evaluation thresholds and stop rule are machine-readable and hashed; decisive rank/stability gates compare rich with both conventional cells and score ties are identity-neutral. |
-| Phase D1 | Not authorized | If separately approved, build `ats_ml` minimally and validate it on synthetic/hand-calculated fixtures without inspecting real predictive performance. |
+| Phase D0 | v2 frozen and preserved | Exact C/P/X/M features, folds, purge, models, opportunity gate, evaluation thresholds and stop rule are machine-readable and hashed; D1 independently checks the four authoritative accepted byte anchors. |
+| Phase D1 | Complete — PASS | Superseding v2 readiness: minimal `ats_ml`, 67 focused tests, 174 full regressions and immutable structural run `phase-d1-structural-b4fb9bbc480c2026e423`; semantic row binding and calendar provenance pass, with no real labels, fits, predictions or performance. |
 | Phase D2/D3 | Not authorized | Execute the locked study once, then stop or authorize only one bounded portfolio translation. |
 | Phase E/F | Trigger-driven / later | Optimize measured pain and add richer reporting only when the completed vertical slice demonstrates a need. |
 
@@ -243,4 +250,6 @@ This file is the project entry point, not the full evidence archive. Update its
 whenever a phase gate or repository boundary changes. Put detailed methodology,
 hashes, metrics and caveats in the phase report, then link that report here. Do
 not silently rewrite the meaning of an earlier accepted artifact to make the
-summary look current.
+summary look current. Replay a historical phase validator against its accepted
+Git checkpoint; never roll current controlling guidance back merely to satisfy
+hashes frozen by an older whole-repository manifest.

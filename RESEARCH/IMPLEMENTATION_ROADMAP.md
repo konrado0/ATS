@@ -186,8 +186,12 @@ folds and endpoint-derived purge, an abstaining score gate, numerical
 continuation thresholds, deterministic D1 structural resolutions, and a
 requirement audit. The v2 amendment requires every decisive rank/stability gate
 to pass against both fixed conventional cells and uses fractional score-boundary
-weights instead of identity to resolve frequency-matching ties. D0 is ready for
-renewed owner review; it does not authorize D1 or any real predictive execution.
+weights instead of identity to resolve frequency-matching ties. The D0 scientific
+contract remains frozen and preserved, and its four authoritative byte anchors
+remain unchanged. Historical whole-repository D0 validation is replayed
+at accepted Git checkpoint `cbddb4ff13f4452aa37f427f0f3c09a3f3da1ae4`;
+mutable current guidance is not rolled back to satisfy that historical manifest.
+D0 authorizes no real predictive execution.
 
 Before inspecting any Phase D prediction result:
 
@@ -233,22 +237,35 @@ approximately ties either conventional model fails the incremental-value objecti
 
 ### Phase D1 — Build only the minimum workbench
 
+**Checkpoint 2026-09-01: complete — PASS.** The superseding implementation and
+evidence are recorded in `PHASE_D1_READINESS_v2.md`,
+`PHASE_D1_REQUIREMENT_AUDIT_v2.json`, `PHASE_D1_MANIFEST_v2.json` and immutable
+run `phase-d1-structural-b4fb9bbc480c2026e423`. The focused D1 suite has 67
+passing tests and the supported complete suite has 174. All eight P features
+survive; semantic matrix/target/score row binding and both calendar-provenance
+equalities pass. No real label, fit, prediction, performance result or D2
+execution machinery was created.
+
 Add a small `ats_ml` boundary for:
 
-- a manifest-pinned security-session dataset builder that reuses `ats_research`
-  PIT, feature, timing and label contracts;
-- date-grouped chronological split generation from explicit feature/label
-  information intervals;
-- fold-local numeric preprocessing with no security identifier, ticker, nominal
-  price, raw volume or other direct identity input;
-- adapters for one regularized linear estimator and LightGBM;
-- session-level prediction evaluation, paired model comparison, block-aware
-  uncertainty, selective opportunity-tail evaluation, signal frequency and idle
-  state, prospective excursion/path diagnostics, overlap, temporal and security
-  concentration, feature-block ablation, and the predefined within-proximity-Q5
-  diagnostic; and
-- portable run manifests containing data, universe, feature, split, model,
-  environment, seed, Git and artifact fingerprints.
+- manifest-pinned D0/input loading and the exact security-session observation
+  builder;
+- the 30 registered PIT feature calculations, synthetic-only primary-label
+  builder, chronological folds and endpoint-derived purge;
+- identity-excluded four-cell matrices with immutable ordered semantic row
+  ledgers shared by matrices, targets and scores;
+- fold-local Ridge preprocessing and LightGBM-native missingness plus fixed,
+  deterministic Ridge and LightGBM adapters that fit/predict only on
+  content-pinned repository fixtures;
+- strict abstention and pure fractional boundary-tie mechanics; and
+- immutable evidence for only the four frozen label-blind structural
+  resolutions, including asserted candidate/WIG and membership/market-state
+  calendar equality.
+
+Session-level predictive evaluation, paired comparisons, uncertainty,
+opportunity tails, episode accounting, concentration, ablations and verdict
+generation remain Phase D2 work. Their definitions in the frozen D0 contract do
+not move their implementation or execution into D1.
 
 D1 validates this machinery with hand-calculated, synthetic and mechanically
 bounded fixtures. After separate owner authorization it may inspect real data
@@ -262,6 +279,9 @@ are opened by a model in D1.
 
 ### Phase D0/D1 acceptance checkpoint
 
+**D0/D1 checkpoint result: PASS for requesting separate owner review of D2;
+Phase D2 remains unauthorized.**
+
 - The owner-approved plan is frozen and hashed before any real model result.
 - The primary label is unchanged and inaccessible to feature computation.
 - No session is divided across train, validation or test.
@@ -271,19 +291,18 @@ are opened by a model in D1.
 - Every fitted transformation uses training dates only; same-session
   cross-sectional transforms are explicit and deterministic.
 - Official denominator 60, eligible count and every excluded-member state remain
-  present in datasets and evaluation outputs.
+  present in the observation and structural evidence.
 - Identity-blind columns are enforced by schema allowlist and negative tests.
-- The four representation/model cells use identical folds and comparable rows.
-- Opportunity gates are trained/calibrated inside each training fold, can emit no
-  candidates, and are never relaxed using validation or test outcomes.
-- No evaluation path converts a rank into a compulsory daily holding or silently
-  allocates capital across the highest-ranked available names.
+- Matrices, targets and scores are bound to the same ordered semantic keys, while
+  the four synthetic representation/model cells use identical folds and rows.
+- Synthetic opportunity-gate fixtures can abstain and use identity-neutral
+  fractional boundary ties; no real gate has been calibrated.
 - Future excursion/path labels are inaccessible to features, preprocessing,
   fitting and opportunity calibration.
 - Synthetic known-signal, no-signal, leakage and shuffled-label controls behave
   as expected.
-- Dataset, split and prediction fixtures reproduce from a portable run directory
-  without MLflow or notebook state.
+- Observation, split, matrix, target and score fixtures reproduce without MLflow
+  or notebook state, and the real structural resolution is immutable.
 - A requirement-by-requirement audit is `PASS`, `FAIL` or `NOT PROVEN`; owner
   approval is required before Phase D2 may inspect real predictive results.
 
