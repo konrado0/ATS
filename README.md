@@ -51,16 +51,18 @@ Status as of 2026-09-02:
   run `phase-d1-structural-b4fb9bbc480c2026e423` remain preserved historical
   evidence. The unchanged 30-feature registry and all eight P survivors are
   carried forward by hash, not silently rewritten.
-- Phase D2 executed the one authorized frozen pooled-ML study. Execution
-  integrity is `PASS` and the predictive evidence package is `COMPLETE`, but 78
+- Phase D2 executed the one authorized frozen pooled-ML study. Audit v2 verifies
+  the scientific `STOP`; execution integrity is `NOT FULLY PROVEN` because the
+  accepted v4 trace cannot prove literal sequential label admission. 78
   of 177 prespecified scientific gates failed. The mechanically derived verdict
   is `STOP`: the rich representation did not provide material, stable, and
   economically relevant incremental information beyond both conventional
   comparators.
 - The accepted prediction table, locked sequence, all evaluation stages, and
   final verdict reproduce exactly by scientific logical hash; an evaluator that
-  imports no primary metric functions independently matches the decisive
-  metrics, gate classifications, and verdict. Phase D3 and portfolio/backtest
+  imports no primary metric functions independently matches a bounded core of
+  metrics and the verdict, while reclassifying—not independently recomputing—
+  the remaining stored gate inputs. Phase D3 and portfolio/backtest
   work remain unauthorized pending owner review.
 
 The automatic Phase D2 authorization overlay activated from committed baseline
@@ -81,6 +83,7 @@ Authoritative current documents:
 - [Phase D2 authorization overlay](RESEARCH/PHASE_D2_AUTHORIZATION_OVERLAY.md)
 - [Phase D2 execution freeze](RESEARCH/PHASE_D2_EXECUTION_FREEZE.md)
 - [Phase D2 results](RESEARCH/PHASE_D2_RESULTS.md)
+- [Phase D2 bounded audit repair](RESEARCH/PHASE_D2_AUDIT_REPAIR.md)
 - [Phase D2 requirement audit](RESEARCH/PHASE_D2_REQUIREMENT_AUDIT.json)
 - [Phase D2 evidence manifest](RESEARCH/PHASE_D2_MANIFEST.json)
 - [preserved Phase D1 readiness v2](RESEARCH/PHASE_D1_READINESS_v2.md)
@@ -226,7 +229,7 @@ Reference run/validation commands and accepted manifest conventions are kept in:
 | Pre-Phase D market state | Complete | Carry the compact numerical block as context; do not turn it into a timing strategy. |
 | Phase D0 | v3 frozen; v2 preserved | Final chronology amendment locks January/July refits, trailing 36-month windows, three-block prequential calibration, complete-block evidence mappings and unchanged scientific definitions. |
 | Phase D1 | v3 complete — PASS | 80 focused tests, 187 full regressions and immutable structural run `phase-d1-v3-structural-ed315ee058c7e0e7ce51`; every structural minimum passes and no real predictive operation occurred. Accepted v2 evidence remains unchanged. |
-| Phase D2/D3 | D2 complete — STOP / D3 not authorized | D2 execution integrity PASS and evidence COMPLETE; 99/177 gates passed and 78 failed. The rich model did not beat both conventional comparators stably or in the frozen opportunity tail. Retain the negative result for owner review; no D3 or portfolio translation. |
+| Phase D2/D3 | D2 STOP verified / D3 not authorized | Audit v2 preserves the accepted predictions and verifies the negative result. Historical execution integrity is NOT FULLY PROVEN because sequential label admission was not retained; independent coverage is explicitly bounded. No D3 or portfolio translation. |
 | Phase E/F | Trigger-driven / later | Optimize measured pain and add richer reporting only when the completed vertical slice demonstrates a need. |
 
 Phase D is a pooled learner but not an always-invested portfolio. It evaluates

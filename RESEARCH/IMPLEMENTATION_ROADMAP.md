@@ -364,10 +364,12 @@ deployment and design changes remain unauthorized.
 Phase D2 execution. That execution is complete. The historical D1 checkpoint
 above remains an accurate record of its pre-overlay state and is not rewritten.
 
-### Phase D2 — Complete: valid negative result
+### Phase D2 — Complete: scientific STOP verified, integrity qualified
 
-Phase D2 execution integrity is `PASS` and the predictive evidence package is
-`COMPLETE`. `C_LIGHTGBM` and `RICH_LIGHTGBM` were selected within their frozen
+Audit v2 preserves the accepted predictions and verifies the scientific `STOP`.
+Execution integrity is `NOT FULLY PROVEN`: individual fits used only mature
+labels, but the accepted v4 trace does not prove literal outer-block sequential
+label admission. `C_LIGHTGBM` and `RICH_LIGHTGBM` were selected within their frozen
 representations on the 2023 selection population. Across development and locked
 evaluation the rich representation did not establish material, stable
 incremental information against both fixed conventional comparators. Its
@@ -379,10 +381,14 @@ influence gates failed.
 The prediction sequence was generated and fingerprinted before any outcome
 attachment. A second execution reproduced the prediction table, sequence, all
 evaluation stages, and final scientific identities exactly. An independent
-evaluator matched the decisive metrics, 177 gate classifications, and verdict
-without importing primary metric functions. The gate matrix contains 99 `PASS`
-and 78 `FAIL` results; all execution-integrity, validity, and reproducibility
-gates pass. See [`PHASE_D2_RESULTS.md`](PHASE_D2_RESULTS.md),
+evaluator matched a bounded core of metrics and the verdict without importing
+primary metric functions. It reclassified remaining stored gate inputs rather
+than independently recomputing every bootstrap, leave-contributor, and annual
+input. The historical gate matrix contains 99 `PASS` and 78 `FAIL` results, but
+its 26 execution-integrity rows were asserted constants; audit v2 replaces that
+claim with artifact-derived checks and an explicit qualification. See
+[`PHASE_D2_RESULTS.md`](PHASE_D2_RESULTS.md),
+[`PHASE_D2_AUDIT_REPAIR.md`](PHASE_D2_AUDIT_REPAIR.md),
 [`PHASE_D2_REQUIREMENT_AUDIT.json`](PHASE_D2_REQUIREMENT_AUDIT.json), and
 [`PHASE_D2_MANIFEST.json`](PHASE_D2_MANIFEST.json).
 

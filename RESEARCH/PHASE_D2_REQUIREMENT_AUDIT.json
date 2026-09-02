@@ -1,11 +1,11 @@
 {
-  "schema_version": "ats.phase_d2.requirement_audit.v1",
+  "schema_version": "ats.phase_d2.requirement_audit.v2",
   "phase": "D2",
   "audit_date": "2026-09-02",
-  "overall_status": "PASS",
-  "execution_integrity": "PASS",
-  "predictive_evidence_package": "COMPLETE",
-  "frozen_phase_d_research_verdict": "STOP",
+  "overall_status": "PASS WITH EXECUTION-INTEGRITY QUALIFICATION",
+  "execution_integrity": "NOT FULLY PROVEN",
+  "predictive_evidence_package": "SCIENTIFIC STOP VERIFIED; INDEPENDENT COVERAGE BOUNDED",
+  "frozen_phase_d_research_verdict": "STOP — VERIFIED",
   "d3_execution_authorized": "NO",
   "portfolio_backtest_work_authorized": "NO",
   "status_semantics": {
@@ -20,7 +20,19 @@
     "pass": 99,
     "fail": 78,
     "not_proven": 0,
-    "note": "Overall requirement PASS means the frozen study was validly completed; it does not override failed predictive gates."
+    "note": "This is the preserved historical matrix. Its 26 execution-integrity rows were asserted constants; audit v2 derives the retained checks and separately classifies sequential label admission NOT PROVEN."
+  },
+  "audit_v2": {
+    "primary": "D:/Stock/data/ATS/phase_d_ml/evaluation_runs/phase-d2-evaluation-20260902-v6/audit-v2",
+    "reproduction": "D:/Stock/data/ATS/phase_d_ml/reproductions/evaluation_runs/phase-d2-evaluation-20260902-v6-reproduction/audit-v2",
+    "scientific_logical_hash": "397d66ed3c88c8e914c1a6bbdc9af7875f0d553acbd86c48dcb8d3f64eab944c",
+    "primary_reproduction_scientific_payload_match": true,
+    "scientific_stop_status": "STOP — VERIFIED",
+    "execution_integrity_status": "NOT FULLY PROVEN",
+    "sequential_locked_label_admission": "NOT PROVEN",
+    "accepted_artifacts_modified": false,
+    "prediction_regenerated": false,
+    "independent_coverage": "Bounded core recomputation; not every bootstrap, leave-contributor, annual, or other gate input was independently recomputed."
   },
   "requirements": [
     {
@@ -75,7 +87,7 @@
       "id": "D2-009",
       "requirement": "Enforce PIT membership, preceding-session feature timing, and official denominator 60.",
       "status": "PASS",
-      "evidence": "Stage 2B and Stage 2C execution_integrity gates."
+      "evidence": "audit-v2 independently derives PIT timing and official-denominator checks from sealed masks."
     },
     {
       "id": "D2-010",
@@ -87,7 +99,7 @@
       "id": "D2-011",
       "requirement": "Use exact label anchors, availability timestamps, and endpoint-derived purge boundaries.",
       "status": "PASS",
-      "evidence": "Stage 2B and Stage 2C exact_label_anchors_and_availability and endpoint_derived_purge gates."
+      "evidence": "audit-v2 derives exact outcome-state/endpoint consistency and all inner/final retained-fit endpoint proofs."
     },
     {
       "id": "D2-012",
@@ -105,19 +117,19 @@
       "id": "D2-014",
       "requirement": "Fit preprocessing only on each allowed training population.",
       "status": "PASS",
-      "evidence": "fold_local_preprocessing=true in both decisive populations."
+      "evidence": "audit-v2 derives estimator recreation and threshold-before-final-refit proofs from every fit/calibration record."
     },
     {
       "id": "D2-015",
       "requirement": "Exclude identity predictors and apply identity-neutral score ties.",
       "status": "PASS",
-      "evidence": "identity_predictors_absent=true and identity_neutral_ties=true in both decisive populations."
+      "evidence": "audit-v2 checks every sealed fit feature allowlist, strict candidate flags, and the frozen identity-neutral tie contract."
     },
     {
       "id": "D2-016",
       "requirement": "Meet every frozen actual fit, score, calibration, outcome, and inference minimum.",
       "status": "PASS",
-      "evidence": "All validity minimum-sample gates passed; paired IC defined fraction was 1.0."
+      "evidence": "audit-v2 independently compares every retained fit/score count with the frozen plan minima; paired IC defined fraction in the accepted metrics was 1.0."
     },
     {
       "id": "D2-017",
@@ -134,8 +146,8 @@
     {
       "id": "D2-019",
       "requirement": "Generate locked 2025 H1, 2025 H2, and 2026 H1 predictions in simulated historical order.",
-      "status": "PASS",
-      "evidence": "locked sequence fingerprint 4af56252a7aae9054baf117a9cb386cf026ad8f35e438a1e3f753b0a1e2999b6."
+      "status": "NOT PROVEN",
+      "evidence": "Prediction blocks and individual mature-label fits are ordered and fingerprinted, but accepted v4 loaded the union of eventual training labels before the first block and retained no literal sequential-admission trace."
     },
     {
       "id": "D2-020",
@@ -213,7 +225,7 @@
       "id": "D2-032",
       "requirement": "Evaluate chronological, frequency, idle-state, concentration, and leave-contributor-out stability.",
       "status": "PASS",
-      "evidence": "All prespecified gate categories are present in final/gate_matrix.json."
+      "evidence": "Accepted gate categories cover security and chronological-quartile concentration; audit-v2 adds largest-session share, top-five-session share, session HHI, half-year shares, and half-year HHI from sealed episode anchors."
     },
     {
       "id": "D2-033",
@@ -241,9 +253,9 @@
     },
     {
       "id": "D2-037",
-      "requirement": "Independently recompute decisive metrics and verdict without importing primary metric functions.",
+      "requirement": "Independently recompute a sufficient core of decisive metrics and the verdict without importing primary metric functions, and state any coverage boundary explicitly.",
       "status": "PASS",
-      "evidence": "independent-v1 status PASS; logical hash 3e5ca0c5c37d4397d968b61e8dc5337240eb990957b07d98f5c44e129884c40f."
+      "evidence": "audit-v2 independently reproduces selection and negative development/locked mean-IC anchors sufficient for STOP. Bootstrap, leave-contributor, complete-year, and other unlisted gate inputs are explicitly outside the independent recomputation claim."
     },
     {
       "id": "D2-038",

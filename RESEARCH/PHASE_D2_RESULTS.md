@@ -1,6 +1,6 @@
 # Phase D2 pooled-ML results
 
-Status: **EXECUTION INTEGRITY PASS — PREDICTIVE EVIDENCE COMPLETE — STOP**
+Status: **STOP — VERIFIED / EXECUTION INTEGRITY NOT FULLY PROVEN**
 
 Date: 2026-09-02
 
@@ -32,11 +32,13 @@ The accepted prediction package is:
 - physical manifest SHA-256:
   `ab0fd8f4c38653470d5ec33ede6758f93ab356e98c5fadaf381161e793c48fc8`.
 
-Prediction validation is `PASS`: every frozen block and cell is present, the
-four cells use their shared semantic population, scores and thresholds are
+Prediction validation is `PASS`: every frozen block and cell is present, all
+five cells (four primary plus the frozen ablation) use their shared semantic
+population, scores and thresholds are
 finite, the strict threshold rule is preserved, the locked sequence is
 complete, and the sealed prediction artifact contains no outcomes or evaluation
-metrics.
+metrics. This proves that the sealed prediction table is label-free; it does
+not retroactively prove literal block-by-block admission of training labels.
 
 The accepted evaluation run is `phase-d2-evaluation-20260902-v6`. Its sealed
 logical hashes are:
@@ -52,10 +54,13 @@ The abbreviated physical hashes above are display aids; the complete values are
 bound in [`PHASE_D2_MANIFEST.json`](PHASE_D2_MANIFEST.json) and in the immutable
 external manifests.
 
-All PIT timing, official-denominator, exact-label-anchor, endpoint-purge,
-fold-local preprocessing, identity-exclusion, tie, population, minimum-sample,
-coverage, missing-state, and seal-order gates passed in development and locked
-evaluation. Development scored 14,894 rows over 249 sessions, with 14,892
+Audit v2 derives PIT timing, official-denominator, exact-label-anchor,
+endpoint-purge, fold-local preprocessing, identity-exclusion, tie, population,
+minimum-sample, coverage, missing-state, lineage, and seal-order checks from
+retained artifacts; all thirteen derived dimensions pass. Literal sequential
+locked-label admission is `NOT PROVEN` for the accepted v4 run, so execution
+integrity is `NOT FULLY PROVEN`. Development scored 14,894 rows over 249
+sessions, with 14,892
 evaluable primary outcomes (99.9866%). Locked evaluation scored and evaluated
 22,013 rows over 372 sessions (100%).
 
@@ -69,19 +74,34 @@ metadata; persisted table and scientific artifact identities are the decisive
 reproduction anchors.
 
 The independent evaluator does not import primary metric functions. It matched
-cell selection, decisive metrics, all gate classifications, denominators, and
-the `STOP` verdict. Its primary logical hash is
+cell selection, a bounded core of IC, tail, frequency, denominator and
+concentration calculations, all classifications obtained by applying the gate
+operators to stored values, and the `STOP` verdict. It did not independently
+recompute every bootstrap, leave-contributor, annual, or other gate input. Its
+primary logical hash is
 `3e5ca0c5c37d4397d968b61e8dc5337240eb990957b07d98f5c44e129884c40f`;
 the reproduction evaluator is independently `PASS` with logical hash
 `196e456ad5774e94098f91e58aed219c346d1434fcb952675fabd689483c320a`.
 
-Fresh post-result verification passed 80 focused Phase D1 tests, 25 focused
-Phase D2 tests, all 212 tests in the supported Python suite, and all 10
+Fresh audit-repair verification passed 29 focused Phase D2 tests, all 216 tests
+in the supported Python suite, and all 10
 pre-Phase-D market-state regressions. The current D1 v3 structural CLI,
 primary/reproduction Stage 1 validators, and all eight primary/reproduction
 evaluation-stage validators pass. The independent evaluator was also rerun
 read-only against both sealed roots and returned the same two logical hashes and
 `STOP` verdict.
+
+### Versioned audit v2
+
+The frozen bounded repair published `audit-v2` beside both accepted evaluation
+roots without editing any accepted artifact. Primary and reproduction audit
+scientific payloads match exactly at
+`397d66ed3c88c8e914c1a6bbdc9af7875f0d553acbd86c48dcb8d3f64eab944c`.
+Both validate the prediction and every evaluation-stage seal, independently
+select `C_LIGHTGBM` and `RICH_LIGHTGBM`, independently reproduce the decisive
+negative rich-minus-`C_LINEAR` IC anchors, retain `STOP — VERIFIED`, and report
+execution integrity `NOT FULLY PROVEN`. See
+[`PHASE_D2_AUDIT_REPAIR.md`](PHASE_D2_AUDIT_REPAIR.md).
 
 The historical D0/D1 v3 validators pass when replayed from their accepted
 activation checkpoint `1dc9bbd` using exact committed bytes. On the current tree
@@ -199,7 +219,15 @@ and 43.61% of locked episodes; both frozen concentration gates failed. Complete-
 year positive performance versus `C_LINEAR` occurred in only half of the
 eligible years, below the required 75%.
 
-## 8. Security concentration and influence
+## 8. Session, period, security concentration and influence
+
+Audit v2 adds the D0-required session dimension from the accepted episode
+anchors. Development's largest session held 21.21% of 198 episodes, its top five
+sessions held 56.57%, and session HHI was 0.09285. Locked evidence's largest
+session held 27.07% of 133 episodes, its top five held 54.14%, and session HHI
+was 0.10815. The largest half-year shares were 74.24% and 55.64%, with half-year
+HHIs 0.61754 and 0.40935. No threshold was frozen for these reporting
+diagnostics, so they do not change a gate or the verdict.
 
 The absolute security counts and simple concentration statistics were not the
 principal problem: the largest-security episode shares were 3.03% development
@@ -260,7 +288,7 @@ The immutable machine gate matrix is:
 
 | Category | PASS | FAIL | NOT PROVEN |
 |---|---:|---:|---:|
-| Execution integrity | 26 | 0 | 0 |
+| Execution integrity (historical asserted rows) | 26 | 0 | 0 |
 | Validity | 8 | 0 | 0 |
 | Reproducibility | 1 | 0 | 0 |
 | Incremental rank information | 3 | 8 | 0 |
@@ -271,18 +299,22 @@ The immutable machine gate matrix is:
 | Concentration | 23 | 25 | 0 |
 | **Total** | **99** | **78** | **0** |
 
-The requirement audit is `PASS` because the authorized study was completely and
-validly executed; that must not be confused with the predictive gates. The
-predictive evidence package is `COMPLETE`. Every individual gate ID, population,
+The table above reconciles the immutable accepted matrix. Its 26 historical
+execution-integrity rows were emitted as unconditional values and are not
+independent proof. Audit v2 derives thirteen artifact-backed integrity
+dimensions as `PASS` but classifies the additional sequential-label-admission
+claim `NOT PROVEN`; overall execution integrity is therefore `NOT FULLY
+PROVEN`. The scientific predictive package is sufficient to verify `STOP`, but
+independent coverage is bounded. Every individual gate ID, population,
 comparator, operator, value, threshold, and classification is retained in the
 machine matrix; this table is its complete category reconciliation.
 
 ## 13. Mechanical research verdict
 
-With execution integrity `PASS`, validity `PASS`, reproducibility `PASS`, and 78
-prespecified scientific gate failures, the frozen mapping mechanically implies:
+With sealed validity/reproducibility evidence and decisive independently
+recomputed failures, the frozen mapping still mechanically implies:
 
-- frozen Phase D research verdict: **STOP**;
+- frozen Phase D research verdict: **STOP — VERIFIED**;
 - Phase D3 execution authorized: **NO**;
 - portfolio/backtest work authorized: **NO**.
 
@@ -292,5 +324,7 @@ cannot cure a failed 2024 confirmation gate.
 ## 14. Actions deferred to owner review
 
 This task stops at owner review. The negative result is retained as the Phase D2
-decision. No additional indicator, horizon, objective, model, infrastructure,
-Phase D3, portfolio translation, or deployment work is authorized by this run.
+decision. Execution integrity remains `NOT FULLY PROVEN`; that qualification
+does not authorize a rerun. No additional indicator, horizon, objective, model,
+infrastructure, Phase D3, portfolio translation, or deployment work is
+authorized by this run.

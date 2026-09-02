@@ -1,6 +1,9 @@
 # ATS owner review notebooks
 
-This suite explains the retained ATS system at the Phase A/B/C review checkpoint. It is an executable, evidence-guided walkthrough for an owner who understands software, mathematics, and trading concepts but did not implement the platform. It does not rebuild or modify any canonical publication.
+This suite explains the retained ATS system through the Phase D pooled-ML
+decision. It is an executable, evidence-guided walkthrough for an owner who
+understands software, mathematics, and trading concepts but did not implement
+the platform. It does not rebuild or modify any canonical publication.
 
 ## Reading order
 
@@ -8,6 +11,7 @@ This suite explains the retained ATS system at the Phase A/B/C review checkpoint
 2. `01_data_identity_and_point_in_time.ipynb` — pinned Phase B access, stable identity, official-universe denominator, temporal visibility, and physical layout.
 3. `02_research_findings_and_diagnostics.ipynb` — frozen feature/label conventions, bounded real calculations, diagnostic classifications, and confounding.
 4. `03_portfolio_ledger_and_end_to_end_flow.ipynb` — Phase C contracts, next-open execution, Decimal accounting, invariants, reproduction, and the actual feature-to-ledger boundary.
+5. `04_phase_d_pooled_ml_review.ipynb` — Phase D chronology and pooled-model machinery, model selection, IC/tail/frequency/concentration findings, bounded audit-v2 coverage, and the verified `STOP`.
 
 The notebooks share vocabulary and should first be read in order. Each repeats its own objectives, paths, retained identities, and imports so it can also execute from a fresh kernel independently.
 
@@ -27,7 +31,9 @@ The wrapper does not install the project, but it now supplies `source\python\src
 
 ## Expected retained inputs
 
-- repository: `D:\Stock\ATS`, expected review HEAD `00e35d98a49492a7913a1e862117c5ae19757d06`;
+- repository: `D:\Stock\ATS`; the Phase A/B/C snapshot notebooks retain their
+  accepted `00e35d98a49492a7913a1e862117c5ae19757d06` checkpoint, while notebook 04
+  pins Phase D by prediction and audit scientific hashes;
 - data root: `D:\Stock\data\ATS`;
 - Phase A: `phasea-2a2b3898aba37814`;
 - extended Phase A: `phasea-9a50dcdb3a4538d7` in `decision_oriented_phase_a\runs\extension-20260820T163347Z`;
@@ -35,19 +41,28 @@ The wrapper does not install the project, but it now supplies `source\python\src
 - U.S. Phase B metadata/profile: `phaseb-5d7086751156ac48cef3`;
 - Phase C: `phasec-fa439d650410376aae9e`;
 - Phase C reproduction: `phase_c\reproductions\00e35d9\phasec-fa439d650410376aae9e`.
+- Phase D2 predictions: `phase_d_ml\prediction_runs\phase-d2-predictions-20260902-v4`.
+- Phase D2 evaluation: `phase_d_ml\evaluation_runs\phase-d2-evaluation-20260902-v6`.
+- Phase D2 audit: `audit-v2` beneath the accepted primary and reproduction evaluation roots.
 
-Override paths without editing notebooks by setting any of: `ATS_REPO_ROOT`, `ATS_DATA_ROOT`, `ATS_GPW_MANIFEST`, `ATS_US_MANIFEST`, `ATS_PHASE_A_RUN`, `ATS_PHASE_A_EXTENDED_RUN`, `ATS_PHASE_C_RUN`, or `ATS_PHASE_C_REPRODUCTION`.
+Override paths without editing notebooks by setting any of: `ATS_REPO_ROOT`,
+`ATS_DATA_ROOT`, `ATS_GPW_MANIFEST`, `ATS_US_MANIFEST`, `ATS_PHASE_A_RUN`,
+`ATS_PHASE_A_EXTENDED_RUN`, `ATS_PHASE_C_RUN`, `ATS_PHASE_C_REPRODUCTION`,
+`ATS_PHASE_D2_PREDICTION_RUN`, `ATS_PHASE_D2_EVALUATION_RUN`, or
+`ATS_PHASE_D2_REPRODUCTION_RUN`.
 
 ## Fresh-kernel execution
 
-Execute all four in documented order, with a new kernel for every notebook:
+Execute all five in documented order, with a new kernel for every notebook:
 
 ```powershell
 & 'D:\Stock\ATS\RESEARCH\prototypes\environment_repair\invoke_repaired_python.ps1' `
   -PythonArgs @('D:\Stock\ATS\source\python\notebooks\execute_notebooks.py')
 ```
 
-The driver overwrites only the four notebook files with their small executed outputs and writes `execution_report.json`. It starts a fresh kernel per notebook, stops at the first error, and does not write beneath `D:\Stock\data`.
+The driver overwrites only the five notebook files with their small executed
+outputs and writes `execution_report.json`. It starts a fresh kernel per
+notebook, stops at the first error, and does not write beneath `D:\Stock\data`.
 
 To execute one notebook from a fresh kernel, pass its filename:
 
@@ -55,6 +70,10 @@ To execute one notebook from a fresh kernel, pass its filename:
 & 'D:\Stock\ATS\RESEARCH\prototypes\environment_repair\invoke_repaired_python.ps1' `
   -PythonArgs @('D:\Stock\ATS\source\python\notebooks\execute_notebooks.py', '01_data_identity_and_point_in_time.ipynb')
 ```
+
+A subset run writes a name-specific report such as
+`execution_report__04_phase_d_pooled_ml_review.json`; it does not overwrite the
+accepted report for the earlier complete notebook suite.
 
 Execution is offline. The GPW manifest is validated in notebook 01; the accepted U.S. publication is represented by retained metadata/profile evidence so the walkthrough does not rescan the 30.9-million-row fact table. The review notes record the separate full live validation.
 

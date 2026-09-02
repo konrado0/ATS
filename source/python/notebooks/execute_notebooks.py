@@ -21,6 +21,7 @@ NOTEBOOKS = (
     "01_data_identity_and_point_in_time.ipynb",
     "02_research_findings_and_diagnostics.ipynb",
     "03_portfolio_ledger_and_end_to_end_flow.ipynb",
+    "04_phase_d_pooled_ml_review.ipynb",
 )
 
 
@@ -103,7 +104,12 @@ def main() -> None:
         "canonical_data_writes": False,
         "results": results,
     }
-    (root / "execution_report.json").write_text(
+    report_name = (
+        "execution_report.json"
+        if not sys.argv[1:]
+        else "execution_report__" + "__".join(Path(name).stem for name in requested) + ".json"
+    )
+    (root / report_name).write_text(
         json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
 
