@@ -1,0 +1,42 @@
+{
+  "schema_version": "ats.phase_d2.execution.v1",
+  "phase": "D2",
+  "authorization": {
+    "activation_commit": "1dc9bbd93aa73da72aceda538f84cba233f79f78",
+    "overlay": "RESEARCH/PHASE_D2_AUTHORIZATION_OVERLAY.md",
+    "structural_run_id": "phase-d1-v3-structural-ed315ee058c7e0e7ce51",
+    "structural_logical_hash": "ed315ee058c7e0e7ce51066dde60800652d25fed0bdbe7e8d239cbe01aca05eb",
+    "structural_manifest_sha256": "13c4efabf78b0b87ba27efd7ef7a9a062871f2c10f1039497406716d1101977c"
+  },
+  "scientific_contract": {
+    "loader": "ats_ml.contracts_v3.load_frozen_d0_v3_contract",
+    "contract_version": "phase-d0-20260901-v3",
+    "feature_registry_sha256": "733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6",
+    "rule": "All scientific choices are derived from the composed frozen D0/D1 v3 contract; this file contains operational identities only."
+  },
+  "inputs": {
+    "candidate_and_market_state": "derive_and_hash_check_from_composed_contract",
+    "expected_factor_version": "ats.gpw.split_adjustment.v1",
+    "mutable_discovery_pointer": null
+  },
+  "output_roots": {
+    "prediction_runs": "D:/Stock/data/ATS/phase_d_ml/prediction_runs",
+    "evaluation_runs": "D:/Stock/data/ATS/phase_d_ml/evaluation_runs",
+    "reproductions": "D:/Stock/data/ATS/phase_d_ml/reproductions"
+  },
+  "primary_run_ids": {
+    "prediction": "phase-d2-predictions-20260902-v1",
+    "evaluation": "phase-d2-evaluation-20260902-v1"
+  },
+  "reproduction_run_ids": {
+    "prediction": "phase-d2-predictions-20260902-v1-reproduction",
+    "evaluation": "phase-d2-evaluation-20260902-v1-reproduction"
+  },
+  "publication": {
+    "parquet_compression": "zstd",
+    "parquet_dictionary_encoding": false,
+    "overwrite_existing_run": false,
+    "mutable_latest_pointer": false,
+    "machine_artifact_before_render": true
+  }
+}
