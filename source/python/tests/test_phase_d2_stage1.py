@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from ats_ml.d2_stage1 import _actual_fit, _score_rows
+from ats_ml.d2_stage1 import _actual_fit, _score_rows, require_common_cell_populations
 from ats_ml.d2_contract import validate_execution_authorization
 
 
@@ -64,3 +64,21 @@ def test_d2_execution_binds_accepted_contract_inputs_and_structural_run() -> Non
     assert proof["status"] == "PASS"
     assert contract.config["contract_version"] == "phase-d0-20260901-v3"
     assert proof["execution_config"]["authorization"]["structural_run_id"] == "phase-d1-v3-structural-ed315ee058c7e0e7ce51"
+
+
+def test_common_population_equality_normalizes_categorical_schema_state() -> None:
+    keys = pd.DataFrame({
+        "security_id": pd.Categorical(["A", "B"], categories=["A", "B", "UNUSED"]),
+        "decision_session": pd.to_datetime(["2024-01-02", "2024-01-02"]),
+    })
+    left = keys.assign(cell_id="LEFT")
+    right = keys.assign(
+        security_id=pd.Categorical(["A", "B"], categories=["B", "A"]),
+        cell_id="RIGHT",
+    )
+    proof = require_common_cell_populations(pd.concat([left, right], ignore_index=True), {"LEFT", "RIGHT"})
+    assert len(proof) == 64
+    with pytest.raises(ValueError, match="populations differ"):
+        require_common_cell_populations(
+            pd.concat([left, right.iloc[:1]], ignore_index=True), {"LEFT", "RIGHT"}
+        )

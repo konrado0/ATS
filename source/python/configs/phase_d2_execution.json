@@ -25,12 +25,17 @@
     "reproductions": "D:/Stock/data/ATS/phase_d_ml/reproductions"
   },
   "primary_run_ids": {
-    "prediction": "phase-d2-predictions-20260902-v1",
-    "evaluation": "phase-d2-evaluation-20260902-v1"
+    "prediction": "phase-d2-predictions-20260902-v2",
+    "evaluation": "phase-d2-evaluation-20260902-v2"
   },
   "reproduction_run_ids": {
-    "prediction": "phase-d2-predictions-20260902-v1-reproduction",
-    "evaluation": "phase-d2-evaluation-20260902-v1-reproduction"
+    "prediction": "phase-d2-predictions-20260902-v2-reproduction",
+    "evaluation": "phase-d2-evaluation-20260902-v2-reproduction"
+  },
+  "operational_correction": {
+    "superseded_failed_attempt": ".failed-phase-d2-predictions-20260902-v1-862052b2c48a4cbf8debfeb599445a94",
+    "scientific_choice_changed": false,
+    "reason": "Replace a categorical-schema-sensitive hash equality predicate with normalized semantic-key equality; the failed attempt produced no sealed publication and exposed no score or metric."
   },
   "publication": {
     "parquet_compression": "zstd",

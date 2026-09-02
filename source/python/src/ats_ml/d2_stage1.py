@@ -49,6 +49,26 @@ PRIMARY_CELLS = ("C_LINEAR", "C_LIGHTGBM", "RICH_LINEAR", "RICH_LIGHTGBM")
 ABLATION_CELL = "RICH_NO_M_LIGHTGBM"
 
 
+def normalized_population_keys(frame: pd.DataFrame) -> pd.DataFrame:
+    keys = frame[["security_id", "decision_session"]].copy()
+    keys["security_id"] = keys["security_id"].astype(str)
+    keys["decision_session"] = pd.to_datetime(keys["decision_session"]).dt.normalize()
+    keys = keys.sort_values(["decision_session", "security_id"], kind="mergesort").reset_index(drop=True)
+    if keys.duplicated().any():
+        raise D2ArtifactError("cell population contains duplicate semantic keys")
+    return keys
+
+
+def require_common_cell_populations(frame: pd.DataFrame, cell_ids: set[str]) -> str:
+    groups = {str(cell): normalized_population_keys(group) for cell, group in frame.groupby("cell_id", sort=True)}
+    if set(groups) != cell_ids:
+        raise D2ArtifactError("cell population proof lacks a frozen cell")
+    first = groups[sorted(groups)[0]]
+    if any(not first.equals(groups[cell]) for cell in sorted(groups)[1:]):
+        raise D2ArtifactError("cell score populations differ")
+    return logical_frame_hash(first, ["decision_session", "security_id"])
+
+
 def _decision_ts(session: object, timezone: str) -> pd.Timestamp:
     return pd.Timestamp(session).normalize().tz_localize(timezone) + pd.Timedelta(hours=8, minutes=45)
 
@@ -285,13 +305,12 @@ def build_prediction_run(stage: Path) -> dict[str, Any]:
                 "outer_outcomes_accessed": False,
             })
         block_frame = pd.concat(block_predictions, ignore_index=True)
-        expected_hashes = {
-            logical_frame_hash(
-                group[["security_id", "decision_session"]], ["decision_session", "security_id"]
-            ) for _, group in block_frame.groupby("cell_id", sort=True)
-        }
-        if len(expected_hashes) != 1:
-            raise D2ArtifactError(f"cell score populations differ in {block_id}")
+        common_population_hash = require_common_cell_populations(block_frame, set(cells))
+        fit_audit.append({
+            "block_id": block_id,
+            "common_outer_population_hash": common_population_hash,
+            "common_outer_population_reconciled": True,
+        })
         predictions.append(block_frame)
         if block_id in expected_locked:
             prediction_hash = logical_frame_hash(
@@ -446,4 +465,3 @@ def publish_prediction_run(*, reproduction: bool = False) -> Path:
         root, run_id, build_prediction_run,
         schema_version=PREDICTION_SCHEMA, validate=validate_prediction_run,
     )
-
