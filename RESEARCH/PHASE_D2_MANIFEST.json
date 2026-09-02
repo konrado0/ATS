@@ -27,6 +27,7 @@
     "d1_structural_manifest_sha256": "13c4efabf78b0b87ba27efd7ef7a9a062871f2c10f1039497406716d1101977c",
     "feature_registry_sha256": "733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6"
   },
+  "repository_artifact_hash_basis": "Exact committed bytes from git -c core.autocrlf=false archive; the notebook execution report separately retains the executed working-file hash.",
   "repository_artifacts": [
     {
       "path": "README.md",
@@ -155,8 +156,8 @@
     },
     {
       "path": "source/python/notebooks/execution_report__04_phase_d_pooled_ml_review.json",
-      "bytes": 537,
-      "sha256": "46b656bf186012d71e4d605264acea57b1e6eca1e443e8a0387651ea8ddcb3b3"
+      "bytes": 519,
+      "sha256": "7524c020c1a69950931bbe20496f9fefd2bbbcf11b6d29a64f74a954e36309fa"
     },
     {
       "path": "source/python/notebooks/build_phase_d_notebook.py",
@@ -165,8 +166,8 @@
     },
     {
       "path": "source/python/notebooks/04_phase_d_pooled_ml_review.ipynb",
-      "bytes": 410422,
-      "sha256": "ba417b03a16496433d4365fc8ed04cd1d3cb6a690363f040cb503fb3f107b48d"
+      "bytes": 408532,
+      "sha256": "dc53032da9eaa44d4db1c0cab3a8e99f73e35b21e251a52e458201c347e28168"
     }
   ],
   "primary_prediction": {
