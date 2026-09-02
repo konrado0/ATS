@@ -32,3 +32,17 @@ def test_mutable_run_identity_is_rejected(tmp_path: Path) -> None:
             validate=lambda stage: {},
         )
 
+
+def test_failed_build_is_preserved_for_forensic_review(tmp_path: Path) -> None:
+    def fail(stage: Path):
+        write_json(stage / "partial.json", {"real_results_may_exist": True})
+        raise RuntimeError("fixture failure")
+
+    with pytest.raises(RuntimeError, match="fixture failure"):
+        publish_immutable(
+            tmp_path, "failed-v1", fail, schema_version="fixture.v1",
+            validate=lambda stage: {},
+        )
+    failed = list(tmp_path.glob(".failed-failed-v1-*"))
+    assert len(failed) == 1
+    assert (failed[0] / "partial.json").is_file()

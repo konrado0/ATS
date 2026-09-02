@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import os
-import shutil
 import uuid
 from pathlib import Path
 from typing import Any, Callable
@@ -101,9 +100,11 @@ def publish_immutable(
         write_json(stage / "manifest.json", manifest)
         validate(stage)
         os.replace(stage, destination)
-    finally:
+    except Exception:
         if stage.exists():
-            shutil.rmtree(stage)
+            failed = root / stage.name.replace(".stage-", ".failed-", 1)
+            os.replace(stage, failed)
+        raise
     validate(destination)
     return destination
 
