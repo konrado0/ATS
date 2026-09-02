@@ -26,11 +26,11 @@
   },
   "primary_run_ids": {
     "prediction": "phase-d2-predictions-20260902-v4",
-    "evaluation": "phase-d2-evaluation-20260902-v4"
+    "evaluation": "phase-d2-evaluation-20260902-v5"
   },
   "reproduction_run_ids": {
     "prediction": "phase-d2-predictions-20260902-v4-reproduction",
-    "evaluation": "phase-d2-evaluation-20260902-v4-reproduction"
+    "evaluation": "phase-d2-evaluation-20260902-v5-reproduction"
   },
   "operational_correction": {
     "superseded_failed_attempts": [
@@ -38,8 +38,11 @@
       ".failed-phase-d2-predictions-20260902-v2-9dc74bb5b3b54e18b93eb90d07e49b6a",
       ".failed-phase-d2-predictions-20260902-v3-6dbd791bdf934f3b9ec389aa99285c48"
     ],
+    "superseded_failed_evaluation_attempts": [
+      "phase-d2-evaluation-20260902-v4/.failed-stage2a-0decb19b6fe640bbad2d934c273f82c9"
+    ],
     "scientific_choice_changed": false,
-    "reason": "The v1 correction replaced a categorical-schema-sensitive population predicate; v2 fixed an inverted no-metrics assertion; v3 binds logical table identities to the persisted Parquet representation. No failed attempt produced a sealed publication or exposed a score or metric."
+    "reason": "The prediction corrections addressed only equality, Boolean validation, and persisted identity. Evaluation v5 permits the temporary atomic-stage directory identity before rename. No failed attempt produced a sealed publication or exposed a score or metric."
   },
   "publication": {
     "parquet_compression": "zstd",

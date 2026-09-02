@@ -128,7 +128,9 @@ def _prediction_dir(*, reproduction: bool) -> Path:
 
 
 def validate_evaluation_stage(stage_dir: Path, stage_name: str) -> dict[str, Any]:
-    if stage_name not in STAGE_SCHEMAS or stage_dir.name != stage_name:
+    if stage_name not in STAGE_SCHEMAS or not (
+        stage_dir.name == stage_name or stage_dir.name.startswith(f".stage-{stage_name}-")
+    ):
         raise D2ArtifactError("evaluation stage identity is invalid")
     manifest = validate_manifest(
         stage_dir, schema_version=STAGE_SCHEMAS[stage_name], required_files=STAGE_FILES[stage_name]

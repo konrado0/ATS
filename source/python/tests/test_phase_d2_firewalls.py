@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from ats_ml.d2_stages import BLOCKS, require_stage_outcome_access
+from ats_ml.d2_stages import BLOCKS, validate_evaluation_stage, require_stage_outcome_access
 
 
 def test_2024_cannot_open_before_stage2a_is_sealed() -> None:
@@ -22,3 +22,9 @@ def test_each_stage_rejects_later_outcome_blocks() -> None:
     require_stage_outcome_access("stage2b", BLOCKS["stage2b"], {"stage2a"})
     require_stage_outcome_access("stage2c", BLOCKS["stage2c"], {"stage2a", "stage2b"})
 
+
+def test_evaluation_validator_rejects_unrelated_directory_before_reading_it(tmp_path) -> None:
+    unrelated = tmp_path / ".stage-stage2b-fixture"
+    unrelated.mkdir()
+    with pytest.raises(ValueError, match="identity is invalid"):
+        validate_evaluation_stage(unrelated, "stage2a")
