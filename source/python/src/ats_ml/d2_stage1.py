@@ -69,6 +69,21 @@ def require_common_cell_populations(frame: pd.DataFrame, cell_ids: set[str]) -> 
     return logical_frame_hash(first, ["decision_session", "security_id"])
 
 
+def require_stage1_validation(validation: dict[str, Any]) -> None:
+    required_true = {
+        "all_blocks_present", "all_cells_present", "finite_scores_and_thresholds",
+        "strict_threshold_rule", "outcome_columns_absent", "common_population_reconciled",
+        "ablation_population_identical", "locked_sequence_complete",
+    }
+    failed = sorted(name for name in required_true if validation.get(name) is not True)
+    if validation.get("evaluation_metrics_computed") is not False:
+        failed.append("evaluation_metrics_computed_must_be_false")
+    if validation.get("status") != "PASS":
+        failed.append("status")
+    if failed:
+        raise D2ArtifactError(f"Stage 1 validation failed: {failed}")
+
+
 def _decision_ts(session: object, timezone: str) -> pd.Timestamp:
     return pd.Timestamp(session).normalize().tz_localize(timezone) + pd.Timedelta(hours=8, minutes=45)
 
@@ -401,8 +416,7 @@ def build_prediction_run(stage: Path) -> dict[str, Any]:
         "locked_sequence_complete": True,
         "evaluation_metrics_computed": False,
     }
-    if not all(value is True for key, value in validation.items() if key not in {"schema_version", "status"}):
-        raise D2ArtifactError(f"Stage 1 validation failed: {validation}")
+    require_stage1_validation(validation)
     write_json(stage / "validation.json", validation)
     return {
         "prediction_identity": frame_identity(

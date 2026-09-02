@@ -4,7 +4,12 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from ats_ml.d2_stage1 import _actual_fit, _score_rows, require_common_cell_populations
+from ats_ml.d2_stage1 import (
+    _actual_fit,
+    _score_rows,
+    require_common_cell_populations,
+    require_stage1_validation,
+)
 from ats_ml.d2_contract import validate_execution_authorization
 
 
@@ -82,3 +87,22 @@ def test_common_population_equality_normalizes_categorical_schema_state() -> Non
         require_common_cell_populations(
             pd.concat([left, right.iloc[:1]], ignore_index=True), {"LEFT", "RIGHT"}
         )
+
+
+def test_stage1_validation_requires_no_evaluation_metric() -> None:
+    proof = {
+        "status": "PASS",
+        "all_blocks_present": True,
+        "all_cells_present": True,
+        "finite_scores_and_thresholds": True,
+        "strict_threshold_rule": True,
+        "outcome_columns_absent": True,
+        "common_population_reconciled": True,
+        "ablation_population_identical": True,
+        "locked_sequence_complete": True,
+        "evaluation_metrics_computed": False,
+    }
+    require_stage1_validation(proof)
+    proof["evaluation_metrics_computed"] = True
+    with pytest.raises(ValueError, match="must_be_false"):
+        require_stage1_validation(proof)
