@@ -1,0 +1,267 @@
+{
+  "schema_version": "ats.phase_d2.requirement_audit.v1",
+  "phase": "D2",
+  "audit_date": "2026-09-02",
+  "overall_status": "PASS",
+  "execution_integrity": "PASS",
+  "predictive_evidence_package": "COMPLETE",
+  "frozen_phase_d_research_verdict": "STOP",
+  "d3_execution_authorized": "NO",
+  "portfolio_backtest_work_authorized": "NO",
+  "status_semantics": {
+    "PASS": "The execution requirement was demonstrated by immutable evidence.",
+    "FAIL": "The execution requirement was contradicted.",
+    "NOT PROVEN": "The requested diagnostic could not be established under the frozen definition.",
+    "DEFERRED BY CONTRACT": "The frozen task deliberately supplied no definition and prohibited invention after results."
+  },
+  "scientific_gate_summary": {
+    "machine_gate_matrix": "D:/Stock/data/ATS/phase_d_ml/evaluation_runs/phase-d2-evaluation-20260902-v6/final/gate_matrix.json",
+    "total": 177,
+    "pass": 99,
+    "fail": 78,
+    "not_proven": 0,
+    "note": "Overall requirement PASS means the frozen study was validly completed; it does not override failed predictive gates."
+  },
+  "requirements": [
+    {
+      "id": "D2-001",
+      "requirement": "Read and obey the repository operating policy and controlling Phase D documents.",
+      "status": "PASS",
+      "evidence": "README.md; RESEARCH/RESEARCH_OPERATING_POLICY.md; PHASE_D0_EXPERIMENT_PLAN_v3.md; PHASE_D1_READINESS_v3.md; PHASE_D2_AUTHORIZATION_OVERLAY.md; PHASE_D2_EXECUTION_FREEZE.md"
+    },
+    {
+      "id": "D2-002",
+      "requirement": "State the exact bounded decision before implementation.",
+      "status": "PASS",
+      "evidence": "RESEARCH/PHASE_D2_EXECUTION_FREEZE.md"
+    },
+    {
+      "id": "D2-003",
+      "requirement": "Use the cheapest experiment capable of deciding the frozen claim and defer unrelated infrastructure.",
+      "status": "PASS",
+      "evidence": "One eight-block D0/D1 v3 walk-forward execution; no platform or model-family expansion."
+    },
+    {
+      "id": "D2-004",
+      "requirement": "Freeze the stop/continue rule before real model fitting.",
+      "status": "PASS",
+      "evidence": "Commit f72972c; RESEARCH/PHASE_D2_EXECUTION_FREEZE.md"
+    },
+    {
+      "id": "D2-005",
+      "requirement": "Activate D2 only from the committed and post-commit-validated D1 v3 baseline.",
+      "status": "PASS",
+      "evidence": "Activation commit 1dc9bbd93aa73da72aceda538f84cba233f79f78 and authorization.json."
+    },
+    {
+      "id": "D2-006",
+      "requirement": "Pin exact input and parent identities without a mutable discovery pointer.",
+      "status": "PASS",
+      "evidence": "source/python/configs/phase_d2_execution.json; accepted prediction manifest."
+    },
+    {
+      "id": "D2-007",
+      "requirement": "Preserve the frozen D0/D1 scientific choices without post-result optimization.",
+      "status": "PASS",
+      "evidence": "Scientific contract derived by ats_ml.contracts_v3.load_frozen_d0_v3_contract; all corrections were operational only."
+    },
+    {
+      "id": "D2-008",
+      "requirement": "Use exactly the frozen 30-feature registry and its representation memberships.",
+      "status": "PASS",
+      "evidence": "Feature registry SHA-256 733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6."
+    },
+    {
+      "id": "D2-009",
+      "requirement": "Enforce PIT membership, preceding-session feature timing, and official denominator 60.",
+      "status": "PASS",
+      "evidence": "Stage 2B and Stage 2C execution_integrity gates."
+    },
+    {
+      "id": "D2-010",
+      "requirement": "Keep labels and outcomes inaccessible during prediction generation.",
+      "status": "PASS",
+      "evidence": "prediction validation: outcome_columns_absent=true and evaluation_metrics_computed=false."
+    },
+    {
+      "id": "D2-011",
+      "requirement": "Use exact label anchors, availability timestamps, and endpoint-derived purge boundaries.",
+      "status": "PASS",
+      "evidence": "Stage 2B and Stage 2C exact_label_anchors_and_availability and endpoint_derived_purge gates."
+    },
+    {
+      "id": "D2-012",
+      "requirement": "Use common semantic score and outcome populations for all four frozen cells.",
+      "status": "PASS",
+      "evidence": "prediction validation common_population_reconciled=true; Stage 2B/2C population gates."
+    },
+    {
+      "id": "D2-013",
+      "requirement": "Preserve missing and non-evaluable states and report official coverage without silent renormalization.",
+      "status": "PASS",
+      "evidence": "14,892/14,894 development outcomes and 22,013/22,013 locked outcomes explicitly reported."
+    },
+    {
+      "id": "D2-014",
+      "requirement": "Fit preprocessing only on each allowed training population.",
+      "status": "PASS",
+      "evidence": "fold_local_preprocessing=true in both decisive populations."
+    },
+    {
+      "id": "D2-015",
+      "requirement": "Exclude identity predictors and apply identity-neutral score ties.",
+      "status": "PASS",
+      "evidence": "identity_predictors_absent=true and identity_neutral_ties=true in both decisive populations."
+    },
+    {
+      "id": "D2-016",
+      "requirement": "Meet every frozen actual fit, score, calibration, outcome, and inference minimum.",
+      "status": "PASS",
+      "evidence": "All validity minimum-sample gates passed; paired IC defined fraction was 1.0."
+    },
+    {
+      "id": "D2-017",
+      "requirement": "Fit and score the four frozen cells and the predefined market-state ablation.",
+      "status": "PASS",
+      "evidence": "prediction validation all_cells_present=true and ablation_population_identical=true."
+    },
+    {
+      "id": "D2-018",
+      "requirement": "Calibrate thresholds from exactly three prior six-month out-of-fit score blocks.",
+      "status": "PASS",
+      "evidence": "fit_calibration_audit.json and locked_sequence.json in the accepted prediction run."
+    },
+    {
+      "id": "D2-019",
+      "requirement": "Generate locked 2025 H1, 2025 H2, and 2026 H1 predictions in simulated historical order.",
+      "status": "PASS",
+      "evidence": "locked sequence fingerprint 4af56252a7aae9054baf117a9cb386cf026ad8f35e438a1e3f753b0a1e2999b6."
+    },
+    {
+      "id": "D2-020",
+      "requirement": "Seal immutable Stage 1 predictions before loading outcomes or computing metrics.",
+      "status": "PASS",
+      "evidence": "prediction package logical hash 2d00f4780309457e5a3b28aa164a5c72a561b2d4188008ce8735f4ea247c18d0."
+    },
+    {
+      "id": "D2-021",
+      "requirement": "Select conventional and rich models within representation using only 2023 selection blocks.",
+      "status": "PASS",
+      "evidence": "Stage 2A selected C_LIGHTGBM and RICH_LIGHTGBM; rich_vs_conventional_selection_performed=false."
+    },
+    {
+      "id": "D2-022",
+      "requirement": "Freeze selected models before Stage 2B development confirmation.",
+      "status": "PASS",
+      "evidence": "selection.json selected_models_frozen_before_stage2b=true."
+    },
+    {
+      "id": "D2-023",
+      "requirement": "Seal Stage 2A before exposing 2024 development outcomes.",
+      "status": "PASS",
+      "evidence": "Stage 2A logical hash 4206fe7d6669b27e43203a7f57bf0c0c368de8bc29d98f4e56d63ee6ba100b05."
+    },
+    {
+      "id": "D2-024",
+      "requirement": "Compute and seal all frozen Stage 2B decisive development metrics and gates.",
+      "status": "PASS",
+      "evidence": "Stage 2B logical hash e1675d0e98f67a5596cc0e3c28e75393aa18c11e534d211d0e5774ff663f4d3d."
+    },
+    {
+      "id": "D2-025",
+      "requirement": "Seal Stage 2B before exposing complete locked outcomes.",
+      "status": "PASS",
+      "evidence": "Stage 2C lineage binds the sealed Stage 2B hash."
+    },
+    {
+      "id": "D2-026",
+      "requirement": "Compute and seal all frozen Stage 2C locked metrics and gates.",
+      "status": "PASS",
+      "evidence": "Stage 2C logical hash 0cf187d0fff6330bcb3cd797aeff5f0dd32e526892893166016c620e73361819."
+    },
+    {
+      "id": "D2-027",
+      "requirement": "Keep partial 2026 H2 monitoring outcome-free, right-censored, and nongating.",
+      "status": "PASS",
+      "evidence": "monitoring.json: outcomes_loaded=false, nongating=true, scored_sessions=35."
+    },
+    {
+      "id": "D2-028",
+      "requirement": "Evaluate cross-sectional IC and paired incremental IC against every fixed comparator.",
+      "status": "PASS",
+      "evidence": "Stage 2B/2C metrics and incremental_rank_information gates."
+    },
+    {
+      "id": "D2-029",
+      "requirement": "Use frozen paired session-block bootstrap inference with defined-fraction reporting.",
+      "status": "PASS",
+      "evidence": "All decisive delta-IC and tail bootstrap defined fractions equal 1.0."
+    },
+    {
+      "id": "D2-030",
+      "requirement": "Collapse overlapping candidates into frozen non-overlapping episodes and retain raw-to-episode ratios.",
+      "status": "PASS",
+      "evidence": "198 development and 133 locked episode anchors; raw candidate counts and ratios reported."
+    },
+    {
+      "id": "D2-031",
+      "requirement": "Compare opportunity tails at frozen frequency-matched operating points against both conventional comparators.",
+      "status": "PASS",
+      "evidence": "Stage 2B/2C frequency-matched return and bootstrap gates are present in the final matrix."
+    },
+    {
+      "id": "D2-032",
+      "requirement": "Evaluate chronological, frequency, idle-state, concentration, and leave-contributor-out stability.",
+      "status": "PASS",
+      "evidence": "All prespecified gate categories are present in final/gate_matrix.json."
+    },
+    {
+      "id": "D2-033",
+      "requirement": "Compute the frozen 5-session and 10-session secondary-label diagnostics without allowing them to affect the verdict.",
+      "status": "PASS",
+      "evidence": "stage2b/diagnostics.json and stage2c/diagnostics.json; diagnostics_cannot_rescue_gate=true."
+    },
+    {
+      "id": "D2-034",
+      "requirement": "Report the frozen proximity-Q5 rank diagnostic under the same per-session IC minimum.",
+      "status": "NOT PROVEN",
+      "evidence": "2,988 development and 4,465 locked Q5 rows, but no session met the frozen 45-observation IC minimum; mean_session_ic=null."
+    },
+    {
+      "id": "D2-035",
+      "requirement": "Report MFE, MAE, time-to-excursion, and path-shape diagnostics.",
+      "status": "DEFERRED BY CONTRACT",
+      "evidence": "No frozen formula existed; post-result invention was prohibited."
+    },
+    {
+      "id": "D2-036",
+      "requirement": "Report descriptive feature importance if it is useful and safely bounded.",
+      "status": "DEFERRED BY CONTRACT",
+      "evidence": "Optional nongating diagnostic was not needed to make the STOP decision."
+    },
+    {
+      "id": "D2-037",
+      "requirement": "Independently recompute decisive metrics and verdict without importing primary metric functions.",
+      "status": "PASS",
+      "evidence": "independent-v1 status PASS; logical hash 3e5ca0c5c37d4397d968b61e8dc5337240eb990957b07d98f5c44e129884c40f."
+    },
+    {
+      "id": "D2-038",
+      "requirement": "Reproduce prediction-table, locked-sequence, Stage 2A, Stage 2B, Stage 2C, and final scientific identities in a second run.",
+      "status": "PASS",
+      "evidence": "All scientific logical hashes matched exactly in the reproduction roots."
+    },
+    {
+      "id": "D2-039",
+      "requirement": "Distinguish physical manifests, operational package identities, and scientific logical fingerprints.",
+      "status": "PASS",
+      "evidence": "Commit 7f1ba4a and accepted v6/reproduction lineage use the prediction-table fingerprint while retaining package hashes as provenance."
+    },
+    {
+      "id": "D2-040",
+      "requirement": "Derive the final verdict mechanically and stop at owner review without D3 or portfolio execution.",
+      "status": "PASS",
+      "evidence": "final validation PASS; verdict STOP; D3 NO; portfolio/backtest NO."
+    }
+  ]
+}

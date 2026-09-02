@@ -1,0 +1,273 @@
+{
+  "schema_version": "ats.phase_d2.evidence_manifest.v1",
+  "phase": "D2",
+  "manifest_date": "2026-09-02",
+  "status": "PASS",
+  "execution_integrity": "PASS",
+  "predictive_evidence_package": "COMPLETE",
+  "frozen_phase_d_research_verdict": "STOP",
+  "d3_execution_authorized": "NO",
+  "portfolio_backtest_work_authorized": "NO",
+  "commits": {
+    "activation_baseline": "1dc9bbd93aa73da72aceda538f84cba233f79f78",
+    "pre_result_execution_freeze": "f72972c",
+    "failed_publication_preservation": "64ee4cf",
+    "population_proof_correction": "a379894",
+    "validation_boolean_correction": "1b8d9ed",
+    "persisted_table_identity_correction": "c6e6efe",
+    "atomic_stage_validation_correction": "36f82b6",
+    "scientific_reproduction_identity_correction": "7f1ba4a435b1cbda7396a91ed0ec986dee817cf6",
+    "scientific_choices_changed_by_corrections": false
+  },
+  "frozen_parents": {
+    "d0_contract_version": "phase-d0-20260901-v3",
+    "d1_structural_run_id": "phase-d1-v3-structural-ed315ee058c7e0e7ce51",
+    "d1_structural_logical_hash": "ed315ee058c7e0e7ce51066dde60800652d25fed0bdbe7e8d239cbe01aca05eb",
+    "d1_structural_manifest_sha256": "13c4efabf78b0b87ba27efd7ef7a9a062871f2c10f1039497406716d1101977c",
+    "feature_registry_sha256": "733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6"
+  },
+  "repository_artifacts": [
+    {
+      "path": "README.md",
+      "bytes": 16116,
+      "sha256": "08e4b605a2b004a0fa18c155d09159457964c5d0a4a4ce686230d1ff591fc9ed"
+    },
+    {
+      "path": "RESEARCH/IMPLEMENTATION_ROADMAP.md",
+      "bytes": 30334,
+      "sha256": "2630dae3bdb7f63cb1d28f97a8bb0b75eb6c4cfb367f49eef631915d88ea946a"
+    },
+    {
+      "path": "RESEARCH/PHASE_D2_EXECUTION_FREEZE.md",
+      "bytes": 2308,
+      "sha256": "ef9ca87d0e951809e6c8ca93134c3ed9f70cf99f7f369fe9baca181ce6a60ebf"
+    },
+    {
+      "path": "RESEARCH/PHASE_D2_RESULTS.md",
+      "bytes": 14725,
+      "sha256": "1ee14be80cc9afb0331e4435817fd476d3a43c28296de84130786017275857ed"
+    },
+    {
+      "path": "RESEARCH/PHASE_D2_REQUIREMENT_AUDIT.json",
+      "bytes": 11961,
+      "sha256": "5517fe382bde769ee0056dfc21e4cfb9164fb1252a07f69787673132f3551b5d"
+    },
+    {
+      "path": "RESEARCH/prototypes/phase_d2/README.md",
+      "bytes": 994,
+      "sha256": "978188f99b4bd4c5336d678369867f4fa74ec0e10b616ba34999596688881efc"
+    },
+    {
+      "path": "RESEARCH/prototypes/phase_d2/evaluate_phase_d2.py",
+      "bytes": 16234,
+      "sha256": "9b63820a4d9d088877e48116a62f1910c3373002217a10e7f6603ee66f7b0783"
+    },
+    {
+      "path": "source/python/configs/phase_d2_execution.json",
+      "bytes": 2709,
+      "sha256": "e58c9e0aa2c72fa2e1f41803abde01ec6846254089319b764289883a292da36e"
+    },
+    {
+      "path": "source/python/src/ats_ml/d2_artifacts.py",
+      "bytes": 5580,
+      "sha256": "22e6e0bae562f1ddd39e5a7e6d0d63454705c72d42aa4e45412d56bbe7612b7b"
+    },
+    {
+      "path": "source/python/src/ats_ml/d2_cli.py",
+      "bytes": 2340,
+      "sha256": "960fbe6c48af26ac80651382fe132d4f727c9119f116d7779255df7c3195b412"
+    },
+    {
+      "path": "source/python/src/ats_ml/d2_contract.py",
+      "bytes": 6457,
+      "sha256": "44cf48e5747d042b054e6c542b345fbecfe0051e63af777ee433130220434ee7"
+    },
+    {
+      "path": "source/python/src/ats_ml/d2_data.py",
+      "bytes": 8488,
+      "sha256": "6a7f31206b7c2db1b4c9b1feac7f09c623b07481c1d12f3fa8c8bbf78e568c67"
+    },
+    {
+      "path": "source/python/src/ats_ml/d2_metrics.py",
+      "bytes": 33844,
+      "sha256": "28192fe66fa75c2249e56f8dea0d26afdba10e75d7c8c8b6c5cc9d5a4fef98da"
+    },
+    {
+      "path": "source/python/src/ats_ml/d2_stage1.py",
+      "bytes": 22840,
+      "sha256": "bd865bdbdb76ab359e08d69a542ca303ce7daaadaa61d2b51b42b1e7d50bacd9"
+    },
+    {
+      "path": "source/python/src/ats_ml/d2_stages.py",
+      "bytes": 26333,
+      "sha256": "a0ff24f293b274fb02c25b267d04ffbe65e321c50b1f71b2359073730eef39ef"
+    },
+    {
+      "path": "source/python/tests/test_phase_d2_artifacts.py",
+      "bytes": 2558,
+      "sha256": "dd7cf2a28e9469bd910434f42fba23e92b5df2c76fa28fdda113464fa88b147f"
+    },
+    {
+      "path": "source/python/tests/test_phase_d2_firewalls.py",
+      "bytes": 1927,
+      "sha256": "ba520e42f39fa7639bdbf41e62179b5aba27efb45cdc5cfca0817f3a6625333e"
+    },
+    {
+      "path": "source/python/tests/test_phase_d2_metrics.py",
+      "bytes": 5123,
+      "sha256": "ffb97bf9bf774ee8a1aee22386f4b813f1ecef73478519a4359bdbd4033a0b0d"
+    },
+    {
+      "path": "source/python/tests/test_phase_d2_stage1.py",
+      "bytes": 4005,
+      "sha256": "f4a60a315c3b99ed70e877c67b9d6b05bd5035dad062ec455372c535b9b1a27a"
+    }
+  ],
+  "primary_prediction": {
+    "run_id": "phase-d2-predictions-20260902-v4",
+    "root": "D:/Stock/data/ATS/phase_d_ml/prediction_runs/phase-d2-predictions-20260902-v4",
+    "package_logical_hash": "2d00f4780309457e5a3b28aa164a5c72a561b2d4188008ce8735f4ea247c18d0",
+    "prediction_table_logical_hash": "ad9ea68d66fde122e127d502706f8eeaea162749b6f67a38b1a68ac0c06e8466",
+    "locked_sequence_fingerprint": "4af56252a7aae9054baf117a9cb386cf026ad8f35e438a1e3f753b0a1e2999b6",
+    "manifest_sha256": "ab0fd8f4c38653470d5ec33ede6758f93ab356e98c5fadaf381161e793c48fc8"
+  },
+  "primary_evaluation": {
+    "run_id": "phase-d2-evaluation-20260902-v6",
+    "root": "D:/Stock/data/ATS/phase_d_ml/evaluation_runs/phase-d2-evaluation-20260902-v6",
+    "stages": {
+      "stage2a": {
+        "logical_hash": "4206fe7d6669b27e43203a7f57bf0c0c368de8bc29d98f4e56d63ee6ba100b05",
+        "manifest_sha256": "82b7e400a10b32d03a8484230ed927c35ef37a78e0d08ff89c68bafecc41a410"
+      },
+      "stage2b": {
+        "logical_hash": "e1675d0e98f67a5596cc0e3c28e75393aa18c11e534d211d0e5774ff663f4d3d",
+        "manifest_sha256": "f112a14d60621f7968e4076bdb69ce8a7079957bd5dc30d167e6df3d92c08e39"
+      },
+      "stage2c": {
+        "logical_hash": "0cf187d0fff6330bcb3cd797aeff5f0dd32e526892893166016c620e73361819",
+        "manifest_sha256": "76051f2df1b3ab61251441cfd30c2caf2d432e005835237bd24d466bcec706fd"
+      },
+      "final": {
+        "logical_hash": "b3a16bad8f0d76e34885639f7758afd11a64aef2a9b075b7ea6f7c201ac55acc",
+        "manifest_sha256": "11b061037877f8ac2d31b9d84efe773d55f6acb9ea0e976060c93452cf553245"
+      },
+      "independent_v1": {
+        "logical_hash": "3e5ca0c5c37d4397d968b61e8dc5337240eb990957b07d98f5c44e129884c40f",
+        "manifest_sha256": "b81ab3c952138e843f766602789d65491c31fc6e96b20fadb8f500dbc4ae0fc9",
+        "status": "PASS",
+        "verdict": "STOP"
+      }
+    }
+  },
+  "reproduction": {
+    "prediction": {
+      "run_id": "phase-d2-predictions-20260902-v4-reproduction",
+      "root": "D:/Stock/data/ATS/phase_d_ml/reproductions/prediction_runs/phase-d2-predictions-20260902-v4-reproduction",
+      "package_logical_hash": "136261a455118632ff7099e9a693b14eee688d41c3e7f83c4497d3b3b8a8d635",
+      "prediction_table_logical_hash": "ad9ea68d66fde122e127d502706f8eeaea162749b6f67a38b1a68ac0c06e8466",
+      "locked_sequence_fingerprint": "4af56252a7aae9054baf117a9cb386cf026ad8f35e438a1e3f753b0a1e2999b6",
+      "manifest_sha256": "36236e873b2bb25971d843394d5cbe33e3941ea4ee61ba80ad95758c2ed3e38e"
+    },
+    "evaluation": {
+      "run_id": "phase-d2-evaluation-20260902-v6-reproduction",
+      "root": "D:/Stock/data/ATS/phase_d_ml/reproductions/evaluation_runs/phase-d2-evaluation-20260902-v6-reproduction",
+      "stage2a_logical_hash": "4206fe7d6669b27e43203a7f57bf0c0c368de8bc29d98f4e56d63ee6ba100b05",
+      "stage2a_manifest_sha256": "d63a396b8d1d0b60550094f0bada1e1532fff77eb25e33e31217a01ed6c998f8",
+      "stage2b_logical_hash": "e1675d0e98f67a5596cc0e3c28e75393aa18c11e534d211d0e5774ff663f4d3d",
+      "stage2b_manifest_sha256": "79bb36978092dd0e92f1c531eac6f4bf8ee377f9f10019bb1076ff343086fa19",
+      "stage2c_logical_hash": "0cf187d0fff6330bcb3cd797aeff5f0dd32e526892893166016c620e73361819",
+      "stage2c_manifest_sha256": "58a7d3413880a0ae1293bb46226707784b8db8a207f4a958b65e3f29d0ab1fa2",
+      "final_logical_hash": "b3a16bad8f0d76e34885639f7758afd11a64aef2a9b075b7ea6f7c201ac55acc",
+      "final_manifest_sha256": "3a53330a6bf53a058cdbbf3c885522e0a464d726462d16c972bafd5f75406c8e",
+      "independent_logical_hash": "196e456ad5774e94098f91e58aed219c346d1434fcb952675fabd689483c320a",
+      "independent_manifest_sha256": "6acaabd4043a4eac031dfc646e8002cafcb1aecbb31aed2aed73b7417661b577",
+      "independent_status": "PASS",
+      "independent_verdict": "STOP"
+    },
+    "scientific_identity_rule": "Prediction-table, locked-sequence, and evaluation-stage logical hashes must match. Package hashes may differ only because run ID, code commit, and parent-package provenance are operational metadata.",
+    "scientific_identities_match": true
+  },
+  "selection": {
+    "population": "MODEL_SELECTION_2023_H1+MODEL_SELECTION_2023_H2",
+    "weighting": "equal_session",
+    "selected_conventional": "C_LIGHTGBM",
+    "selected_rich": "RICH_LIGHTGBM",
+    "tie_rule_applied": false
+  },
+  "gate_summary": {
+    "total": 177,
+    "pass": 99,
+    "fail": 78,
+    "not_proven": 0,
+    "execution_integrity": {
+      "pass": 26,
+      "fail": 0
+    },
+    "validity": {
+      "pass": 8,
+      "fail": 0
+    },
+    "reproducibility": {
+      "pass": 1,
+      "fail": 0
+    },
+    "incremental_rank_information": {
+      "pass": 3,
+      "fail": 8
+    },
+    "tail_outcome_separation": {
+      "pass": 2,
+      "fail": 22
+    },
+    "chronological_stability": {
+      "pass": 14,
+      "fail": 12
+    },
+    "opportunity_evidence": {
+      "pass": 4,
+      "fail": 4
+    },
+    "frequency_and_abstention": {
+      "pass": 18,
+      "fail": 7
+    },
+    "concentration": {
+      "pass": 23,
+      "fail": 25
+    }
+  },
+  "post_result_verification": {
+    "focused_phase_d1_tests": "80 passed",
+    "focused_phase_d2_tests": "25 passed",
+    "supported_source_python_suite": "212 passed",
+    "pre_phase_d_market_state_regressions": "10 passed",
+    "activation_checkpoint_d0_v3_validator": "PASS at 1dc9bbd exact committed bytes",
+    "activation_checkpoint_d1_v3_validator": "PASS at 1dc9bbd exact committed bytes",
+    "current_structural_cli": "PASS",
+    "current_primary_stage_validators": "PASS",
+    "current_reproduction_stage_validators": "PASS",
+    "current_independent_primary_recompute": "PASS",
+    "current_independent_reproduction_recompute": "PASS",
+    "current_tree_legacy_d0_d1_note": "The legacy D0 validator's only current-tree mismatch is the historical manifest hashes for README.md and RESEARCH/IMPLEMENTATION_ROADMAP.md. Both changed to record D2. Every scientific/contract check passes; current guidance is not rolled back to satisfy a historical manifest."
+  },
+  "preservation": {
+    "failed_prediction_publications": [
+      ".failed-phase-d2-predictions-20260902-v1-862052b2c48a4cbf8debfeb599445a94",
+      ".failed-phase-d2-predictions-20260902-v2-9dc74bb5b3b54e18b93eb90d07e49b6a",
+      ".failed-phase-d2-predictions-20260902-v3-6dbd791bdf934f3b9ec389aa99285c48"
+    ],
+    "failed_evaluation_publications": [
+      "phase-d2-evaluation-20260902-v4/.failed-stage2a-0decb19b6fe640bbad2d934c273f82c9"
+    ],
+    "superseded_complete_evaluation_runs": [
+      "phase-d2-evaluation-20260902-v5"
+    ],
+    "overwrite_or_delete_used": false
+  },
+  "publication_rules": {
+    "manifest_is_self_hashing": false,
+    "reason": "A manifest cannot stably contain its own physical hash; its containing Git commit supplies the outer repository identity.",
+    "mutable_latest_pointer": false,
+    "accepted_external_runs_edited_in_place": false
+  }
+}

@@ -306,10 +306,10 @@ D1 may not load or derive realized forward labels, emit validation scores, or
 publish or inspect real predictive performance. No locked historical test data
 are opened by a model in D1.
 
-### Phase D0/D1 acceptance checkpoint
+### Phase D0/D1 historical acceptance checkpoint — 2026-09-01
 
-**D0/D1 v3 checkpoint result: PASS for requesting separate owner review of D2;
-Phase D2 remains unauthorized.**
+**State at this checkpoint: D0/D1 v3 PASS for requesting separate owner review
+of D2; Phase D2 was not yet authorized.**
 
 - The owner-approved plan is frozen and hashed before any real model result.
 - The primary label is unchanged and inaccessible to feature computation.
@@ -336,8 +336,9 @@ Phase D2 remains unauthorized.**
   as expected.
 - Observation, split, matrix, target and score fixtures reproduce without MLflow
   or notebook state, and the real structural resolution is immutable.
-- A requirement-by-requirement audit is `PASS`, `FAIL` or `NOT PROVEN`; owner
-  approval is required before Phase D2 may inspect real predictive results.
+- A requirement-by-requirement audit is `PASS`, `FAIL` or `NOT PROVEN`; at this
+  historical checkpoint, owner approval was required before Phase D2 could
+  inspect real predictive results.
 - Locked D2 generation must proceed 2025 H1, 2025 H2 and 2026 H1 in simulated
   historical time and be completely fingerprinted before outcomes or metrics are
   accessible.
@@ -358,42 +359,46 @@ D2 study, with prediction generation/fingerprinting mechanically preceding
 outcome attachment/evaluation. Phase D3, portfolio translation, optimization,
 deployment and design changes remain unauthorized.
 
-### Phase D2 — Execute the frozen historical study
+**Overlay outcome on 2026-09-02: ACTIVATED AND CONSUMED.** Committed baseline
+`1dc9bbd` passed the named post-commit checks and authorized exactly one frozen
+Phase D2 execution. That execution is complete. The historical D1 checkpoint
+above remains an accurate record of its pre-overlay state and is not rewritten.
 
-Only after the automatic authorization overlay activates on a committed and
-post-commit-validated D1 v3 baseline, run the four frozen cells and predefined feature
-block ablations. Cross-sectional rank IC, paired incremental IC and quantile
-monotonicity remain diagnostics of general information content. The primary
-actionability evidence is the frozen opportunity tail: conditional forward
-outcomes, hurdle hit rate, signal frequency and idle periods, maximum favourable
-and adverse excursion, time/path behavior, overlap, chronological and market-state
-stability, concentration, coverage and missingness sensitivity. Compare rich and
-conventional models under their frozen opportunity rules and at predefined
-frequency-matched operating points so additional selectivity is not mistaken for
-better prediction. The within-proximity-Q5 ranking check is diagnostic only and
-cannot become an alternative optimization target.
+### Phase D2 — Complete: valid negative result
 
-The locked historical prediction sequence is generated and fingerprinted first,
-with later refits allowed to use only earlier locked labels whose exact
-availability precedes the refit. Outcome attachment and evaluation are a second
-mechanically separated stage. The procedure cannot change between refits. True
-forward evidence begins after 2026-08-18.
+Phase D2 execution integrity is `PASS` and the predictive evidence package is
+`COMPLETE`. `C_LIGHTGBM` and `RICH_LIGHTGBM` were selected within their frozen
+representations on the 2023 selection population. Across development and locked
+evaluation the rich representation did not establish material, stable
+incremental information against both fixed conventional comparators. Its
+positive standalone locked IC and mean episode return were insufficient: paired
+incremental bounds remained negative, frequency-matched locked tail returns were
+worse than both comparators, and chronology, opportunity-count, frequency, and
+influence gates failed.
 
-### Phase D3 — Stop or continue
+The prediction sequence was generated and fingerprinted before any outcome
+attachment. A second execution reproduced the prediction table, sequence, all
+evaluation stages, and final scientific identities exactly. An independent
+evaluator matched the decisive metrics, 177 gate classifications, and verdict
+without importing primary metric functions. The gate matrix contains 99 `PASS`
+and 78 `FAIL` results; all execution-integrity, validity, and reproducibility
+gates pass. See [`PHASE_D2_RESULTS.md`](PHASE_D2_RESULTS.md),
+[`PHASE_D2_REQUIREMENT_AUDIT.json`](PHASE_D2_REQUIREMENT_AUDIT.json), and
+[`PHASE_D2_MANIFEST.json`](PHASE_D2_MANIFEST.json).
 
-Continue only if the rich representation delivers material and stable incremental
-information over the strongest conventional model across chronological
-development validation and the locked historical test, with an economically
-credible selective opportunity tail, sufficient non-overlapping evidence for the
-claim being made, a meaningful cash/no-position state, and no dependence on a
-small number of sessions, years, regimes or securities. Positive standalone rank
-IC without superior opportunity-tail evidence is insufficient. Data, causality
-and reproducibility gates must also pass.
+### Phase D3 — Not authorized; Phase D verdict STOP
 
-If it does not, retain the negative result and stop expanding ML research and
-infrastructure. Do not search additional indicators, horizons, objectives or
-models until one works. A clean pass authorizes only one frozen Phase C portfolio
-translation and later forward observation—not deployment.
+The frozen mechanical verdict is `STOP`. Phase D3 execution, portfolio/backtest
+translation, optimization, and deployment are `NO` pending owner review. The
+negative result is retained as the bounded decision; do not search additional
+indicators, horizons, objectives, models, subgroups, or thresholds until one
+works.
+
+The original continue rule required material and stable incremental information
+over both conventional models, an economically credible selective opportunity
+tail, enough non-overlapping evidence, meaningful abstention, and robustness to
+time and contributor influence. Those conditions were not met. Valid execution
+and positive standalone metrics cannot rescue failed scientific gates.
 
 Deferred unless a successful bounded experiment demonstrates a concrete need:
 all-GPW expansion, new sector history, ESPI/event ingestion, sequence/deep models,
