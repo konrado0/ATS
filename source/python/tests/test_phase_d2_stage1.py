@@ -5,6 +5,7 @@ import pandas as pd
 import pytest
 
 from ats_ml.d2_stage1 import (
+    SequentialLabelAdmissionFirewall,
     _actual_fit,
     _score_rows,
     require_common_cell_populations,
@@ -106,3 +107,36 @@ def test_stage1_validation_requires_no_evaluation_metric() -> None:
     proof["evaluation_metrics_computed"] = True
     with pytest.raises(ValueError, match="must_be_false"):
         require_stage1_validation(proof)
+
+
+def test_label_admission_is_outer_block_sequential_and_cannot_reach_refit() -> None:
+    first = {
+        "block_id": "FIRST",
+        "refit_session": "2024-01-02",
+        "final_fit": {"retained_sessions": ["2023-01-02", "2023-12-01"]},
+        "inner_score_blocks": [
+            {"fit_retained_sessions": ["2023-01-02"]},
+            {"fit_retained_sessions": ["2023-01-02", "2023-06-01"]},
+        ],
+    }
+    second = {
+        "block_id": "SECOND",
+        "refit_session": "2024-07-01",
+        "final_fit": {"retained_sessions": ["2023-07-03", "2024-06-03"]},
+        "inner_score_blocks": [{"fit_retained_sessions": ["2023-07-03"]}],
+    }
+    firewall = SequentialLabelAdmissionFirewall({"blocks": [first, second]})
+    with pytest.raises(ValueError, match="out of order"):
+        firewall.admit(second)
+    sessions, proof = firewall.admit(first)
+    assert sessions == ["2023-01-02", "2023-06-01", "2023-12-01"]
+    assert proof["future_outer_block_sessions_loaded"] is False
+    firewall.admit(second)
+    firewall.require_complete()
+
+    invalid = {
+        **first,
+        "final_fit": {"retained_sessions": ["2024-01-02"]},
+    }
+    with pytest.raises(ValueError, match="reaches its refit"):
+        SequentialLabelAdmissionFirewall({"blocks": [invalid]}).admit(invalid)

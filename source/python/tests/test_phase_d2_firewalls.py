@@ -4,6 +4,8 @@ import pytest
 
 from ats_ml.d2_stages import (
     BLOCKS,
+    INTEGRITY_GATE_NAMES,
+    _integrity_gates,
     prediction_scientific_hash,
     validate_evaluation_stage,
     require_stage_outcome_access,
@@ -48,3 +50,21 @@ def test_reproduction_identity_excludes_operational_package_metadata() -> None:
     }
     assert primary["logical_hash"] != reproduction["logical_hash"]
     assert prediction_scientific_hash(primary) == prediction_scientific_hash(reproduction)
+
+
+def test_execution_integrity_rows_are_classified_from_supplied_evidence() -> None:
+    checks = {
+        name: {"value": True, "evidence": f"derived {name}"}
+        for name in INTEGRITY_GATE_NAMES
+    }
+    checks["endpoint_derived_purge"]["value"] = False
+    checks["stage_information_order"]["value"] = None
+    rows = _integrity_gates("stage2b", "DEVELOPMENT", checks)
+    status = {row["gate_id"]: row["status"] for row in rows}
+    assert status["stage2b__pit_membership_and_information_timing"] == "PASS"
+    assert status["stage2b__endpoint_derived_purge"] == "FAIL"
+    assert status["stage2b__stage_information_order"] == "NOT PROVEN"
+    assert all(row["evidence"].startswith("derived ") for row in rows)
+
+    with pytest.raises(ValueError, match="differs from the frozen gate set"):
+        _integrity_gates("stage2b", "DEVELOPMENT", {"unexpected": {"value": True, "evidence": "x"}})

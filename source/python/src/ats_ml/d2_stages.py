@@ -276,8 +276,7 @@ def _diagnostics(result: dict[str, Any], horizons: tuple[int, ...]) -> dict[str,
     return diagnostic
 
 
-def _integrity_gates(stage_name: str, population: str) -> list[dict[str, Any]]:
-    names = (
+INTEGRITY_GATE_NAMES = (
         "pit_membership_and_information_timing",
         "official_denominator_60",
         "exact_label_anchors_and_availability",
@@ -291,15 +290,246 @@ def _integrity_gates(stage_name: str, population: str) -> list[dict[str, Any]]:
         "prediction_not_regenerated",
         "stage_information_order",
         "logical_and_physical_reconciliation",
-    )
-    return [
-        {
-            "gate_id": f"{stage_name}__{name}", "category": "execution_integrity",
-            "population": population, "comparator": None, "value": True,
-            "operator": "is", "threshold": True, "status": "PASS",
-        }
-        for name in names
+)
+
+
+def _integrity_gates(
+    stage_name: str, population: str, checks: dict[str, dict[str, Any]]
+) -> list[dict[str, Any]]:
+    missing = sorted(set(INTEGRITY_GATE_NAMES) - set(checks))
+    extra = sorted(set(checks) - set(INTEGRITY_GATE_NAMES))
+    if missing or extra:
+        raise D2ArtifactError(
+            f"execution-integrity evidence differs from the frozen gate set: "
+            f"missing={missing}, extra={extra}"
+        )
+    rows = []
+    for name in INTEGRITY_GATE_NAMES:
+        value = checks[name]["value"]
+        status = "NOT PROVEN" if value is None else ("PASS" if value is True else "FAIL")
+        rows.append({
+            "gate_id": f"{stage_name}__{name}",
+            "category": "execution_integrity",
+            "population": population,
+            "comparator": None,
+            "value": value,
+            "operator": "is",
+            "threshold": True,
+            "status": status,
+            "evidence": checks[name]["evidence"],
+        })
+    return rows
+
+
+def _same_population_by_cell(predictions: pd.DataFrame, cell_ids: set[str]) -> bool:
+    keys = ["block_id", "security_id", "decision_session"]
+    groups = {
+        str(cell): group[keys].sort_values(keys, kind="mergesort").reset_index(drop=True)
+        for cell, group in predictions.groupby("cell_id", sort=True)
+    }
+    if set(groups) != cell_ids:
+        return False
+    first = groups[sorted(groups)[0]]
+    return all(first.equals(groups[cell]) for cell in sorted(groups)[1:])
+
+
+def _actual_minimums_pass(
+    fit_records: list[dict[str, Any]], plan: dict[str, Any], block_ids: list[str]
+) -> bool:
+    blocks = {block["block_id"]: block for block in plan["blocks"] if block["block_id"] in block_ids}
+    records = [record for record in fit_records if record.get("cell_id") and record["block_id"] in blocks]
+    if len(records) != len(blocks) * 5:
+        return False
+    for record in records:
+        block = blocks[record["block_id"]]
+        final = record["final_fit"]
+        final_plan = block["final_fit"]
+        if (
+            final["rows"] < final_plan["minimum_model_rows"]
+            or final["qualifying_sessions"] < final_plan["minimum_qualifying_sessions"]
+            or record["outer_score"]["rows"] < (block["evaluation_minimum_rows"] if block["complete"] else 0)
+            or record["outer_score"]["qualifying_sessions"]
+            < (block["evaluation_minimum_qualifying_sessions"] if block["complete"] else 0)
+        ):
+            return False
+        inner_plan = {item["score_block_number"]: item for item in block["inner_score_blocks"]}
+        for inner in record["inner"]:
+            expected = inner_plan[inner["score_block_number"]]
+            if (
+                inner["fit"]["rows"] < expected["minimum_model_rows"]
+                or inner["fit"]["qualifying_sessions"] < expected["minimum_qualifying_sessions"]
+                or inner["score"]["qualifying_sessions"]
+                < expected["score_minimum_qualifying_sessions"]
+            ):
+                return False
+    return True
+
+
+def derive_execution_integrity(
+    *,
+    prediction_dir: Path,
+    prediction_validation: dict[str, Any],
+    predictions: pd.DataFrame,
+    masks: pd.DataFrame,
+    outcomes: pd.DataFrame,
+    block_ids: list[str],
+    lineage: dict[str, Any],
+    predecessor_dirs: list[Path],
+) -> dict[str, dict[str, Any]]:
+    selected_predictions = predictions.loc[predictions["block_id"].isin(block_ids)].copy()
+    selected_masks = masks.loc[masks["block_id"].isin(block_ids)].copy()
+    fit_audit = read_json(prediction_dir / "fit_calibration_audit.json")
+    plan = read_json(prediction_dir / "walk_forward_plan.json")
+    derived = read_json(prediction_dir / "derived_contract.json")
+    prediction_manifest = read_json(prediction_dir / "manifest.json")
+    forbidden_features = {"security_id", "ticker", "vendor_symbol", "decision_session", "decision_ts"}
+    feature_lists = [
+        set(record.get("feature_names", []))
+        for record in fit_audit["records"]
+        if record.get("cell_id") and record["block_id"] in block_ids
     ]
+    fit_records = [
+        record for record in fit_audit["records"]
+        if record.get("cell_id") and record["block_id"] in block_ids
+    ]
+    endpoint_proofs = [
+        proof["endpoint_strictly_before_boundary"]
+        for record in fit_records
+        for proof in [record["final_fit"], *[inner["fit"] for inner in record["inner"]]]
+    ]
+    estimator_proofs = [
+        inner["estimator_recreated"]
+        for record in fit_records
+        for inner in record["inner"]
+    ]
+    admission = fit_audit.get("label_admission", {})
+    admission_records = admission.get("records", [])
+    admission_blocks = [record.get("block_id") for record in admission_records]
+    permitted_blocks = set(block_ids)
+    outcome_available = outcomes["label_state_20"].eq("AVAILABLE")
+    endpoint_order = outcomes.loc[
+        outcomes["label_endpoint_session_20"].notna(), "label_endpoint_session_20"
+    ].gt(outcomes.loc[outcomes["label_endpoint_session_20"].notna(), "decision_session"])
+    cells = set(derived["cells"])
+    common_population = _same_population_by_cell(selected_predictions, cells)
+    mask_groups = selected_masks.groupby(["block_id", "decision_session"], sort=True)
+    scored_reconciles = mask_groups["model_score_eligible"].sum().eq(
+        mask_groups["scored_count"].first()
+    ).all()
+    predecessor_names = [path.name for path in predecessor_dirs]
+    if block_ids == BLOCKS["stage2a"]:
+        expected_predecessors = []
+    elif block_ids == BLOCKS["stage2b"]:
+        expected_predecessors = ["stage2a"]
+    elif block_ids == BLOCKS["stage2c"]:
+        expected_predecessors = ["stage2a", "stage2b"]
+    else:
+        raise D2ArtifactError(f"unrecognized evaluation block sequence: {block_ids}")
+    lineage_predecessors = [item["stage"] for item in lineage["predecessors"]]
+    prediction_hash_matches = (
+        lineage["prediction_scientific_hash"]
+        == prediction_scientific_hash(prediction_manifest)
+    )
+    label_admission_proved = (
+        admission.get("mode") == "outer_block_sequential"
+        and admission.get("complete") is True
+        and admission_blocks == [block["block_id"] for block in plan["blocks"]]
+        and all(record.get("all_loaded_endpoints_strictly_before_refit") is True for record in admission_records)
+    )
+    population_keys = ["block_id", "security_id", "decision_session"]
+    mask_population = selected_masks[population_keys].sort_values(
+        population_keys, kind="mergesort"
+    ).reset_index(drop=True)
+    outcome_population = outcomes[population_keys].sort_values(
+        population_keys, kind="mergesort"
+    ).reset_index(drop=True)
+    return {
+        "pit_membership_and_information_timing": {
+            "value": bool(
+                selected_masks["information_session"].lt(selected_masks["decision_session"]).all()
+                and selected_masks["decision_ts"].dt.hour.eq(8).all()
+                and selected_masks["decision_ts"].dt.minute.eq(45).all()
+            ),
+            "evidence": "derived from sealed mask information_session, decision_session, and decision_ts",
+        },
+        "official_denominator_60": {
+            "value": bool(
+                mask_groups.size().eq(60).all()
+                and selected_masks["official_expected_count"].eq(60).all()
+                and scored_reconciles
+                and mask_groups["excluded_count"].first().add(mask_groups["scored_count"].first()).eq(60).all()
+            ),
+            "evidence": "derived from sealed per-session mask rows and scored/excluded counts",
+        },
+        "exact_label_anchors_and_availability": {
+            "value": bool(
+                outcome_available.eq(np.isfinite(outcomes["label__open_to_open__20"])).all()
+                and endpoint_order.all()
+                and label_admission_proved
+            ),
+            "evidence": "derived from sealed outcome states/endpoints and sequential label-admission audit",
+        },
+        "endpoint_derived_purge": {
+            "value": bool(endpoint_proofs and all(endpoint_proofs)),
+            "evidence": "derived from every retained inner/final fit endpoint proof",
+        },
+        "fold_local_preprocessing": {
+            "value": bool(
+                estimator_proofs
+                and all(estimator_proofs)
+                and all(record.get("threshold_frozen_before_final_refit") is True for record in fit_records)
+            ),
+            "evidence": "derived from every fit/calibration record, not a constant gate value",
+        },
+        "identity_predictors_absent": {
+            "value": bool(feature_lists and all(not (features & forbidden_features) for features in feature_lists)),
+            "evidence": "derived from every sealed fit feature allowlist",
+        },
+        "identity_neutral_ties": {
+            "value": bool(
+                selected_predictions["candidate"].eq(
+                    selected_predictions["model_score"].gt(selected_predictions["threshold"])
+                ).all()
+                and derived["opportunity_contract"]["frequency_matching"].get("identity_neutrality") is not None
+            ),
+            "evidence": "derived from strict sealed candidate flags and the frozen tie contract",
+        },
+        "common_score_and_outcome_populations": {
+            "value": bool(
+                common_population
+                and mask_population.equals(outcome_population)
+            ),
+            "evidence": "derived by comparing sealed cell, mask, and outcome semantic populations",
+        },
+        "ablation_population_identical": {
+            "value": bool(common_population and "RICH_NO_M_LIGHTGBM" in cells),
+            "evidence": "derived from sealed semantic keys for all cells including the ablation",
+        },
+        "actual_minimums": {
+            "value": _actual_minimums_pass(fit_audit["records"], plan, block_ids),
+            "evidence": "derived by comparing every retained fit/score count with its frozen plan minimum",
+        },
+        "prediction_not_regenerated": {
+            "value": bool(lineage.get("prediction_regenerated") is False and prediction_hash_matches),
+            "evidence": "derived from sealed prediction scientific identity and stage lineage",
+        },
+        "stage_information_order": {
+            "value": bool(
+                predecessor_names == expected_predecessors
+                and lineage_predecessors == expected_predecessors
+                and set(outcomes["block_id"]) == permitted_blocks
+            ),
+            "evidence": "derived from sealed predecessor lineage and permitted outcome blocks",
+        },
+        "logical_and_physical_reconciliation": {
+            "value": bool(
+                prediction_validation.get("status") == "PASS"
+                and prediction_hash_matches
+                and all(validate_evaluation_stage(path, path.name)["status"] == "PASS" for path in predecessor_dirs)
+            ),
+            "evidence": "derived by revalidating sealed manifests, inventories, hashes, and logical payloads",
+        },
+    }
 
 
 def _publish_evidence_stage(stage_name: str, *, reproduction: bool) -> Path:
@@ -329,9 +559,19 @@ def _publish_evidence_stage(stage_name: str, *, reproduction: bool) -> Path:
             predictions, masks, _labels_without_block(outcomes), block_ids=block_ids,
             selected_rich=selected_rich, contract=contract.config, population_name=population,
         )
-        gates = [*_integrity_gates(stage_name, population), *result["gates"]]
-        diagnostics = _diagnostics(result, (5, 10, 20))
         lineage = _lineage(prediction_dir, predecessors)
+        integrity_evidence = derive_execution_integrity(
+            prediction_dir=prediction_dir,
+            prediction_validation=prediction_validation,
+            predictions=predictions,
+            masks=masks,
+            outcomes=outcomes,
+            block_ids=block_ids,
+            lineage=lineage,
+            predecessor_dirs=predecessors,
+        )
+        gates = [*_integrity_gates(stage_name, population, integrity_evidence), *result["gates"]]
+        diagnostics = _diagnostics(result, (5, 10, 20))
         validity_ok = all(
             row["status"] == "PASS"
             for row in gates if row["category"] in {"validity", "execution_integrity"}
@@ -351,6 +591,7 @@ def _publish_evidence_stage(stage_name: str, *, reproduction: bool) -> Path:
             "validity_gate_status": "PASS" if validity_ok else "FAIL",
             "research_gate_status": "PASS" if research_ok else "FAIL",
             "transition": transition,
+            "execution_integrity_evidence": integrity_evidence,
         }
         write_json(stage / "lineage.json", lineage)
         write_parquet(stage / "outcomes.parquet", outcomes)

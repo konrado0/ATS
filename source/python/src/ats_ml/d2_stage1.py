@@ -50,6 +50,53 @@ PRIMARY_CELLS = ("C_LINEAR", "C_LIGHTGBM", "RICH_LINEAR", "RICH_LIGHTGBM")
 ABLATION_CELL = "RICH_NO_M_LIGHTGBM"
 
 
+class SequentialLabelAdmissionFirewall:
+    """Admit only the training-label sessions needed by the next outer block."""
+
+    def __init__(self, plan: dict[str, Any]) -> None:
+        self._blocks = list(plan["blocks"])
+        self._next_index = 0
+
+    def admit(self, block: dict[str, Any]) -> tuple[list[str], dict[str, Any]]:
+        if self._next_index >= len(self._blocks):
+            raise D2ArtifactError("label admission attempted after the final outer block")
+        expected = self._blocks[self._next_index]
+        if block["block_id"] != expected["block_id"]:
+            raise D2ArtifactError(
+                "label admission is out of order: "
+                f"expected {expected['block_id']}, received {block['block_id']}"
+            )
+        sessions = sorted({
+            session
+            for collection in [
+                block["final_fit"]["retained_sessions"],
+                *[inner["fit_retained_sessions"] for inner in block["inner_score_blocks"]],
+            ]
+            for session in collection
+        })
+        refit_session = pd.Timestamp(block["refit_session"]).normalize()
+        if any(pd.Timestamp(session).normalize() >= refit_session for session in sessions):
+            raise D2ArtifactError(
+                f"label admission for {block['block_id']} reaches its refit session"
+            )
+        self._next_index += 1
+        return sessions, {
+            "block_id": block["block_id"],
+            "admission_sequence_number": self._next_index,
+            "refit_session": str(pd.Timestamp(block["refit_session"]).date()),
+            "requested_training_sessions": len(sessions),
+            "first_requested_session": sessions[0] if sessions else None,
+            "last_requested_session": sessions[-1] if sessions else None,
+            "future_outer_block_sessions_loaded": False,
+        }
+
+    def require_complete(self) -> None:
+        if self._next_index != len(self._blocks):
+            raise D2ArtifactError(
+                f"label admission sequence is incomplete: {self._next_index}/{len(self._blocks)}"
+            )
+
+
 def normalized_population_keys(frame: pd.DataFrame) -> pd.DataFrame:
     keys = frame[["security_id", "decision_session"]].copy()
     keys["security_id"] = keys["security_id"].astype(str)
@@ -208,20 +255,12 @@ def build_prediction_run(stage: Path) -> dict[str, Any]:
         raise D2ArtifactError("real Stage 1 walk-forward structure differs from the accepted D1 binding")
     p_survivors = tuple(structural["p_duplicate_resolution"]["survivors"])
     cells = _cell_definitions(contract, p_survivors)
-    training_sessions = sorted({
-        session
-        for block in plan["blocks"]
-        for collection in [
-            block["final_fit"]["retained_sessions"],
-            *[inner["fit_retained_sessions"] for inner in block["inner_score_blocks"]],
-        ]
-        for session in collection
-    })
-    labels = build_real_labels(contract, observations, training_sessions, horizons=(20,))
     timezone = contract.config["observation_contract"]["market_timezone"]
     predictions: list[pd.DataFrame] = []
     masks: list[pd.DataFrame] = []
     fit_audit: list[dict[str, Any]] = []
+    label_admission_audit: list[dict[str, Any]] = []
+    label_firewall = SequentialLabelAdmissionFirewall(plan)
     expected_locked = expected_locked_sequence_bindings(plan)
     if expected_locked != structural["locked_sequence_firewall_proof"]["expected_bindings"]:
         raise D2ArtifactError("Stage 1 locked availability bindings differ from accepted D1")
@@ -230,6 +269,24 @@ def build_prediction_run(stage: Path) -> dict[str, Any]:
 
     for block in plan["blocks"]:
         block_id = block["block_id"]
+        training_sessions, admission = label_firewall.admit(block)
+        labels = build_real_labels(contract, observations, training_sessions, horizons=(20,))
+        label_endpoints = labels["label_endpoint_ts_20"].dropna()
+        refit_boundary = _decision_ts(block["refit_session"], timezone)
+        if not label_endpoints.lt(refit_boundary).all():
+            raise D2ArtifactError(
+                f"label admission for {block_id} includes an endpoint unavailable at refit"
+            )
+        admission.update({
+            "loaded_label_rows": len(labels),
+            "loaded_endpoint_count": int(label_endpoints.size),
+            "all_loaded_endpoints_strictly_before_refit": True,
+            "semantic_row_hash": logical_frame_hash(
+                labels[["security_id", "decision_session"]],
+                ["decision_session", "security_id"],
+            ),
+        })
+        label_admission_audit.append(admission)
         outer_sessions = block["evaluation_sessions"]
         block_mask = observations.loc[
             observations["decision_session"].isin(pd.to_datetime(outer_sessions)),
@@ -347,6 +404,8 @@ def build_prediction_run(stage: Path) -> dict[str, Any]:
                 "availability_proof_hash": binding["availability_proof_hash"],
             })
 
+    label_firewall.require_complete()
+
     prediction_frame = pd.concat(predictions, ignore_index=True).sort_values(
         ["block_id", "cell_id", "decision_session", "security_id"], kind="mergesort"
     ).reset_index(drop=True)
@@ -388,6 +447,11 @@ def build_prediction_run(stage: Path) -> dict[str, Any]:
     write_json(stage / "fit_calibration_audit.json", {
         "schema_version": "ats.phase_d2.fit_calibration_audit.v1",
         "records": fit_audit,
+        "label_admission": {
+            "mode": "outer_block_sequential",
+            "records": label_admission_audit,
+            "complete": True,
+        },
         "evaluation_metrics_computed": False,
         "evaluation_outcomes_attached": False,
     })
