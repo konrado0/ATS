@@ -26,11 +26,11 @@
   },
   "primary_run_ids": {
     "prediction": "phase-d2-predictions-20260902-v4",
-    "evaluation": "phase-d2-evaluation-20260902-v5"
+    "evaluation": "phase-d2-evaluation-20260902-v6"
   },
   "reproduction_run_ids": {
     "prediction": "phase-d2-predictions-20260902-v4-reproduction",
-    "evaluation": "phase-d2-evaluation-20260902-v5-reproduction"
+    "evaluation": "phase-d2-evaluation-20260902-v6-reproduction"
   },
   "operational_correction": {
     "superseded_failed_attempts": [
@@ -41,8 +41,11 @@
     "superseded_failed_evaluation_attempts": [
       "phase-d2-evaluation-20260902-v4/.failed-stage2a-0decb19b6fe640bbad2d934c273f82c9"
     ],
+    "superseded_complete_evaluation_runs": [
+      "phase-d2-evaluation-20260902-v5"
+    ],
     "scientific_choice_changed": false,
-    "reason": "The prediction corrections addressed only equality, Boolean validation, and persisted identity. Evaluation v5 permits the temporary atomic-stage directory identity before rename. No failed attempt produced a sealed publication or exposed a score or metric."
+    "reason": "Prediction corrections addressed only operational validation. Evaluation v5 is scientifically valid but used an operational package hash for reproduction lineage; v6 uses the persisted prediction-table fingerprint while retaining package hashes as provenance."
   },
   "publication": {
     "parquet_compression": "zstd",

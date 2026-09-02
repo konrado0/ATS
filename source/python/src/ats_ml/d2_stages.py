@@ -73,6 +73,16 @@ def _prediction_inputs(prediction_dir: Path) -> tuple[dict[str, Any], pd.DataFra
     return validation, predictions, masks
 
 
+def prediction_scientific_hash(manifest: dict[str, Any]) -> str:
+    try:
+        value = manifest["logical_payload"]["prediction_identity"]["logical_hash"]
+    except (KeyError, TypeError) as exc:
+        raise D2ArtifactError("prediction manifest lacks a scientific table fingerprint") from exc
+    if not isinstance(value, str) or len(value) != 64:
+        raise D2ArtifactError("prediction scientific fingerprint is invalid")
+    return value
+
+
 def _outcomes(contract: Any, masks: pd.DataFrame, block_ids: list[str], horizons: tuple[int, ...]) -> pd.DataFrame:
     selected_masks = masks.loc[masks["block_id"].isin(block_ids)].copy()
     sessions = sorted(selected_masks["decision_session"].unique())
@@ -95,7 +105,8 @@ def _lineage(prediction_dir: Path, predecessor_dirs: list[Path]) -> dict[str, An
     return {
         "prediction_run_id": prediction_manifest["run_id"],
         "prediction_manifest_sha256": sha256_file(prediction_dir / "manifest.json"),
-        "prediction_logical_hash": prediction_manifest["logical_hash"],
+        "prediction_package_logical_hash": prediction_manifest["logical_hash"],
+        "prediction_scientific_hash": prediction_scientific_hash(prediction_manifest),
         "predecessors": [
             {
                 "stage": path.name,
@@ -206,7 +217,7 @@ def publish_stage2a(*, reproduction: bool = False) -> Path:
         write_json(stage / "validation.json", validation)
         science = {key: value for key, value in selection.items() if key != "schema_version"}
         return {
-            "prediction_logical_hash": lineage["prediction_logical_hash"],
+            "prediction_scientific_hash": lineage["prediction_scientific_hash"],
             "outcome_identity": parquet_identity(stage / "outcomes.parquet", sort_by=["block_id", "decision_session", "security_id"]),
             "session_ic_identity": parquet_identity(stage / "session_ic.parquet", sort_by=["decision_session"]),
             "selection": science,
@@ -373,7 +384,7 @@ def _publish_evidence_stage(stage_name: str, *, reproduction: bool) -> Path:
             write_json(stage / "monitoring.json", monitoring)
         write_json(stage / "validation.json", validation)
         return {
-            "prediction_logical_hash": lineage["prediction_logical_hash"],
+            "prediction_scientific_hash": lineage["prediction_scientific_hash"],
             "predecessor_logical_hashes": [item["logical_hash"] for item in lineage["predecessors"]],
             "outcome_identity": parquet_identity(stage / "outcomes.parquet", sort_by=["block_id", "decision_session", "security_id"]),
             "session_ic_identity": parquet_identity(stage / "session_ic.parquet", sort_by=["decision_session"]),
@@ -448,7 +459,7 @@ def publish_final(*, reproduction: bool = False, peer_reproduction: bool) -> Pat
         own_prediction_manifest = read_json(own_prediction / "manifest.json")
         peer_prediction_manifest = read_json(peer_prediction / "manifest.json")
         reproduction_checks = {
-            "prediction_logical_hash_equal": own_prediction_manifest["logical_hash"] == peer_prediction_manifest["logical_hash"],
+            "prediction_table_logical_hash_equal": prediction_scientific_hash(own_prediction_manifest) == prediction_scientific_hash(peer_prediction_manifest),
             "stage2a_logical_hash_equal": read_json(stage2a / "manifest.json")["logical_hash"] == read_json(peer_stages[0] / "manifest.json")["logical_hash"],
             "stage2b_logical_hash_equal": read_json(stage2b / "manifest.json")["logical_hash"] == read_json(peer_stages[1] / "manifest.json")["logical_hash"],
             "stage2c_logical_hash_equal": read_json(stage2c / "manifest.json")["logical_hash"] == read_json(peer_stages[2] / "manifest.json")["logical_hash"],
@@ -478,12 +489,14 @@ def publish_final(*, reproduction: bool = False, peer_reproduction: bool) -> Pat
             "diagnostics_can_reverse_verdict": False,
         }
         lineage = {
-            "prediction_logical_hash": own_prediction_manifest["logical_hash"],
+            "prediction_scientific_hash": prediction_scientific_hash(own_prediction_manifest),
+            "prediction_package_logical_hash": own_prediction_manifest["logical_hash"],
             "stage_logical_hashes": {
                 name: read_json(path / "manifest.json")["logical_hash"]
                 for name, path in (("stage2a", stage2a), ("stage2b", stage2b), ("stage2c", stage2c))
             },
-            "peer_prediction_logical_hash": peer_prediction_manifest["logical_hash"],
+            "peer_prediction_scientific_hash": prediction_scientific_hash(peer_prediction_manifest),
+            "peer_prediction_package_logical_hash": peer_prediction_manifest["logical_hash"],
             "peer_stage_logical_hashes": {
                 name: read_json(path / "manifest.json")["logical_hash"]
                 for name, path in zip(("stage2a", "stage2b", "stage2c"), peer_stages, strict=True)
@@ -502,7 +515,7 @@ def publish_final(*, reproduction: bool = False, peer_reproduction: bool) -> Pat
         write_json(stage / "verdict.json", verdict_record)
         write_json(stage / "validation.json", validation)
         return {
-            "prediction_logical_hash": own_prediction_manifest["logical_hash"],
+            "prediction_scientific_hash": prediction_scientific_hash(own_prediction_manifest),
             "stage_logical_hashes": lineage["stage_logical_hashes"],
             "gate_matrix": gates,
             "verdict": verdict_record,

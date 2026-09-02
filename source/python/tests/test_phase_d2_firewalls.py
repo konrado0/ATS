@@ -2,7 +2,12 @@ from __future__ import annotations
 
 import pytest
 
-from ats_ml.d2_stages import BLOCKS, validate_evaluation_stage, require_stage_outcome_access
+from ats_ml.d2_stages import (
+    BLOCKS,
+    prediction_scientific_hash,
+    validate_evaluation_stage,
+    require_stage_outcome_access,
+)
 
 
 def test_2024_cannot_open_before_stage2a_is_sealed() -> None:
@@ -28,3 +33,18 @@ def test_evaluation_validator_rejects_unrelated_directory_before_reading_it(tmp_
     unrelated.mkdir()
     with pytest.raises(ValueError, match="identity is invalid"):
         validate_evaluation_stage(unrelated, "stage2a")
+
+
+def test_reproduction_identity_excludes_operational_package_metadata() -> None:
+    primary = {
+        "logical_hash": "a" * 64,
+        "run_id": "primary",
+        "logical_payload": {"prediction_identity": {"logical_hash": "c" * 64}},
+    }
+    reproduction = {
+        "logical_hash": "b" * 64,
+        "run_id": "reproduction",
+        "logical_payload": {"prediction_identity": {"logical_hash": "c" * 64}},
+    }
+    assert primary["logical_hash"] != reproduction["logical_hash"]
+    assert prediction_scientific_hash(primary) == prediction_scientific_hash(reproduction)
