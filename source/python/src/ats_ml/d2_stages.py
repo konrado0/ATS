@@ -10,7 +10,7 @@ import pandas as pd
 from ats_ml.contracts_v3 import load_frozen_d0_v3_contract
 from ats_ml.d2_artifacts import (
     D2ArtifactError,
-    frame_identity,
+    parquet_identity,
     json_ready,
     publish_immutable,
     read_json,
@@ -205,8 +205,8 @@ def publish_stage2a(*, reproduction: bool = False) -> Path:
         science = {key: value for key, value in selection.items() if key != "schema_version"}
         return {
             "prediction_logical_hash": lineage["prediction_logical_hash"],
-            "outcome_identity": frame_identity(outcomes, sort_by=["block_id", "decision_session", "security_id"]),
-            "session_ic_identity": frame_identity(ic, sort_by=["decision_session"]),
+            "outcome_identity": parquet_identity(stage / "outcomes.parquet", sort_by=["block_id", "decision_session", "security_id"]),
+            "session_ic_identity": parquet_identity(stage / "session_ic.parquet", sort_by=["decision_session"]),
             "selection": science,
         }
 
@@ -373,10 +373,10 @@ def _publish_evidence_stage(stage_name: str, *, reproduction: bool) -> Path:
         return {
             "prediction_logical_hash": lineage["prediction_logical_hash"],
             "predecessor_logical_hashes": [item["logical_hash"] for item in lineage["predecessors"]],
-            "outcome_identity": frame_identity(outcomes, sort_by=["block_id", "decision_session", "security_id"]),
-            "session_ic_identity": frame_identity(result["session_ic"], sort_by=["decision_session"]),
-            "tail_session_identity": frame_identity(result["tail_sessions"], sort_by=["decision_session"]),
-            "episode_anchor_identity": frame_identity(result["episode_anchors"][anchor_columns], sort_by=["decision_session", "security_id"]),
+            "outcome_identity": parquet_identity(stage / "outcomes.parquet", sort_by=["block_id", "decision_session", "security_id"]),
+            "session_ic_identity": parquet_identity(stage / "session_ic.parquet", sort_by=["decision_session"]),
+            "tail_session_identity": parquet_identity(stage / "tail_sessions.parquet", sort_by=["decision_session"]),
+            "episode_anchor_identity": parquet_identity(stage / "episode_anchors.parquet", sort_by=["decision_session", "security_id"]),
             "metrics": json_ready(result["metrics"]),
             "gates": json_ready(gates),
             "diagnostics": json_ready(diagnostics),

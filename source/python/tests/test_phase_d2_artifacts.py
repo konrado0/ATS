@@ -5,7 +5,14 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from ats_ml.d2_artifacts import D2ArtifactError, publish_immutable, validate_manifest, write_json, write_parquet
+from ats_ml.d2_artifacts import (
+    D2ArtifactError,
+    parquet_identity,
+    publish_immutable,
+    validate_manifest,
+    write_json,
+    write_parquet,
+)
 
 
 def test_immutable_publication_rejects_overwrite_and_detects_tampering(tmp_path: Path) -> None:
@@ -46,3 +53,15 @@ def test_failed_build_is_preserved_for_forensic_review(tmp_path: Path) -> None:
     failed = list(tmp_path.glob(".failed-failed-v1-*"))
     assert len(failed) == 1
     assert (failed[0] / "partial.json").is_file()
+
+
+def test_parquet_identity_is_bound_to_persisted_representation(tmp_path: Path) -> None:
+    frame = pd.DataFrame({
+        "key": pd.Categorical(["A", "B"], categories=["A", "B", "UNUSED"]),
+        "session": pd.to_datetime(["2024-01-02", "2024-01-03"]).astype("datetime64[ns]"),
+    })
+    path = tmp_path / "frame.parquet"
+    write_parquet(path, frame)
+    identity = parquet_identity(path, sort_by=["session", "key"])
+    assert identity["rows"] == 2
+    assert identity == parquet_identity(path, sort_by=["session", "key"])

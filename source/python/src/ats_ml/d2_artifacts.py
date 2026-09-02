@@ -60,6 +60,10 @@ def frame_identity(frame: pd.DataFrame, *, sort_by: list[str] | None = None) -> 
     }
 
 
+def parquet_identity(path: Path, *, sort_by: list[str] | None = None) -> dict[str, Any]:
+    return frame_identity(pd.read_parquet(path), sort_by=sort_by)
+
+
 def file_inventory(root: Path, *, exclude: tuple[str, ...] = ("manifest.json",)) -> dict[str, dict[str, Any]]:
     inventory: dict[str, dict[str, Any]] = {}
     for path in sorted((item for item in root.rglob("*") if item.is_file()), key=lambda value: value.as_posix()):

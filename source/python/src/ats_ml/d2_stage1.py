@@ -12,6 +12,7 @@ from ats_ml.contracts import REPOSITORY_ROOT, FrozenD0Contract
 from ats_ml.d2_artifacts import (
     D2ArtifactError,
     frame_identity,
+    parquet_identity,
     publish_immutable,
     read_json,
     validate_manifest,
@@ -419,11 +420,11 @@ def build_prediction_run(stage: Path) -> dict[str, Any]:
     require_stage1_validation(validation)
     write_json(stage / "validation.json", validation)
     return {
-        "prediction_identity": frame_identity(
-            prediction_frame, sort_by=["block_id", "cell_id", "decision_session", "security_id"]
+        "prediction_identity": parquet_identity(
+            stage / "predictions.parquet", sort_by=["block_id", "cell_id", "decision_session", "security_id"]
         ),
-        "common_score_mask_identity": frame_identity(
-            mask_frame, sort_by=["block_id", "decision_session", "security_id"]
+        "common_score_mask_identity": parquet_identity(
+            stage / "common_score_masks.parquet", sort_by=["block_id", "decision_session", "security_id"]
         ),
         "observation_feature_matrix_hash": observation_audit["feature_matrix_hash"],
         "locked_sequence_fingerprint": locked_fingerprint,
