@@ -422,6 +422,29 @@ late rows monitoring-only. See
 [`PHASE_D2_NO_M_RESULTS.md`](PHASE_D2_NO_M_RESULTS.md) and
 [`PHASE_D2_NO_M_PROSPECTIVE_RUNBOOK.md`](PHASE_D2_NO_M_PROSPECTIVE_RUNBOOK.md).
 
+### Phase D2-NM mechanism — Complete: nonlinearity-dependent, weak
+
+The accepted weak-persistent C+P+X result motivated one separately frozen,
+rank-only estimator-mechanism test. One scientifically new cell,
+`RICH_NO_M_LINEAR`, used the unchanged 18-feature C+P+X allowlist and frozen
+Ridge pipeline. Three accepted controls reproduced exactly in all seven complete
+half-years before outcomes were opened. The primary and clean-reproduction
+prediction tables are byte-identical, and a separately coded evaluator matches
+the primary decision core exactly.
+
+Ridge C+P+X has pooled mean session IC 0.03012 and improves +0.01592 over
+`C_LINEAR`, but only 3/7 half-years are positive; the median half-year delta is
+negative and leaving out 2023 H1 reverses the pooled sign. It therefore fails
+the broad-increment gate against `C_LINEAR`. LightGBM adds +0.01363 over Ridge
+with C+P+X held fixed and passes every frozen nonlinear-increment gate. The
+mechanical verdict is `NONLINEARITY-DEPENDENT — WEAK`.
+
+This retrospective hypothesis-development result permits discussion—not
+execution—of a separately frozen 36m-versus-48m rank-only diagnostic. It does
+not alter the original D2 `STOP`, the existing prospective LightGBM stream, or
+the prohibition on Phase D3, portfolio work, optimization, and deployment. See
+[`PHASE_D2_NO_M_LINEAR_MECHANISM_RESULTS.md`](PHASE_D2_NO_M_LINEAR_MECHANISM_RESULTS.md).
+
 ### Phase D3 — Not authorized; original Phase D verdict STOP
 
 The frozen mechanical verdict is `STOP`. Phase D3 execution, portfolio/backtest
@@ -430,7 +453,9 @@ negative result is retained as the bounded decision for that exact rich-state
 contract. It does not establish that every ML representation is ineffective.
 The completed no-M diagnostic follow-up supports monitoring and an owner
 discussion of at most one later specifically motivated feature hypothesis. It
-does not implement or authorize that hypothesis. Do not search additional
+does not implement or authorize that hypothesis. The mechanism follow-up permits
+discussion only of its prespecified 36m-versus-48m rank diagnostic; that
+diagnostic is not authorized for execution. Do not search additional
 indicators, horizons, objectives, models, subgroups, or thresholds until one
 works.
 

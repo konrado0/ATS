@@ -1,0 +1,52 @@
+{
+  "schema_version": "ats.phase_d2_nm_linear_mechanism.results.v1",
+  "contract_id": "phase-d2-no-m-linear-mechanism-20260903-v1",
+  "date": "2026-09-03",
+  "evidence_level": "RETROSPECTIVE_HYPOTHESIS_DEVELOPMENT_AND_ROBUSTNESS",
+  "freeze_commit": "a26d8eb",
+  "successful_prediction_code_commit": "a979072",
+  "integrity": {
+    "status": "PASS",
+    "prediction_rows": 207608,
+    "control_hashes_passed": 21,
+    "control_hashes_failed": 0,
+    "primary_prediction_validation": "PASS",
+    "reproduction_prediction_validation": "PASS",
+    "prediction_table_byte_identical": true,
+    "prediction_parquet_sha256": "21b918448fbb98e47dd299ad63f735f6949d7fede89d02f44efa473db66f19c2",
+    "independent_evaluation_match": true,
+    "decision_core_hash": "70731235fb59251b6e7609d1f9ab3f5405be1ac1f669c650a4b99dab968098c7",
+    "evaluation_manifest_logical_hash": "b99a37ae5457836f0e01285037ff47e8b06439aa38ffe553adb001f90b929310",
+    "outer_outcomes_loaded_before_prediction_seal": false,
+    "prospective_stream_unchanged": true
+  },
+  "population": {"sessions": 871, "half_years": 7, "start": "2023-01-02", "end": "2026-06-30", "official_denominator": 60},
+  "cell_pooled_session_ic": {
+    "C_LINEAR": {"mean": 0.014201288588153739, "median": 0.024117810502917482},
+    "C_LIGHTGBM": {"mean": -0.00246523601582156, "median": -0.005143191116306255},
+    "RICH_NO_M_LINEAR": {"mean": 0.03012196744102386, "median": 0.027674353987218677},
+    "RICH_NO_M_LIGHTGBM": {"mean": 0.04375537914545246, "median": 0.04909409701928698}
+  },
+  "primary_contrasts": {
+    "RIDGE_VS_C_LINEAR": {"pooled_mean": 0.015920678852870115, "pooled_median": 0.013614893025840485, "positive_half_years": 3, "positive_session_fraction": 0.5407577497129736, "interval": [-0.020345981262399934, 0.05544855154621929], "broad_increment": "FAIL"},
+    "RIDGE_VS_C_LIGHTGBM": {"pooled_mean": 0.03258720345684541, "pooled_median": 0.03467629897193665, "positive_half_years": 6, "positive_session_fraction": 0.5843857634902411, "interval": [-0.0065332209641811535, 0.07042460803383423], "broad_increment": "PASS"},
+    "NONLINEAR_INCREMENT": {"pooled_mean": 0.013633411704428606, "pooled_median": 0.016004445679355384, "positive_half_years": 5, "positive_session_fraction": 0.5464982778415615, "interval": [-0.016452235542959125, 0.042349641728577435], "broad_increment": "PASS"},
+    "LIGHTGBM_VS_C_LINEAR": {"pooled_mean": 0.029554090557298723, "pooled_median": 0.023261250730566924, "positive_half_years": 4, "positive_session_fraction": 0.547646383467279, "interval": [-0.00874212872813618, 0.0706525357875476], "broad_increment": "FAIL"},
+    "LIGHTGBM_VS_C_LIGHTGBM": {"pooled_mean": 0.04622061516127402, "pooled_median": 0.04651292025562656, "positive_half_years": 6, "positive_session_fraction": 0.6084959816303099, "interval": [0.01896809908083847, 0.07202200622984674], "broad_increment": "PASS"}
+  },
+  "ridge_vs_c_linear_failed_checks": ["positive_half_years_at_least_5", "median_half_year_positive", "all_leave_half_year_out_positive"],
+  "verdict": "NONLINEARITY-DEPENDENT — WEAK",
+  "result_dependent_action": "Discussion only of a separately frozen 36m-versus-48m rank-only diagnostic is permitted; execution is not authorized.",
+  "original_D2_STOP_unchanged": true,
+  "follow_on_automatically_authorized": false,
+  "sealed_artifacts": {
+    "primary_prediction": "D:/Stock/data/ATS/phase_d_ml/mechanism_runs/phase-d2-no-m-linear-mechanism-20260903-v1",
+    "prediction_reproduction": "D:/Stock/data/ATS/phase_d_ml/mechanism_runs/phase-d2-no-m-linear-mechanism-20260903-v1-reproduction",
+    "independent_evaluation": "D:/Stock/data/ATS/phase_d_ml/mechanism_reproductions/phase-d2-no-m-linear-mechanism-independent-20260903-v1",
+    "primary_evaluation": "D:/Stock/data/ATS/phase_d_ml/mechanism_evaluation_runs/phase-d2-no-m-linear-mechanism-evaluation-20260903-v1",
+    "full_contrast_details": "primary_evaluation/contrasts.json",
+    "per_session_results": "primary_evaluation/per_session.parquet",
+    "nongating_diagnostics": "primary_evaluation/diagnostics.json"
+  }
+}
+

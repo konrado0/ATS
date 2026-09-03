@@ -15,6 +15,9 @@ the platform. It does not rebuild or modify any canonical publication.
 6. `05_phase_d_no_m_followup.ipynb` — sealed retrospective no-M rank, tail,
    concentration and classification evidence, plus the prospective-monitoring
    boundary; it does not refit models.
+7. `06_phase_d_no_m_linear_mechanism_review.ipynb` — sealed Ridge-versus-
+   LightGBM C+P+X mechanism evidence, broad-increment gates, and the mechanical
+   `NONLINEARITY-DEPENDENT — WEAK` verdict; it does not refit models.
 
 The notebooks share vocabulary and should first be read in order. Each repeats its own objectives, paths, retained identities, and imports so it can also execute from a fresh kernel independently.
 
@@ -50,6 +53,12 @@ The wrapper does not install the project, but it now supplies `source\python\src
 - Phase D2-NM follow-up: `phase_d_ml\followup_runs\phase-d2-nm-followup-20260903-v1`.
 - Phase D2-NM independent audit: `phase_d_ml\followup_reproductions\phase-d2-nm-followup-20260903-v1-independent`.
 - Phase D2-NM fully repaired prospective registration: `phase_d_ml\prospective_streams\phase-d2-nm-post-freeze-2026-v3`; v1 and v2 are preserved and explicitly superseded empty.
+- Phase D2 C+P+X mechanism predictions and reproduction:
+  `phase_d_ml\mechanism_runs\phase-d2-no-m-linear-mechanism-20260903-v1*`.
+- Phase D2 C+P+X mechanism evaluation:
+  `phase_d_ml\mechanism_evaluation_runs\phase-d2-no-m-linear-mechanism-evaluation-20260903-v1`.
+- Phase D2 C+P+X independent mechanism evaluation:
+  `phase_d_ml\mechanism_reproductions\phase-d2-no-m-linear-mechanism-independent-20260903-v1`.
 
 Override paths without editing notebooks by setting any of: `ATS_REPO_ROOT`,
 `ATS_DATA_ROOT`, `ATS_GPW_MANIFEST`, `ATS_US_MANIFEST`, `ATS_PHASE_A_RUN`,
@@ -59,14 +68,14 @@ Override paths without editing notebooks by setting any of: `ATS_REPO_ROOT`,
 
 ## Fresh-kernel execution
 
-Execute all six in documented order, with a new kernel for every notebook:
+Execute all seven in documented order, with a new kernel for every notebook:
 
 ```powershell
 & 'D:\Stock\ATS\RESEARCH\prototypes\environment_repair\invoke_repaired_python.ps1' `
   -PythonArgs @('D:\Stock\ATS\source\python\notebooks\execute_notebooks.py')
 ```
 
-The driver overwrites only the six notebook files with their small executed
+The driver overwrites only the seven notebook files with their small executed
 outputs and writes `execution_report.json`. It starts a fresh kernel per
 notebook, stops at the first error, and does not write beneath `D:\Stock\data`.
 
