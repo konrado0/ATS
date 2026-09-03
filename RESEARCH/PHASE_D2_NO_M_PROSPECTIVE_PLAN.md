@@ -1,299 +1,282 @@
-# Phase D2-NM — prospective C+P+X LightGBM falsification plan
+# Phase D2-NM — retrospective adjudication with conditional prospective monitoring
 
-**Status:** draft for owner review; design only; no new fit, prediction,
-outcome access, evaluation, or Phase D3 work is authorized by this document
+**Status:** frozen for bounded execution; this document and
+`source/python/configs/phase_d2_no_m_followup.json` must be committed before any
+previously unopened no-M per-period, tail, concentration, or influence result is
+calculated.
 
-**Research-philosophy amendment (2026-09-03):** the prospective-only structure
-below is not the controlling execution design. Before execution, revise this
-draft into an explicitly labeled retrospective robustness study with prospective
-monitoring conditional on that result. Reused D2 history may guide the research
-direction but is not independent confirmation. This note changes no accepted D2
-artifact or verdict.
+**Contract ID:** `phase-d2-nm-followup-20260903-v1`
 
-**Proposed contract ID:** `phase-d2-nm-prospective-v1`
+**Selection history and evidence level:** inspection of accepted Phase D2 results
+suggested that removing the frozen market-state block M might improve the rich
+LightGBM cell. All 2023 H1 through 2026 H1 results in Stage R are therefore
+retrospective hypothesis-development and robustness evidence. They may decide
+whether the representation deserves further research, but are not untouched,
+independent confirmation, prospective evidence, trading evidence, or deployment
+evidence. Only predictions sealed under this contract before their 08:45
+Europe/Warsaw decision timestamps can accumulate prospective evidence.
 
-**Relationship to accepted evidence:** this is a second, related Phase D query.
-It does not amend, reinterpret, or overturn the accepted Phase D2 `STOP`. The
-accepted D2 predictions, evaluations, audit qualification, and scientific hash
-remain immutable.
+The accepted Phase D2 `STOP — VERIFIED / EXECUTION INTEGRITY NOT FULLY PROVEN`
+remains immutable and continues to govern the original C+P+X+M challenger. This
+follow-up asks a narrower research-direction question and cannot rewrite that
+historical conclusion.
 
-## Recommendation
+## 1. Bounded decision design
 
-One more experiment is defensible, but only in this narrow form. Promote the
-already-defined `RICH_NO_M_LIGHTGBM` diagnostic cell to one prospective
-challenger, compare it with the unchanged `C_LINEAR` and `C_LIGHTGBM` cells,
-retain the original materiality and opportunity-tail hurdles, and use only
-outcomes that were not available when this follow-up was frozen.
+### Exact decision
 
-This is a low-probability falsification, not a likely rescue. The diagnostic
-arithmetic implies the following equal-session-weighted mean rank ICs:
+Does the exact existing C+P+X LightGBM representation show sufficiently broad
+and stable incremental information, selective-opportunity behavior, and
+chronological persistence to justify keeping a prospective prediction stream
+running and possibly discussing one later, specifically motivated feature
+research step?
 
-| Evidence already inspected | C+P+X LightGBM | C linear | Delta vs C linear | C LightGBM | Delta vs C LightGBM |
-|---|---:|---:|---:|---:|---:|
-| 2024 development | 0.028235 | 0.021092 | +0.007143 | -0.004789 | +0.033024 |
-| 2025 H1–2026 H1 locked | 0.068374 | 0.064749 | +0.003626 | 0.018319 | +0.050055 |
+### Cheapest credible experiment
 
-The no-M diagnostic beat both conventional cells in both pooled periods, but
-its margin over `C_LINEAR` was below the frozen `+0.010` materiality hurdle in
-both. These retrospective values motivate the hypothesis and set expectations;
-they are not confirmation evidence and cannot enter the new gate.
+Reuse the sealed accepted D2 predictions and outcomes. Evaluate exactly
+`RICH_NO_M_LIGHTGBM`, `C_LINEAR`, and `C_LIGHTGBM` on seven complete half-years.
+Use `RICH_LIGHTGBM` only for the direct frozen-M diagnostic. Add no fit, feature,
+model, threshold, horizon, subgroup, universe, or vendor search. Build minimal
+prospective machinery only if the retrospective classification is `STRONG
+RESEARCH DIRECTION` or `WEAK BUT PERSISTENT`.
 
-No new no-M tail, per-block, subgroup, feature-importance, or alternative-model
-result may be opened to refine this plan.
+### Must-have validity work
 
-## 1. Exact decision
+- Prove that accepted D2 Stage 1 independently fitted and scored
+  `RICH_NO_M_LIGHTGBM` at every applicable refit with exactly the frozen 18 C+P+X
+  predictors and the frozen LightGBM configuration.
+- Bind the feature registry, accepted prediction run, prediction-table logical
+  hash, feature lists, estimator configuration, windows, endpoint purges,
+  calibration blocks, thresholds, common score masks, prediction hashes, row
+  counts, and fit records.
+- Use identical semantic rows for every paired comparison; retain official
+  denominator 60 and visible missing, unresolved, non-trading, and unavailable
+  states.
+- Preserve exact 20-session split-adjusted open-to-open outcomes, PIT timing,
+  one-session information lag, and session-level dependence.
+- Reproduce every classification input with a separate implementation and fail
+  closed on any unresolved correctness or comparability question.
 
-Does the exact frozen 18-feature C+P+X LightGBM cell provide **material,
-stable, and economically relevant incremental information** over each of the
-two frozen conventional comparators on two consecutive outcome-unopened
-half-years?
+### Useful nongating diagnostics
 
-A pass supports only an owner decision about one bounded portfolio translation.
-It does not establish deployable alpha. A failure closes this C+P+X LightGBM
-follow-up and supplies no authority to search more models, features, horizons,
-thresholds, subgroups, or data sources.
+Cumulative paired-delta plots, direct no-M versus full-rich comparison, exact
+concentration tables, and the distinction between aggregates already reported in
+Phase D2 and newly opened diagnostics explain the result but cannot select a new
+scientific object.
 
-## 2. Cheapest credible experiment
+### Deferred
 
-Reuse the accepted Phase D machinery and make only three bounded changes:
+Every alternative model, feature set, threshold, target, horizon, subgroup,
+universe, vendor, total-return reconstruction, portfolio/backtest, cost, sizing,
+fill, execution, Phase D3, feature store, MLflow, service, daemon, scheduler, and
+deployment task is deferred. A positive classification permits discussion of one
+later specifically motivated feature block; it does not authorize implementing
+one.
 
-1. evaluate exactly three cells: `RICH_NO_M_LIGHTGBM`, `C_LINEAR`, and
-   `C_LIGHTGBM`;
-2. remove model-family selection, the M ablation, secondary labels, proximity-Q5
-   work, feature importance, and every other nongating branch; and
-3. make label admission literally block-scoped and artifact-proven before any
-   new prediction publication.
+### Stop/continue rule
 
-The model, feature definitions, target, panel, timing, refit cadence,
-calibration rule, comparators, economic hurdles, and missing-state semantics do
-not change. No new D0-scale registry or general ML infrastructure is justified.
+Apply the classifications in section 5 mechanically after all validity and
+reproduction checks. Only `STRONG RESEARCH DIRECTION` or `WEAK BUT PERSISTENT`
+authorizes the minimal prospective stage. `UNSTABLE`, `NEGATIVE`, or `NOT
+PROVEN` stops before prospective subsystem work.
 
-## 3. Frozen scientific object
+## 2. Frozen scientific object
 
-### Challenger
+The machine-readable contract is authoritative where prose could be ambiguous.
 
-- cell: `RICH_NO_M_LIGHTGBM`;
-- representation: the exact 18 C+P+X columns already present in the accepted
-  D2 derived contract;
-- feature authority: the existing 30-feature registry with SHA-256
-  `733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6`,
-  filtered to the existing C, P, and X allowlist;
-- estimator: the existing deterministic `lightgbm.LGBMRegressor` configuration
-  (`gbdt`, squared error, 300 trees, learning rate 0.03, 15 leaves, depth 4,
-  minimum child 100, full row/column sampling, L1 0.1, L2 1.0, seed
-  `20260831`, one job, forced column-wise execution);
-- missing values: unchanged native IEEE NaN routing; and
-- model or hyperparameter selection: none.
+- challenger: `RICH_NO_M_LIGHTGBM`;
+- conventional comparators: `C_LINEAR`, `C_LIGHTGBM`;
+- direct M diagnostic only: `RICH_LIGHTGBM`;
+- no-M features: the exact accepted 18 C+P+X predictors filtered from feature
+  registry SHA-256
+  `733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6`;
+- estimator: accepted deterministic `lightgbm.LGBMRegressor` configuration;
+- accepted prediction run: `phase-d2-predictions-20260902-v4`;
+- required prediction-table logical hash:
+  `ad9ea68d66fde122e127d502706f8eeaea162749b6f67a38b1a68ac0c06e8466`;
+- target: `label__open_to_open__20` on `split_adjusted_price_return`, excluding
+  cash distributions and retaining known dividend price gaps;
+- refits: first official January/July session, trailing 36 calendar months,
+  exact endpoint purge, three six-month prequential calibration blocks, then a
+  distinct final refit;
+- threshold: `max(0.010000, numpy linear empirical q90)` separately by cell and
+  refit, strict `score > threshold`, no quota, zero-candidate sessions valid;
+- episode rule: first qualifying observation is the anchor; later qualifying
+  observations remain in the episode until more than 20 official sessions have
+  elapsed since the preceding qualifying observation; and
+- identity: security identity is excluded from predictors and never resolves a
+  score or outcome tie.
 
-### Comparators
+If independent no-M fitting and scoring cannot be proved exactly, stop with
+`NOT PROVEN` before Stage R.
 
-`C_LINEAR` and `C_LIGHTGBM` remain exactly as frozen in Phase D2. Every decisive
-incremental rank and tail comparison must pass against both separately. The
-fact that the diagnostic no-M cell clearly beat `C_LIGHTGBM` does not reduce the
-burden against `C_LINEAR`.
+## 3. Frozen historical populations
 
-### Target and opportunity definition
+Use every complete outcome-available half-year and no other historical period:
 
-- target: unchanged `label__open_to_open__20` split-adjusted price return;
-- decision timestamp: unchanged 08:45 Europe/Warsaw with one-session-lagged
-  information;
-- refits: unchanged January/July cadence and trailing 36 calendar months;
-- calibration: exactly three preceding six-month out-of-fit score blocks;
-- threshold: unchanged `max(0.010000, linear empirical q90)` separately by cell
-  and refit;
-- qualification: strict `score > threshold`, no quota and valid zero-candidate
-  sessions;
-- episodes: unchanged first-anchor and 20-official-session de-overlap rule; and
-- price basis: split-adjusted price only, excluding cash distributions and
-  preserving known dividend price gaps.
+| Population ID | Sessions |
+|---|---|
+| `RETRO_2023_H1` | 2023-01-02 through 2023-06-30 |
+| `RETRO_2023_H2` | 2023-07-03 through 2023-12-29 |
+| `RETRO_2024_H1` | 2024-01-02 through 2024-06-28 |
+| `RETRO_2024_H2` | 2024-07-01 through 2024-12-30 |
+| `RETRO_2025_H1` | 2025-01-02 through 2025-06-30 |
+| `RETRO_2025_H2` | 2025-07-01 through 2025-12-30 |
+| `RETRO_2026_H1` | 2026-01-02 through 2026-06-30 |
 
-## 4. Prospective evidence boundary
+The pooled population is the ordered union of all seven with equal weight per
+defined session. The 2024 pooled and 2025 H1–2026 H1 pooled no-M rank aggregates
+were already inspected and must be labeled as such. The 2023 no-M breakdown,
+all half-year no-M breakdowns, tails, concentration, and influence results are
+newly opened under this freeze. No security-session is treated as an independent
+inferential observation.
 
-The owner confirms that no newer labels currently exist. That delays the
-verdict but does not prevent freezing the experiment or starting an
-outcome-inaccessible prediction stream.
+## 4. Frozen diagnostics
 
-The accepted D2 prediction table
-`phase-d2-predictions-20260902-v4` already contains all three proposed cells for
-35 monitoring sessions from 2026-07-01 through 2026-08-18. It contains 2,100
-`RICH_NO_M_LIGHTGBM` rows with finite scores and thresholds and no attached
-outcomes. The whole prediction table is bound by scientific logical hash
-`ad9ea68d66fde122e127d502706f8eeaea162749b6f67a38b1a68ac0c06e8466`.
+### Rank diagnostics
 
-Those rows are a useful outcome-unopened canary, but the new primary publication
-must be generated under the repaired literal label-admission process. It must
-reproduce the overlapping three-cell score rows exactly before extending the
-stream. The accepted D2 run is read-only and is never replaced.
+For each half-year and pooled across seven, calculate session Spearman rank IC
+on the identical common outcome-evaluable rows, requiring at least 45 paired rows
+and nonconstant score and outcome. Report each cell's mean and median session IC;
+paired no-M-minus-`C_LINEAR`, no-M-minus-`C_LIGHTGBM`, and no-M-minus-full-rich
+session-IC deltas; delta mean and median; positive-delta count and fraction;
+defined/usable session counts; row and distinct-security counts; and 95% intervals.
 
-### Prespecified gating blocks
+Uncertainty is the accepted deterministic circular moving-block bootstrap over
+ordered decision sessions: 5,000 samples, 20-session blocks, PCG64 seed
+`20260831`, identical resample indices for paired cells, linear 2.5%/97.5%
+quantiles, and at least 99% defined replicates. Report cumulative paired-delta
+series without using them as additional gates.
 
-The preferred gating pair is:
+For each comparator, recompute the pooled mean paired delta after leaving out
+each half-year. Separately identify the largest contributing security as the
+identity-neutral boundary set whose removal causes the largest decrease in the
+pooled mean paired delta, including all exact ties, and report every leave-one-
+security-out result in that set. No refit or recalibration is permitted.
 
-- `PROSPECTIVE_2026_H2`; and
-- `PROSPECTIVE_2027_H1`.
+### Selective-opportunity diagnostics
 
-`PROSPECTIVE_2026_H2` is eligible only if every included official decision
-session has all three cell scores sealed before its primary label is admitted to
-evaluation, the full half-year meets the unchanged structural coverage minimum,
-and every access-integrity check passes. Whether this block qualifies is decided
-from timestamps, manifests, and access traces alone, before any of its outcomes
-are opened.
+For each half-year and pooled, report candidate rows and fraction, opportunity
+sessions and fraction, idle sessions and fraction, effective episode anchors,
+represented securities, anchor-level mean and median 20-session outcome,
+equal-session no-M minus eligible-universe outcome, no-M minus each same-session
+frequency-matched conventional outcome, severe outcome (`<= -0.10`) frequency
+and comparator differences, plus security, session, and chronological
+concentration and largest-contributor influence.
 
-If 2026 H2 fails that outcome-blind operational test, it becomes monitoring only
-and the **single prespecified fallback pair** is 2027 H1 plus 2027 H2. There is
-no third rollover, no best-period choice, and no shortened denominator. Failure
-to obtain two valid blocks by the maturity of 2027 H2 is `NOT PROVEN` and ends
-this proposal unless the owner explicitly commissions a new phase.
+Frequency matching uses the common outcome-evaluable score population and the
+integer number of no-M episode anchors on each session. The comparator's kth
+score boundary is selected by score only; observations above receive weight 1,
+below receive 0, and all exact boundary ties receive equal fractional weight so
+weights sum exactly to k. Sessions with k=0 remain in frequency/idle reporting
+and have no tail contrast. Tail comparisons aggregate available per-session
+contrasts with equal session weight. The median is across all evaluable no-M
+episode anchors. Severe outcomes use the same weights and session populations.
 
-No interim outcome evaluation is permitted. Outcomes are attached once, only
-after both selected blocks are complete, label-mature, prediction-fingerprinted,
-and independently validated as inaccessible during scoring.
+Concentration reports largest and top-five shares and HHI by security and
+session, half-year shares/HHI, contiguous chronological-quartile shares, and the
+maximum rolling 20-session episode share. Exact contributor-boundary ties are
+included without identity resolution. Recompute rank and tail conclusions after
+removing each largest-contributor boundary security, with no refit or threshold
+change.
 
-## 5. Must-have validity work
+### Frozen dominance and coherence definitions
 
-1. Preserve exact PIT identity, official TOP60 membership, denominator 60,
-   decision timestamps, feature lags, exact label endpoints, and all missing,
-   unresolved, non-trading, and outcome-unavailable states.
-2. Replace eager whole-training-period label loading with block-scoped admission.
-   Each refit may read only labels whose exact availability precedes that refit;
-   the retained access trace must prove the files, rows, maximum endpoint, and
-   admission time rather than asserting a Boolean gate.
-3. Build one common semantic score mask for all three cells. No cell may gain an
-   easier population through missingness, row dropping, or denominator changes.
-4. Recreate preprocessing and estimators at every inner and outer fit, preserve
-   endpoint purging, and keep calibration scores and final-refit predictions
-   separate.
-5. Seal and hash predictions before outcome attachment. Any session scored after
-   its label was accessible is ineligible for the prospective block; it is not
-   silently discarded from the official denominator.
-6. Require at least `ceil(0.80 × expected official sessions)` qualifying
-   sessions per complete half-year, at least 45 eligible securities per
-   qualifying session, and the inherited fit/calibration minima.
-7. Preserve at least 90% scored-row and episode-anchor outcome evaluability, at
-   least 90% defined paired-IC session coverage, and at most a five-point gap
-   between scored-row and episode evaluability.
-8. Reproduce the complete three-cell prediction and evaluation identities in a
-   second run. A narrow independent evaluator must recompute every input to the
-   final D2-NM verdict, including bootstrap, block, frequency, concentration,
-   and leave-contributor gates; it may not merely reclassify stored gate rows.
+A result is dominated when any one security, one decision session, one
+half-year, or one contiguous 20-session cluster accounts for at least 50% of all
+positive no-M episode-outcome excess over the same-session eligible universe,
+or when removing the identified largest contributor changes a positive pooled
+delta against either conventional comparator to nonpositive. Half-year rank
+dominance also holds when one half-year accounts for at least 50% of the sum of
+positive session paired deltas against either conventional comparator.
 
-Any failure above is fail-closed before scientific metrics are interpreted.
+A coherent selective-tail advantage requires all four descriptive signs:
+pooled no-M opportunity mean above the eligible universe, above each
+frequency-matched conventional comparator, and pooled no-M opportunity median
+strictly positive. Tail evidence is inconsistent with a positive rank result
+when fewer than four half-years have positive no-M-minus-eligible tail contrast
+or the coherent pooled-tail definition fails.
 
-## 6. Frozen scientific gate
+### Direct no-M versus full-rich diagnostic
 
-The historical D2 periods never enter the prospective estimates. Because the
-hypothesis is fixed from old data and tested once on new outcomes, the original
-materiality and uncertainty thresholds remain unchanged; no retrospective and
-prospective estimate is pooled to increase apparent precision.
+Report whether removing M improves pooled mean rank IC, improves mean rank IC in
+at least four of seven half-years, improves pooled selective-tail mean and
+median, changes candidate frequency by at least 20% relatively or 1 percentage
+point absolutely, and changes every reported concentration measure. This is a
+fixed ablation description only; `RICH_LIGHTGBM` is not selectable.
 
-All conditions below must pass.
+## 5. Mechanical retrospective classification
 
-### Incremental rank information
+Apply in this order.
 
-Against `C_LINEAR` and `C_LIGHTGBM` separately:
+1. `NOT PROVEN` if any PIT, population, timing, outcome, independent-fit,
+   artifact, or reproduction requirement is not established.
+2. `NEGATIVE` if no-M pooled mean session-IC delta is nonpositive against the
+   stronger conventional comparator and the coherent selective-tail definition
+   fails. The stronger comparator is the one with the larger pooled mean session
+   IC; an exact tie resolves to `C_LINEAR`.
+3. `STRONG RESEARCH DIRECTION` only if pooled mean session-IC delta is at least
+   `+0.005` against both conventional comparators; each contrast is positive in
+   at least five of seven half-years; the median of the seven half-year mean
+   deltas is positive against each; pooled no-M mean IC exceeds full-rich
+   LightGBM; the coherent selective-tail definition passes; no dominance
+   definition triggers; and all validity and reproduction checks pass.
+4. `WEAK BUT PERSISTENT` if pooled mean session-IC delta is positive against
+   both conventional comparators; each contrast is positive in at least four of
+   seven half-years; no-M pooled mean IC exceeds full-rich LightGBM; no security
+   or half-year dominance definition triggers; and at least one strong-direction
+   materiality, persistence, median-half-year, tail, session/cluster dominance,
+   or concentration condition fails.
+5. Otherwise classify `UNSTABLE`. This includes a positive pooled result with
+   fewer than four positive half-years against either comparator, material sign
+   changes, security/session/cluster/half-year dominance, an inconsistent tail,
+   or removal of M helping only in an isolated period.
 
-- pooled two-block mean paired session-IC delta at least `+0.010`;
-- the frozen 5,000-sample, 20-session circular moving-block bootstrap 95%
-  lower bound strictly above zero;
-- relative mean improvement at least 15% when the comparator mean IC is
-  positive; and
-- each of the two half-years has mean paired delta at least `+0.005`.
+Statistical intervals describe uncertainty and are reported; they are not an
+additional academic significance gate for this retrospective research-direction
+decision.
 
-### Selective opportunity tail
+## 6. Conditional prospective stage
 
-- no-M episode mean minus same-session eligible-universe mean at least `+1.00`
-  percentage point;
-- no-M episode mean minus each same-session frequency-matched conventional mean
-  at least `+0.50` percentage point;
-- no-M episode median strictly positive;
-- severe-outcome-rate difference versus each comparator no greater than two
-  points; and
-- the inherited bootstrap lower/upper bounds pass for eligible separation, both
-  comparator separations, median, and severe-outcome differences.
+Build the following only after a mechanically reproduced `STRONG RESEARCH
+DIRECTION` or `WEAK BUT PERSISTENT` result.
 
-These are research diagnostics, not fills, trades, costs, or portfolio returns.
+Reuse exactly the same 18 features, LightGBM parameters, two comparators,
+20-session label, January/July refits, trailing 36-month window, endpoint purge,
+three-block calibration, threshold, episode rule, PIT TOP60 population, and
+split-adjusted price basis. Retrospective results cannot change them.
 
-### Evidence amount, abstention, and concentration
+A row is prospectively eligible only if its immutable publication is sealed no
+later than the decision session's 08:45 Europe/Warsaw timestamp. Record
+information session, decision session/timestamp, generation timestamp,
+publication/seal timestamp, target start and endpoint, label availability,
+prospective eligibility, monitoring-only status, and exclusion reason. A late
+row is monitoring-only forever. A missed row remains missed and is never
+backfilled.
 
-- at least 100 effective same-security episodes, 20 distinct securities, and 50
-  opportunity sessions across the pooled two-block population;
-- raw candidate rows per effective episode at most 5;
-- in each half-year: candidate-row fraction at most 10%, opportunity-session
-  fraction from 10% through 80%, idle-session fraction at least 20%, and linear
-  p95 session candidate count at most 12;
-- largest-security episode share at most 10%, top-five share at most 35%,
-  security HHI at most 0.05, and largest chronological-quartile share at most
-  40%; and
-- after leaving out each identity-neutral top-contributor boundary security,
-  delta IC remains at least `+0.005` and tail separation remains positive
-  against both comparators.
+The accepted 35 July–August 2026 monitoring sessions remain historical canary
+evidence. New timely rows enter `POST_FREEZE_2026`. After the final 20-session
+outcomes mature, report an early prospective checkpoint with exact sample size
+and accepted uncertainty. Fewer than 40 qualifying decision sessions is
+`INSUFFICIENT`, not failure. Later 2027 rows may accumulate under the unchanged
+contract, but this task does not wait for them.
 
-Approximately tying, beating only `C_LIGHTGBM`, positive standalone IC, one good
-half-year, a rare or concentrated tail, or an unresolved confidence bound is not
-a pass.
+Minimal permitted machinery is an explicit three-cell contract, prediction-only
+command using pinned inputs, append-only immutable publication, objective timing
+eligibility, block-scoped label access for refits, rejection of outcomes and late
+predictions, and a concise manual runbook. Do not build a service or scheduler.
 
-## 7. Useful nongating diagnostics
+## 7. Required evidence and integration
 
-Keep these descriptive and unable to alter the gate:
+Publish machine-readable per-session, per-half-year, tail, concentration,
+classification, provenance, and independent-reproduction outputs without
+overwriting accepted D2 artifacts. Publish a concise retrospective report and a
+fresh-kernel executable owner-review notebook at
+`source/python/notebooks/05_phase_d_no_m_followup.ipynb` that reads sealed outputs
+without fitting models.
 
-- the pre-existing outcome-unopened 2026 H2 overlap reproduction;
-- per-session IC distributions and plotted cumulative paired deltas;
-- candidate and episode counts by session and half-year;
-- largest-session share and session HHI; and
-- the historical diagnostic values in the rationale table, displayed separately
-  and never pooled with prospective evidence.
-
-Do not calculate alternate labels, alternate horizons, new thresholds, feature
-importance, SHAP, subgroups, market regimes, portfolio returns, or additional
-ablations.
-
-## 8. Explicitly deferred
-
-- Ridge or another model on C+P+X;
-- full-rich C+P+X+M as a new challenger;
-- XGBoost, CatBoost, ranking objectives, neural/sequence models, ensembles, or
-  hyperparameter search;
-- reopening P/X definitions, adding technical indicators, changing the label or
-  using a new universe/vendor;
-- total-return reconstruction, sector/event data, all-GPW expansion, a feature
-  store, MLflow, GPU work, or a general prediction service; and
-- portfolio construction, costs, sizing, turnover, fillability, optimization,
-  deployment, or live trading.
-
-## 9. Prespecified verdict
-
-- **CONTINUE CANDIDATE:** every validity, incremental-rank, tail, evidence,
-  abstention, stability, concentration, reproduction, and independent-audit
-  requirement passes. This returns to the owner for a decision on exactly one
-  bounded Phase D3 portfolio test; it does not authorize that test
-  automatically.
-- **STOP:** any scientifically evaluable gate fails. The tested OHLCV-only
-  C+P+X LightGBM extension is closed. No diagnostic may rescue it and no further
-  ML/model search is authorized.
-- **NOT PROVEN:** two valid prospective blocks cannot be obtained or a validity,
-  access, reproduction, or audit requirement remains unresolved. This does not
-  become `CONTINUE` by relaxing thresholds or extending the window after the
-  fact.
-
-The result must always be reported narrowly. Even a `STOP` would reject this
-fixed C+P+X LightGBM continuation, not every conceivable ML approach. Conversely,
-a `CONTINUE CANDIDATE` would support only a bounded portfolio falsification, not
-deployment.
-
-## 10. Minimal execution sequence after separate authorization
-
-1. Freeze this plan and a small machine-readable amendment before opening any
-   new outcome.
-2. Implement and fixture-test literal block-scoped label admission and the
-   three-cell allowlist; perform no scientific evaluation.
-3. Reproduce the overlapping sealed 2026 H2 scores and publish the prospective
-   prediction stream under a new immutable run ID.
-4. Select the preferred or fallback block pair using access/coverage evidence
-   only, then seal both complete prediction blocks.
-5. Attach outcomes once, compute the reduced frozen gate, reproduce it, and run
-   the independent full-gate evaluator.
-6. Publish `CONTINUE CANDIDATE`, `STOP`, or `NOT PROVEN`, preserve all artifacts,
-   and stop for owner review.
-
-Until steps 1–2 receive separate owner authorization, the current Phase D2
-`STOP — VERIFIED` controls and Phase D3 remains unauthorized.
+Commit this freeze first. Commit implementation and results separately. Preserve
+the three unrelated untracked environment paths. Completed, accurately qualified
+evidence is then fast-forwarded to `master`, validated after merge, and pushed
+normally. None of those integration steps authorizes Phase D3, a portfolio test,
+a new feature block, or deployment.

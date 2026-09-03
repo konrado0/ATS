@@ -1,0 +1,159 @@
+{
+  "schema_version": "ats.phase_d2_nm.followup.v1",
+  "contract_id": "phase-d2-nm-followup-20260903-v1",
+  "evidence_level": "retrospective_hypothesis_development_and_robustness_with_conditional_prospective_monitoring",
+  "decision": "Decide whether the exact accepted C+P+X LightGBM representation is broad, stable, and economically interesting enough to justify prospective monitoring and possible owner discussion of one later specifically motivated feature-research step.",
+  "accepted_inputs": {
+    "feature_registry_sha256": "733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6",
+    "prediction_run_id": "phase-d2-predictions-20260902-v4",
+    "prediction_table_logical_hash": "ad9ea68d66fde122e127d502706f8eeaea162749b6f67a38b1a68ac0c06e8466",
+    "evaluation_run_id": "phase-d2-evaluation-20260902-v6",
+    "overwrite_accepted_artifacts": false
+  },
+  "cells": {
+    "challenger": "RICH_NO_M_LIGHTGBM",
+    "comparators": ["C_LINEAR", "C_LIGHTGBM"],
+    "direct_m_diagnostic_only": "RICH_LIGHTGBM",
+    "permitted": ["RICH_NO_M_LIGHTGBM", "C_LINEAR", "C_LIGHTGBM", "RICH_LIGHTGBM"],
+    "selectable": ["RICH_NO_M_LIGHTGBM"],
+    "no_other_cells": true
+  },
+  "scientific_object": {
+    "no_m_feature_blocks": ["C", "P", "X"],
+    "no_m_feature_count": 18,
+    "feature_allowlist_source": "accepted_phase_d2_derived_contract",
+    "model_parameters_source": "accepted_phase_d2_derived_contract",
+    "target": "label__open_to_open__20",
+    "return_basis": "split_adjusted_price_return",
+    "cash_distributions_included": false,
+    "decision_time": "08:45:00 Europe/Warsaw",
+    "information_lag_sessions": 1,
+    "refit_months": [1, 7],
+    "training_window_calendar_months": 36,
+    "endpoint_purge": "label_endpoint_ts_strictly_before_refit_decision_ts",
+    "calibration_blocks": 3,
+    "calibration_block_calendar_months": 6,
+    "threshold": "max(0.010000, numpy_linear_empirical_q90_of_finite_pooled_inner_oof_scores_per_cell_refit)",
+    "qualification": "score_strictly_greater_than_threshold",
+    "quota": null,
+    "zero_candidate_sessions_valid": true,
+    "episode_horizon_official_sessions": 20
+  },
+  "historical_populations": [
+    {"id": "RETRO_2023_H1", "start": "2023-01-02", "end": "2023-06-30"},
+    {"id": "RETRO_2023_H2", "start": "2023-07-03", "end": "2023-12-29"},
+    {"id": "RETRO_2024_H1", "start": "2024-01-02", "end": "2024-06-28"},
+    {"id": "RETRO_2024_H2", "start": "2024-07-01", "end": "2024-12-30"},
+    {"id": "RETRO_2025_H1", "start": "2025-01-02", "end": "2025-06-30"},
+    {"id": "RETRO_2025_H2", "start": "2025-07-01", "end": "2025-12-30"},
+    {"id": "RETRO_2026_H1", "start": "2026-01-02", "end": "2026-06-30"}
+  ],
+  "paired_population": {
+    "same_security_session_rows_for_all_cells": true,
+    "minimum_rows_for_session_ic": 45,
+    "official_denominator": 60,
+    "undefined_sessions_retained_in_coverage": true,
+    "pooled_weighting": "equal_defined_session"
+  },
+  "uncertainty": {
+    "method": "deterministic_circular_moving_block_bootstrap_over_ordered_sessions",
+    "samples": 5000,
+    "block_sessions": 20,
+    "seed": 20260831,
+    "rng": "numpy.random.Generator(numpy.random.PCG64(20260831))",
+    "confidence_level": 0.95,
+    "quantile_method": "linear",
+    "minimum_defined_replicate_fraction": 0.99,
+    "paired_indices": true
+  },
+  "required_rank_outputs": [
+    "cell_mean_session_rank_ic", "cell_median_session_rank_ic", "paired_delta_mean",
+    "paired_delta_median", "paired_delta_positive_session_count", "paired_delta_positive_session_fraction",
+    "bootstrap_interval", "usable_session_count", "semantic_row_count", "distinct_security_count",
+    "cumulative_paired_delta", "leave_each_half_year_out", "leave_largest_contributing_security_out"
+  ],
+  "required_tail_outputs": [
+    "candidate_row_count", "candidate_row_fraction", "opportunity_session_count",
+    "opportunity_session_fraction", "idle_session_count", "idle_session_fraction",
+    "effective_episode_count", "represented_security_count", "episode_mean_outcome",
+    "episode_median_outcome", "no_m_minus_eligible_universe", "no_m_minus_C_LINEAR",
+    "no_m_minus_C_LIGHTGBM", "severe_outcome_frequency", "severe_outcome_differences",
+    "security_concentration", "session_concentration", "half_year_concentration",
+    "chronological_quartile_concentration", "rolling_20_session_concentration",
+    "largest_contributor_influence"
+  ],
+  "frequency_matching": {
+    "target_count": "no_m_outcome_evaluable_episode_anchors_on_same_session",
+    "boundary": "kth_largest_comparator_score",
+    "tie_policy": "equal_fractional_weight_for_all_exact_score_ties_without_identity_or_row_order",
+    "weight_sum_equals_target_count": true
+  },
+  "severe_outcome": {"operator": "<=", "threshold": -0.10},
+  "dominance": {
+    "positive_excess_share_threshold": 0.50,
+    "dimensions": ["security", "decision_session", "half_year", "contiguous_20_session_cluster"],
+    "half_year_positive_paired_delta_share_threshold": 0.50,
+    "largest_contributor_flip_rule": "positive_pooled_delta_becomes_nonpositive_against_either_comparator"
+  },
+  "coherent_tail": {
+    "pooled_no_m_minus_eligible_positive": true,
+    "pooled_no_m_minus_each_comparator_positive": true,
+    "pooled_no_m_episode_median_positive": true,
+    "minimum_positive_half_years_for_consistency": 4
+  },
+  "classification_order": ["NOT PROVEN", "NEGATIVE", "STRONG RESEARCH DIRECTION", "WEAK BUT PERSISTENT", "UNSTABLE"],
+  "classification": {
+    "NOT PROVEN": "Any PIT, population, timing, outcome, independent-fit, artifact, or reproduction requirement is not established.",
+    "NEGATIVE": "Pooled mean session-IC delta is nonpositive against the conventional cell with the larger pooled mean session IC, tie to C_LINEAR, and coherent selective-tail advantage fails.",
+    "STRONG RESEARCH DIRECTION": {
+      "pooled_delta_min_against_each_comparator": 0.005,
+      "minimum_positive_half_years_against_each_comparator": 5,
+      "median_half_year_mean_delta_positive_against_each_comparator": true,
+      "pooled_no_m_ic_exceeds_full_rich": true,
+      "coherent_tail_required": true,
+      "dominance_forbidden": true,
+      "all_validity_and_reproduction_pass": true
+    },
+    "WEAK BUT PERSISTENT": {
+      "pooled_delta_positive_against_each_comparator": true,
+      "minimum_positive_half_years_against_each_comparator": 4,
+      "pooled_no_m_ic_exceeds_full_rich": true,
+      "security_or_half_year_dominance_forbidden": true,
+      "at_least_one_strong_condition_fails": true
+    },
+    "UNSTABLE": "Scientifically evaluable result not classified above, including insufficient half-year persistence, material sign changes, dominance, inconsistent tail, or isolated benefit from removing M."
+  },
+  "direct_m_diagnostic": {
+    "pooled_mean_rank_ic": true,
+    "half_year_mean_rank_ic": true,
+    "selective_tail_mean_and_median": true,
+    "candidate_frequency_material_change_relative": 0.20,
+    "candidate_frequency_material_change_absolute": 0.01,
+    "concentration_comparison": true,
+    "can_select_challenger": false
+  },
+  "prospective_trigger": ["STRONG RESEARCH DIRECTION", "WEAK BUT PERSISTENT"],
+  "prospective": {
+    "cohort": "POST_FREEZE_2026",
+    "eligible_if_sealed_no_later_than_decision_ts": true,
+    "late_is_monitoring_only": true,
+    "missed_predictions_backfilled": false,
+    "accepted_2026_h2_35_sessions_status": "historical_canary_only",
+    "early_checkpoint_minimum_qualifying_sessions": 40,
+    "below_minimum_classification": "INSUFFICIENT",
+    "required_timestamp_fields": [
+      "information_session", "decision_session", "decision_ts", "prediction_generation_ts",
+      "publication_seal_ts", "target_start_session", "target_endpoint_session",
+      "label_availability_ts", "prospective_eligible", "monitoring_only", "exclusion_reason"
+    ]
+  },
+  "permitted_conclusions": [
+    "retrospective_research_direction_classification", "prospective_monitoring_justified_or_not",
+    "owner_discussion_of_one_later_specifically_motivated_feature_step_if_strong_or_weak_persistent"
+  ],
+  "unauthorized": [
+    "Phase_D3", "portfolio_or_backtest", "new_feature_block_implementation", "model_search",
+    "threshold_or_horizon_change", "new_universe_or_vendor", "deployment_claim", "live_trading",
+    "daemon", "prediction_service", "generalized_scheduler", "feature_store", "MLflow"
+  ]
+}
