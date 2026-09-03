@@ -24,7 +24,7 @@ from ats_ml.d2_artifacts import (
 )
 from ats_ml.d2_contract import validate_execution_authorization
 from ats_ml.d2_data import build_real_labels, build_real_observations, load_official_calendar
-from ats_ml.d2_stage1 import SequentialLabelAdmissionFirewall, _actual_fit, _score_rows
+from ats_ml.d2_stage1 import SequentialLabelAdmissionFirewall, _actual_fit, _score_rows, normalized_population_keys
 from ats_ml.models import LIGHTGBM_PARAMETERS, RIDGE_PARAMETERS
 from ats_ml.structural_v3 import _compact_plan
 from ats_ml.walkforward import _new_estimator, bind_structural_minimums, derive_walk_forward_plan
@@ -265,13 +265,12 @@ def _build_prediction(stage: Path) -> dict[str, Any]:
                 "final_fit_coefficients": _coefficient_record(estimator, features),
             })
         block_frame = pd.concat(block_parts, ignore_index=True)
-        ledgers = {
-            logical_frame_hash(group[["security_id", "decision_session"]], ["decision_session", "security_id"])
-            for _, group in block_frame.groupby("cell_id")
-        }
-        if len(ledgers) != 1:
+        grouped = [normalized_population_keys(group) for _, group in block_frame.groupby("cell_id", sort=True)]
+        if not grouped or any(not group.equals(grouped[0]) for group in grouped[1:]):
             raise D2ArtifactError(f"cell populations differ: {block_id}")
-        common_population_hashes[block_id] = next(iter(ledgers))
+        common_population_hashes[block_id] = logical_frame_hash(
+            grouped[0], ["decision_session", "security_id"]
+        )
         for cell_id in CONTROLS:
             generated = block_frame.loc[block_frame["cell_id"].eq(cell_id)].sort_values(["decision_session", "security_id"], kind="mergesort")
             accepted_cell = accepted.loc[accepted["block_id"].eq(block_id) & accepted["cell_id"].eq(cell_id)].sort_values(["decision_session", "security_id"], kind="mergesort")
