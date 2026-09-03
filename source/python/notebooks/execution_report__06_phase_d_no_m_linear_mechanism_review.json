@@ -8,9 +8,12 @@
       "bytes": 109457,
       "cell_errors": 0,
       "code_cells": 6,
+      "committed_blob_sha256": "5bfdcab0e55212744fdb35f9eceb46c29084cfeed5e762d2bf97332486b87019",
+      "committed_semantic_json_matches_executed_worktree": true,
       "elapsed_seconds": 4.115,
       "notebook": "06_phase_d_no_m_linear_mechanism_review.ipynb",
       "retained_outputs": 10,
+      "executed_worktree_sha256": "7d59cbd372055f6dba8ee0ff482c7da3506b4432084db4471b8a2845ebf9cd86",
       "sha256": "7d59cbd372055f6dba8ee0ff482c7da3506b4432084db4471b8a2845ebf9cd86"
     }
   ],
