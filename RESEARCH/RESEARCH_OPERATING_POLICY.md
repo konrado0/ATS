@@ -141,6 +141,44 @@ contract:
 If containment cannot be demonstrated, broaden the audit only as far as needed to
 establish it and return any material scope expansion to the owner.
 
+## Branch integration and task completion
+
+Branches are temporary implementation boundaries, not evidence archives. A
+completed, accurately qualified research result belongs in the repository's
+controlling history even when its conclusion is negative, inconclusive or stops
+further work.
+
+Owner review gates the next experiment, deployment or other follow-on action. It
+does not normally gate incorporation of already completed evidence. Therefore a
+research or implementation task is not complete while its accepted work remains
+only on a topic branch.
+
+After the task's scoped checks pass, the responsible agent must:
+
+1. confirm that the branch contains only the intended work and preserves unrelated
+   dirty files;
+2. qualify the result and its authority honestly, including any retained caveats
+   or `NOT PROVEN` items;
+3. integrate the reviewed commits into local `master`, preferring a fast-forward
+   merge when ancestry permits;
+4. rerun the smallest checks needed to prove that the integrated `master` is the
+   reviewed state; and
+5. report whether local `master` and its configured remote are synchronized.
+
+Do not merge known incorrect evidence, unresolved misleading claims, failing
+required checks or unrelated work merely to clear a branch. Leaving completed work
+unmerged is permitted only when the owner explicitly requests it or when a concrete
+blocker exists, such as divergent history, a merge conflict, unavailable required
+credentials, an unresolved correctness issue, or mixed scope that cannot be
+separated safely. In that case, classify repository integration as `INCOMPLETE`,
+name the exact blocker and give the precise next integration action.
+
+Ordinary remote publication follows the authority of the task: push when the owner
+has requested publication or the controlling task explicitly includes it;
+otherwise finish the local `master` integration and report that the remote remains
+behind. Never describe owner review of future work as a reason to strand completed
+knowledge on a feature branch.
+
 ## Research-grade versus deployment-grade
 
 Research-grade data must be sufficiently PIT-correct and semantically explicit

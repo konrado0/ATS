@@ -298,6 +298,13 @@ test after viewing its results or run an unbounded search until something works.
 A secondary diagnostic may motivate one new bounded hypothesis when its selection
 history and weaker evidentiary status remain explicit.
 
+Completed, accurately qualified work is integrated into local `master`; topic
+branches are temporary implementation boundaries. Owner review governs the next
+experiment or deployment action, not whether finished project knowledge is retained
+in the controlling history. Any exception must be reported as an incomplete
+integration with a concrete blocker. Remote publication remains explicit and its
+synchronization state must be reported.
+
 ## Documentation maintenance
 
 This file is the project entry point, not the full evidence archive. Update its
