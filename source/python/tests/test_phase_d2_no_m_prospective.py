@@ -33,7 +33,7 @@ def _refresh_score(score: Path, package: Path, *, refresh_inputs: bool = True) -
     audit["prediction_sha256"] = sha256_file(score / "predictions.parquet")
     write_json(score / "scorer_audit.json", audit)
     write_json(score / "manifest.json", {
-        "schema_version": "ats.phase_d2_nm.score_package.v2",
+        "schema_version": "ats.phase_d2_nm.score_package.v3",
         "files": file_inventory(score, exclude={"manifest.json"}),
     })
 
@@ -42,10 +42,10 @@ def _refresh_score(score: Path, package: Path, *, refresh_inputs: bool = True) -
 def score_package(tmp_path: Path) -> tuple[Path, Path]:
     package, score = tmp_path / "input", tmp_path / "score"
     package.mkdir(); score.mkdir()
-    calendar = pd.bdate_range("2026-08-03", periods=45)
-    decision = calendar[10]
-    information = calendar[9]
-    endpoint = calendar[30]
+    calendar = pd.bdate_range("2022-07-01", "2026-10-30")
+    decision = pd.Timestamp("2026-08-17")
+    information = calendar[calendar.get_loc(decision) - 1]
+    endpoint = calendar[calendar.get_loc(decision) + 20]
     pd.DataFrame({"session_date": calendar}).to_parquet(package / "official_calendar.parquet", index=False)
     ids = [f"SEC{i:02d}" for i in range(60)]
     membership = pd.DataFrame({"security_id": ids, "decision_session": decision, "official_membership": True})
@@ -57,10 +57,9 @@ def score_package(tmp_path: Path) -> tuple[Path, Path]:
     })
     observations.to_parquet(package / "observations.parquet", index=False)
     pd.DataFrame({"decision_session": pd.Series(dtype="datetime64[ns]"), "label_endpoint_ts_20": pd.Series(dtype="datetime64[ns, UTC]")}).to_parquet(package / "training_labels.parquet", index=False)
-    write_json(package / "walk_forward_block.json", {"refit_session": decision.strftime("%Y-%m-%d")})
     config = {
-        "schema_version": "ats.phase_d2_nm.prospective_input.v2",
-        "refit_session": decision.strftime("%Y-%m-%d"),
+        "schema_version": "ats.phase_d2_nm.prospective_input.v3",
+        "refit_session": "2026-07-01",
         "decision_sessions": [decision.strftime("%Y-%m-%d")],
         "targets": [{
             "information_session": information.strftime("%Y-%m-%d"),
@@ -71,6 +70,10 @@ def score_package(tmp_path: Path) -> tuple[Path, Path]:
             "label_availability_ts": (endpoint.tz_localize("Europe/Warsaw") + pd.Timedelta(hours=9)).isoformat(),
         }],
     }
+    expected_block, walk_forward_proof = prospective._derive_expected_walk_forward_block(
+        config, {"official_calendar.parquet": pd.DataFrame({"session_date": calendar})}
+    )
+    write_json(package / "walk_forward_block.json", expected_block)
     write_json(package / "input_config.json", config)
     _rewrite_config(package)
     predictions = pd.concat([
@@ -80,13 +83,15 @@ def score_package(tmp_path: Path) -> tuple[Path, Path]:
     predictions.to_parquet(score / "predictions.parquet", index=False)
     binding = prospective._verified_contract_binding()
     audit = {
-        "schema_version": "ats.phase_d2_nm.scorer_audit.v2", "input_package": str(package.resolve()),
+        "schema_version": "ats.phase_d2_nm.scorer_audit.v3", "input_package": str(package.resolve()),
         "input_config_sha256": sha256_file(package / "input_config.json"),
         "pinned_input_hashes": {name: json.loads((package / "input_config.json").read_text())["files"][name]["sha256"] for name in prospective.INPUT_FILES},
-        "contract_binding": binding, "cells": binding["cells"], "prediction_sha256": sha256_file(score / "predictions.parquet"),
+        "contract_binding": binding, "cells": binding["cells"], "walk_forward_proof": walk_forward_proof,
+        "implementation_fingerprint": prospective._implementation_fingerprint(),
+        "prediction_sha256": sha256_file(score / "predictions.parquet"),
     }
     write_json(score / "scorer_audit.json", audit)
-    write_json(score / "manifest.json", {"schema_version": "ats.phase_d2_nm.score_package.v2", "files": file_inventory(score, exclude={"manifest.json"})})
+    write_json(score / "manifest.json", {"schema_version": "ats.phase_d2_nm.score_package.v3", "files": file_inventory(score, exclude={"manifest.json"})})
     return package, score
 
 
@@ -148,7 +153,7 @@ def test_corrupt_contract_binding_is_rejected(score_package) -> None:
     audit = json.loads((score / "scorer_audit.json").read_text())
     audit["contract_binding"]["scientific_contract_sha256"] = "0" * 64
     write_json(score / "scorer_audit.json", audit)
-    write_json(score / "manifest.json", {"schema_version": "ats.phase_d2_nm.score_package.v2", "files": file_inventory(score, exclude={"manifest.json"})})
+    write_json(score / "manifest.json", {"schema_version": "ats.phase_d2_nm.score_package.v3", "files": file_inventory(score, exclude={"manifest.json"})})
     with pytest.raises(D2ArtifactError, match="contract binding"):
         prospective._verify_score_package(score)
 
@@ -183,6 +188,40 @@ def test_incorrect_target_endpoint_is_rejected(score_package) -> None:
         prospective._verify_score_package(score)
 
 
+@pytest.mark.parametrize("mutation", ["fit_window", "calibration_blocks", "purge_boundary"])
+def test_altered_walk_forward_training_procedure_fails_closed(score_package, mutation) -> None:
+    package, score = score_package
+    block_path = package / "walk_forward_block.json"
+    block = json.loads(block_path.read_text())
+    if mutation == "fit_window":
+        block["estimator_window_start"] = block["estimator_window_sessions"][1]
+    elif mutation == "calibration_blocks":
+        block["inner_score_blocks"] = block["inner_score_blocks"][:2]
+    else:
+        block["inner_score_blocks"][0]["fit_boundary_session"] = block["inner_score_blocks"][0]["score_sessions"][1]
+    write_json(block_path, block)
+    _refresh_score(score, package)
+    with pytest.raises(D2ArtifactError, match="walk-forward block"):
+        prospective._verify_score_package(score)
+
+
+@pytest.mark.parametrize("mutation", ["lightgbm_parameter", "ridge_parameter", "preprocessing"])
+def test_altered_estimator_parameters_or_preprocessing_fail_closed(score_package, mutation) -> None:
+    package, score = score_package
+    audit = json.loads((score / "scorer_audit.json").read_text())
+    definitions = audit["implementation_fingerprint"]["model_definitions"]
+    if mutation == "lightgbm_parameter":
+        definitions["LIGHTGBM"]["parameters"]["num_leaves"] = 31
+    elif mutation == "ridge_parameter":
+        definitions["RIDGE"]["parameters"]["alpha"] = 2.0
+    else:
+        definitions["RIDGE"]["preprocessing"][0]["strategy"] = "mean"
+    write_json(score / "scorer_audit.json", audit)
+    write_json(score / "manifest.json", {"schema_version": "ats.phase_d2_nm.score_package.v3", "files": file_inventory(score, exclude={"manifest.json"})})
+    with pytest.raises(D2ArtifactError, match="estimator parameters, or preprocessing"):
+        prospective._verify_score_package(score)
+
+
 def test_publication_crossing_0845_is_permanently_monitoring_only(score_package, tmp_path, monkeypatch) -> None:
     _package, score = score_package
     stream = tmp_path / "stream"
@@ -208,6 +247,6 @@ def test_empty_v1_is_preserved_and_superseded_by_v2(tmp_path, monkeypatch) -> No
     monkeypatch.setattr(prospective, "SUPERSESSION_ROOT", streams / "supersessions")
     prospective.initialize_repaired_stream(reason="bounded repair", now_provider=lambda: pd.Timestamp("2026-09-03T12:00:00Z"))
     assert sha256_file(legacy / "registration.json") == before
-    marker = json.loads((streams / "supersessions/phase-d2-nm-post-freeze-2026-v1.json").read_text())
+    marker = json.loads((streams / "supersessions/phase-d2-nm-post-freeze-2026-v2.json").read_text())
     assert marker["status"] == "NON_OPERATIONAL_SUPERSEDED_EMPTY_REGISTRATION"
     assert json.loads((repaired / "registration.json").read_text())["status"] == "ACTIVE_EMPTY_AWAITING_ELIGIBLE_SESSION"

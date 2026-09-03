@@ -5,6 +5,8 @@ import os
 import shutil
 import hashlib
 import subprocess
+import copy
+from dataclasses import replace
 import tempfile
 from pathlib import Path
 from typing import Any, Callable
@@ -15,17 +17,20 @@ import pandas as pd
 from ats_ml.d2_artifacts import D2ArtifactError, file_inventory, read_json, write_json
 from ats_ml.d2_no_m import CONTRACT_PATH, NO_M, COMPARATORS, PREDICTION_ROOT, load_contract
 from ats_ml.d2_stage1 import SequentialLabelAdmissionFirewall, _actual_fit, _score_rows
-from ats_ml.walkforward import _new_estimator
+from ats_ml.contracts_v3 import D0_V3_CONFIG, load_frozen_d0_v3_contract
+from ats_ml.models import LIGHTGBM_PARAMETERS, RIDGE_PARAMETERS
+from ats_ml.labels import label_endpoints
+from ats_ml.walkforward import _new_estimator, derive_walk_forward_plan
 from ats_research.hashing import content_hash, logical_frame_hash, sha256_file
 
 
-LEGACY_STREAM_ID = "phase-d2-nm-post-freeze-2026-v1"
-STREAM_ID = "phase-d2-nm-post-freeze-2026-v2"
+LEGACY_STREAM_ID = "phase-d2-nm-post-freeze-2026-v2"
+STREAM_ID = "phase-d2-nm-post-freeze-2026-v3"
 STREAMS_ROOT = Path("D:/Stock/data/ATS/phase_d_ml/prospective_streams")
 STREAM_ROOT = STREAMS_ROOT / STREAM_ID
 LEGACY_STREAM_ROOT = STREAMS_ROOT / LEGACY_STREAM_ID
 SUPERSESSION_ROOT = STREAMS_ROOT / "supersessions"
-PROSPECTIVE_CONTRACT_PATH = Path(__file__).resolve().parents[2] / "configs/phase_d2_no_m_prospective_v2.json"
+PROSPECTIVE_CONTRACT_PATH = Path(__file__).resolve().parents[2] / "configs/phase_d2_no_m_prospective_v3.json"
 DERIVED_CONTRACT_PATH = PREDICTION_ROOT / "derived_contract.json"
 REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
 EXPECTED_CELLS = (NO_M, *COMPARATORS)
@@ -39,6 +44,13 @@ PUBLISHER_ONLY_COLUMNS = {"prospective_eligible", "monitoring_only", "exclusion_
 INPUT_FILES = (
     "observations.parquet", "training_labels.parquet", "walk_forward_block.json",
     "pit_membership.parquet", "official_calendar.parquet",
+)
+TRAINING_IMPLEMENTATION_PATHS = (
+    "source/python/configs/phase_d0_reference_v3.json",
+    "source/python/src/ats_ml/models.py",
+    "source/python/src/ats_ml/walkforward.py",
+    "source/python/src/ats_ml/d2_stage1.py",
+    "source/python/src/ats_ml/d2_no_m_prospective.py",
 )
 
 
@@ -54,6 +66,31 @@ def _committed_sha256(relative: str) -> str:
     if result.returncode:
         raise D2ArtifactError(f"cannot verify committed operational contract: {relative}")
     return hashlib.sha256(result.stdout).hexdigest()
+
+
+def _model_definitions() -> dict[str, Any]:
+    return {
+        "RIDGE": {
+            "estimator": "sklearn.linear_model.Ridge",
+            "parameters": dict(RIDGE_PARAMETERS),
+            "preprocessing": [
+                {"step": "SimpleImputer", "strategy": "median", "add_indicator": False, "keep_empty_features": False},
+                {"step": "StandardScaler", "with_mean": True, "with_std": True},
+            ],
+        },
+        "LIGHTGBM": {
+            "estimator": "lightgbm.LGBMRegressor",
+            "parameters": dict(LIGHTGBM_PARAMETERS),
+            "preprocessing": [],
+            "missing_value_behavior": "native LightGBM handling",
+        },
+    }
+
+
+def _implementation_fingerprint() -> dict[str, Any]:
+    files = {path: _committed_sha256(path) for path in TRAINING_IMPLEMENTATION_PATHS}
+    definition = {"files": files, "model_definitions": _model_definitions()}
+    return {**definition, "fingerprint": content_hash(definition)}
 
 
 def _atomic_directory(destination: Path, build: Callable[[Path], None]) -> None:
@@ -96,24 +133,28 @@ def _verified_contract_binding() -> dict[str, Any]:
         raise D2ArtifactError("corrupt prospective scientific-contract binding")
     if operational.get("cells") != expected:
         raise D2ArtifactError("prospective feature allowlist or model definition differs from accepted D2")
+    if operational.get("training_procedure", {}).get("model_definitions") != _model_definitions():
+        raise D2ArtifactError("prospective estimator parameters or preprocessing differ from committed implementation")
     declared = operational.get("bindings", {})
     actual = {
         "scientific_contract_sha256": sha256_file(CONTRACT_PATH),
         "accepted_derived_contract_sha256": sha256_file(DERIVED_CONTRACT_PATH),
+        "phase_d0_v3_contract_sha256": _committed_sha256("source/python/configs/phase_d0_reference_v3.json"),
     }
     if declared != actual:
         raise D2ArtifactError("corrupt prospective contract hash binding")
     return {
-        "operational_contract_sha256": _committed_sha256("source/python/configs/phase_d2_no_m_prospective_v2.json"),
+        "operational_contract_sha256": _committed_sha256("source/python/configs/phase_d2_no_m_prospective_v3.json"),
         **actual,
         "cells": expected,
+        "training_procedure": operational["training_procedure"],
     }
 
 
 def _load_input_package(package_dir: Path) -> tuple[dict[str, Any], dict[str, pd.DataFrame | dict[str, Any]]]:
     config_path = package_dir / "input_config.json"
     config = read_json(config_path)
-    if config.get("schema_version") != "ats.phase_d2_nm.prospective_input.v2":
+    if config.get("schema_version") != "ats.phase_d2_nm.prospective_input.v3":
         raise D2ArtifactError("unexpected prospective input schema")
     files = config.get("files", {})
     loaded: dict[str, pd.DataFrame | dict[str, Any]] = {}
@@ -162,6 +203,89 @@ def _calendar_and_targets(config: dict[str, Any], loaded: dict[str, pd.DataFrame
     return calendar, targets
 
 
+def _derive_expected_walk_forward_block(
+    config: dict[str, Any],
+    loaded: dict[str, pd.DataFrame | dict[str, Any]],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    calendar, targets = _calendar_and_targets(config, loaded)
+    decisions = sorted(targets)
+    halves = {(value.year, 1 if value.month <= 6 else 2) for value in decisions}
+    if len(halves) != 1:
+        raise D2ArtifactError("one prospective package cannot cross a January/July refit boundary")
+    year, half = next(iter(halves))
+    specification = {
+        "block_id": f"PROSPECTIVE_{year}_H{half}",
+        "calendar_half": f"{year}H{half}",
+        "role": "prospective_monitoring",
+        "complete": False,
+        "observation_end": decisions[-1].strftime("%Y-%m-%d"),
+    }
+    frozen = load_frozen_d0_v3_contract()
+    composed = copy.deepcopy(frozen.config)
+    composed["v3_amendment"]["evidence_blocks"] = [specification]
+    derived = derive_walk_forward_plan(calendar, replace(frozen, config=composed))
+    expected = derived["blocks"][0]
+    if config.get("refit_session") != expected["refit_session"]:
+        raise D2ArtifactError("prospective refit binding differs from the first January/July official session")
+    if not set(config["decision_sessions"]).issubset(set(expected["evaluation_sessions"])):
+        raise D2ArtifactError("requested sessions are outside the derived following half-year score block")
+    endpoints = label_endpoints(calendar, calendar, timezone="Europe/Warsaw").set_index("decision_session")
+
+    def exact_purge(candidates: list[str], retained: list[str], boundary: str) -> bool:
+        candidate_dates = pd.DatetimeIndex(pd.to_datetime(candidates)).normalize()
+        boundary_ts = pd.Timestamp(boundary).tz_localize("Europe/Warsaw") + pd.Timedelta(hours=8, minutes=45)
+        expected_retained = endpoints.loc[candidate_dates, "label_endpoint_ts"]
+        expected_retained = list(candidate_dates[expected_retained.notna() & expected_retained.lt(boundary_ts)])
+        return [pd.Timestamp(value) for value in retained] == expected_retained
+
+    inner_purge = []
+    for item in expected["inner_score_blocks"]:
+        candidates = calendar[
+            (calendar >= pd.Timestamp(item["fit_start"]))
+            & (calendar <= pd.Timestamp(item["fit_end_candidate"]))
+        ]
+        inner_purge.append(exact_purge(
+            [value.strftime("%Y-%m-%d") for value in candidates],
+            item["fit_retained_sessions"],
+            item["fit_boundary_session"],
+        ))
+    proof = {
+        "schema_version": "ats.phase_d2_nm.walk_forward_proof.v3",
+        "block_id": expected["block_id"],
+        "block_logical_hash": content_hash(expected),
+        "refit_session": expected["refit_session"],
+        "estimator_window_calendar_months": 36,
+        "estimator_window_start": expected["estimator_window_start"],
+        "estimator_window_end": expected["estimator_window_end"],
+        "inner_calibration_block_count": len(expected["inner_score_blocks"]),
+        "inner_fit_history_months": [item["fit_history_months"] for item in expected["inner_score_blocks"]],
+        "inner_score_block_months": 6,
+        "endpoint_purge_strict_before_each_boundary": all(inner_purge) and exact_purge(
+            expected["estimator_window_sessions"],
+            expected["final_fit"]["retained_sessions"],
+            expected["final_fit"]["boundary_session"],
+        ),
+    }
+    if proof["inner_calibration_block_count"] != 3 or proof["inner_fit_history_months"] != [18, 24, 30]:
+        raise D2ArtifactError("derived calibration structure differs from the frozen three-block contract")
+    if proof["endpoint_purge_strict_before_each_boundary"] is not True:
+        raise D2ArtifactError("derived endpoint purge is not strictly before its boundary")
+    proof["proof_hash"] = content_hash(proof)
+    return expected, proof
+
+
+def _derive_and_verify_walk_forward_block(
+    config: dict[str, Any],
+    loaded: dict[str, pd.DataFrame | dict[str, Any]],
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    expected, proof = _derive_expected_walk_forward_block(config, loaded)
+    supplied = loaded["walk_forward_block.json"]
+    assert isinstance(supplied, dict)
+    if supplied != expected:
+        raise D2ArtifactError("submitted walk-forward block differs from the frozen canonical derivation")
+    return expected, proof
+
+
 def _validate_population_and_timing(observations: pd.DataFrame, membership: pd.DataFrame, targets: dict[pd.Timestamp, dict[str, Any]]) -> None:
     required = {"security_id", "decision_session", "official_membership"}
     if required - set(membership.columns):
@@ -177,11 +301,12 @@ def _validate_population_and_timing(observations: pd.DataFrame, membership: pd.D
     obs["decision_session"] = pd.to_datetime(obs["decision_session"]).dt.normalize()
     obs["information_session"] = pd.to_datetime(obs["information_session"]).dt.normalize()
     obs["security_id"] = obs["security_id"].astype(str)
-    if set(obs["decision_session"].unique()) != set(targets):
+    if not set(targets).issubset(set(obs["decision_session"].unique())):
         raise D2ArtifactError("observation sessions differ from the pinned request")
     if obs.duplicated(["decision_session", "security_id"]).any():
         raise D2ArtifactError("duplicate identities in prospective observations")
-    for session, group in obs.groupby("decision_session", sort=True):
+    prospective = obs.loc[obs["decision_session"].isin(targets)]
+    for session, group in prospective.groupby("decision_session", sort=True):
         expected = targets[pd.Timestamp(session)]
         member_ids = set(official.loc[official["decision_session"].eq(session), "security_id"])
         if len(group) != 60 or group["security_id"].nunique() != 60 or set(group["security_id"]) != member_ids:
@@ -239,7 +364,7 @@ def _verify_score_package(score_package: Path) -> tuple[pd.DataFrame, dict[str, 
     if not prediction_path.is_file() or not audit_path.is_file() or not manifest_path.is_file():
         raise D2ArtifactError("complete scorer-generated audit sidecar and manifest are required")
     audit, manifest = read_json(audit_path), read_json(manifest_path)
-    if audit.get("schema_version") != "ats.phase_d2_nm.scorer_audit.v2":
+    if audit.get("schema_version") != "ats.phase_d2_nm.scorer_audit.v3":
         raise D2ArtifactError("invalid scorer audit schema")
     for name in ("predictions.parquet", "scorer_audit.json"):
         record, path = manifest.get("files", {}).get(name, {}), score_package / name
@@ -258,6 +383,12 @@ def _verify_score_package(score_package: Path) -> tuple[pd.DataFrame, dict[str, 
     if audit.get("pinned_input_hashes") != expected_inputs:
         raise D2ArtifactError("scorer audit pinned-input hashes changed")
     _calendar, targets = _calendar_and_targets(config, loaded)
+    _block, walk_forward_proof = _derive_and_verify_walk_forward_block(config, loaded)
+    if audit.get("walk_forward_proof") != walk_forward_proof:
+        raise D2ArtifactError("scorer audit is not bound to the canonically derived walk-forward block")
+    implementation = _implementation_fingerprint()
+    if audit.get("implementation_fingerprint") != implementation:
+        raise D2ArtifactError("scorer audit implementation, estimator parameters, or preprocessing fingerprint changed")
     observations, membership = loaded["observations.parquet"], loaded["pit_membership.parquet"]
     assert isinstance(observations, pd.DataFrame) and isinstance(membership, pd.DataFrame)
     frame = pd.read_parquet(prediction_path)
@@ -280,10 +411,10 @@ def initialize_repaired_stream(*, reason: str, now_provider: Callable[[], pd.Tim
     _atomic_json(SUPERSESSION_ROOT / f"{LEGACY_STREAM_ID}.json", marker)
 
     def build(stage: Path) -> None:
-        registration = {"schema_version": "ats.phase_d2_nm.prospective_registration.v2", "stream_id": STREAM_ID, "status": "ACTIVE_EMPTY_AWAITING_ELIGIBLE_SESSION", "publisher_completed_ts": completed.isoformat(), "contract_binding": binding, "supersedes": LEGACY_STREAM_ID, "legacy_registration_sha256": legacy_hash, "missed_predictions_are_never_backfilled": True, "late_publications_are_permanently_monitoring_only": True, "reason": reason}
+        registration = {"schema_version": "ats.phase_d2_nm.prospective_registration.v3", "stream_id": STREAM_ID, "status": "ACTIVE_EMPTY_AWAITING_ELIGIBLE_SESSION", "publisher_completed_ts": completed.isoformat(), "contract_binding": binding, "implementation_fingerprint": _implementation_fingerprint(), "supersedes": LEGACY_STREAM_ID, "legacy_registration_sha256": legacy_hash, "missed_predictions_are_never_backfilled": True, "late_publications_are_permanently_monitoring_only": True, "reason": reason}
         registration["logical_hash"] = content_hash(registration)
         write_json(stage / "registration.json", registration)
-        write_json(stage / "manifest.json", {"schema_version": "ats.phase_d2_nm.prospective_stream.v2", "stream_id": STREAM_ID, "files": file_inventory(stage), "mutable_latest_pointer": False})
+        write_json(stage / "manifest.json", {"schema_version": "ats.phase_d2_nm.prospective_stream.v3", "stream_id": STREAM_ID, "files": file_inventory(stage), "mutable_latest_pointer": False})
     _atomic_directory(STREAM_ROOT, build)
     return STREAM_ROOT
 
@@ -309,7 +440,7 @@ def append_prediction_batch(score_package: Path, *, batch_id: str, now_provider:
         output.sort_values(["decision_session", "cell_id", "security_id"], kind="mergesort").to_parquet(stage / "predictions.parquet", index=False, compression="zstd", use_dictionary=False)
         write_json(stage / "validation.json", validation)
         write_json(stage / "source_scorer_audit.json", audit)
-        write_json(stage / "manifest.json", {"schema_version": "ats.phase_d2_nm.prospective_batch.v2", "batch_id": batch_id, "source_score_package_manifest_sha256": sha256_file(score_package / "manifest.json"), "files": file_inventory(stage)})
+        write_json(stage / "manifest.json", {"schema_version": "ats.phase_d2_nm.prospective_batch.v3", "batch_id": batch_id, "source_score_package_manifest_sha256": sha256_file(score_package / "manifest.json"), "files": file_inventory(stage)})
     _atomic_directory(destination, build)
     completed = pd.Timestamp(now_provider()).tz_convert("UTC")
     if completed < started:
@@ -319,7 +450,7 @@ def append_prediction_batch(score_package: Path, *, batch_id: str, now_provider:
         decision_ts = target["decision_ts"].tz_convert("UTC")
         timely = completed <= decision_ts
         session_records.append({"decision_session": decision.strftime("%Y-%m-%d"), "decision_ts": decision_ts.isoformat(), "publication_completed_ts": completed.isoformat(), "prospective_eligible": bool(timely), "monitoring_only": bool(not timely), "exclusion_reason": "" if timely else "PUBLISHED_AFTER_DECISION_TS"})
-    receipt = {"schema_version": "ats.phase_d2_nm.publication_receipt.v2", "stream_id": STREAM_ID, "batch_id": batch_id, "publication_started_ts": started.isoformat(), "publication_completed_ts": completed.isoformat(), "batch_manifest_sha256": sha256_file(destination / "manifest.json"), "eligibility_authority": "publisher_post_atomic_finalization_clock", "sessions": session_records}
+    receipt = {"schema_version": "ats.phase_d2_nm.publication_receipt.v3", "stream_id": STREAM_ID, "batch_id": batch_id, "publication_started_ts": started.isoformat(), "publication_completed_ts": completed.isoformat(), "batch_manifest_sha256": sha256_file(destination / "manifest.json"), "eligibility_authority": "publisher_post_atomic_finalization_clock", "sessions": session_records}
     receipt["logical_hash"] = content_hash(receipt)
     _atomic_json(receipt_path, receipt)
     return destination
@@ -333,8 +464,8 @@ def score_pinned_package(package_dir: Path, *, output_dir: Path) -> Path:
     assert isinstance(observations, pd.DataFrame) and isinstance(labels, pd.DataFrame) and isinstance(block, dict) and isinstance(membership, pd.DataFrame)
     _calendar, targets = _calendar_and_targets(config, loaded)
     _validate_population_and_timing(observations, membership, targets)
-    if block.get("refit_session") != config.get("refit_session"):
-        raise D2ArtifactError("prospective refit binding mismatch")
+    expected_block, walk_forward_proof = _derive_and_verify_walk_forward_block(config, loaded)
+    block = expected_block
     decision_sessions = [str(value) for value in config.get("decision_sessions", [])]
     if set(decision_sessions) - set(block.get("evaluation_sessions", [])):
         raise D2ArtifactError("requested sessions are absent from the pinned walk-forward block")
@@ -370,14 +501,14 @@ def score_pinned_package(package_dir: Path, *, output_dir: Path) -> Path:
 
     def build(stage: Path) -> None:
         frame.to_parquet(stage / "predictions.parquet", index=False, compression="zstd", use_dictionary=False)
-        audit = {"schema_version": "ats.phase_d2_nm.scorer_audit.v2", "input_package": str(package_dir.resolve()), "input_config_sha256": sha256_file(package_dir / "input_config.json"), "pinned_input_hashes": {name: config["files"][name]["sha256"] for name in INPUT_FILES}, "contract_binding": binding, "cells": binding["cells"], "label_admission": admission, "fit_audit": audits, "validation": validation, "prediction_sha256": sha256_file(stage / "predictions.parquet")}
+        audit = {"schema_version": "ats.phase_d2_nm.scorer_audit.v3", "input_package": str(package_dir.resolve()), "input_config_sha256": sha256_file(package_dir / "input_config.json"), "pinned_input_hashes": {name: config["files"][name]["sha256"] for name in INPUT_FILES}, "contract_binding": binding, "cells": binding["cells"], "walk_forward_proof": walk_forward_proof, "implementation_fingerprint": _implementation_fingerprint(), "label_admission": admission, "fit_audit": audits, "validation": validation, "prediction_sha256": sha256_file(stage / "predictions.parquet")}
         write_json(stage / "scorer_audit.json", audit)
-        write_json(stage / "manifest.json", {"schema_version": "ats.phase_d2_nm.score_package.v2", "files": file_inventory(stage)})
+        write_json(stage / "manifest.json", {"schema_version": "ats.phase_d2_nm.score_package.v3", "files": file_inventory(stage)})
     _atomic_directory(output_dir, build)
     return output_dir
 
 
 def record_missed_session(*, decision_session: str, reason: str, now_provider: Callable[[], pd.Timestamp] = _now_utc) -> Path:
     session, destination = pd.Timestamp(decision_session).strftime("%Y-%m-%d"), STREAM_ROOT / "missed" / f"{pd.Timestamp(decision_session).strftime('%Y-%m-%d')}.json"
-    _atomic_json(destination, {"schema_version": "ats.phase_d2_nm.missed_session.v2", "decision_session": session, "publisher_recorded_ts": pd.Timestamp(now_provider()).tz_convert("UTC").isoformat(), "status": "MISSED_PERMANENTLY_INELIGIBLE", "reason": reason, "backfill_permitted": False})
+    _atomic_json(destination, {"schema_version": "ats.phase_d2_nm.missed_session.v3", "decision_session": session, "publisher_recorded_ts": pd.Timestamp(now_provider()).tz_convert("UTC").isoformat(), "status": "MISSED_PERMANENTLY_INELIGIBLE", "reason": reason, "backfill_permitted": False})
     return destination
