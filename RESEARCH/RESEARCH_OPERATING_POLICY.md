@@ -15,6 +15,16 @@ research task is a credible `CONTINUE`, `STOP`, `DEFER` or `NOT PROVEN` decision
 Additional machinery is worthwhile only when it can materially improve confidence
 in that decision or is required by a surviving result.
 
+> **Exploration is allowed, but evidence is tagged according to how contaminated
+> it is. Strong claims require cleaner evidence than research-direction
+> decisions.**
+
+Here, contamination describes how an observation relates to hypothesis formation
+and model or parameter selection; it does not necessarily mean that the underlying
+market data are defective. Reusing history that helped form a new hypothesis is a
+normal part of applied research. It lowers the strength of the claim that can be
+made from that history, but it does not make the analysis scientifically useless.
+
 This policy governs future task design and review. It does not change the meaning
 of accepted Phase A/B/C artifacts, supersede retained evidence, or amend a frozen
 scientific contract after results have been inspected.
@@ -26,14 +36,17 @@ of the available tools.
 
 | Level | Appropriate use | Minimum retained evidence | Normally deferred |
 |---|---|---|---|
-| Exploratory | Generate or cheaply reject hypotheses | Named data basis and period, enough code/configuration to understand the calculation, visible caveats, no confirmatory claim | Formal release manifests, exact physical reproduction, production architecture |
-| Decision evidence | Authorize or stop a research line, model comparison, bounded strategy test or new engineering work | Frozen question and primary definitions before new outcomes, decision-relevant correctness checks, pinned logical inputs, reproducible decisive outputs, explicit stop/continue gate | Deployment operations and unrelated platform generalization |
-| Deployment candidate | Capital allocation, broker/live integration or operational service | Full execution, liquidity, corporate-action, reconciliation, monitoring, rollback and operational guarantees appropriate to the deployment | Nothing required for safe operation may be waived as “research-grade” |
+| Exploratory | Generate, refine or cheaply reject hypotheses, including ideas prompted by inspected historical results | Named data basis and period, enough code/configuration to understand the calculation, visible selection history and caveats, no confirmatory claim | Formal release manifests, exact physical reproduction, production architecture |
+| Retrospective robustness | Decide whether a historically motivated idea is broad and credible enough to continue researching | Explicitly frozen candidate for the bounded pass, chronological and concentration diagnostics, strong comparators, reproducible decision outputs, honest disclosure that the evidence helped form the hypothesis | Claims of untouched validation, deployment operations and unrelated platform generalization |
+| Prospective confirmation | Test a frozen surviving candidate on observations whose predictions were sealed before their decision timestamps | Precommitted procedure and gate, objective prediction timestamps, immutable predictions, outcome firewall, reproducible evaluation | Retrospective redesign, post-result threshold/model changes and deployment claims |
+| Trading/deployment candidate | Capital allocation, broker/live integration or operational service | Full execution, liquidity, corporate-action, reconciliation, monitoring, rollback and operational guarantees appropriate to the deployment | Nothing required for safe operation may be waived as “research-grade” |
 
-An exploratory result may suggest a confirmatory task, but it may not be described
-retrospectively as frozen, out-of-sample or deployment evidence. A result that
-changes the roadmap or authorizes significant implementation work is decision
-evidence and must cross the corresponding reproducibility boundary.
+An exploratory or retrospective result may suggest another bounded hypothesis or
+a prospective task, but it may not be described retrospectively as untouched,
+out-of-sample, prospective or deployment evidence. Research-direction decisions
+do not require the same evidentiary cleanliness as capital or deployment claims.
+A result that authorizes significant implementation work must still cross a
+reproducibility boundary proportionate to that work.
 
 ## Non-negotiable research correctness
 
@@ -92,11 +105,20 @@ failure to justify added complexity.
 
 - Prefer the cheapest prespecified falsification capable of rejecting a hypothesis
   over progressive refinement of a weak result.
+- Iteration is legitimate: an inspected result may motivate a narrower
+  representation, feature block or model question. Freeze the next bounded analysis
+  before opening its previously unexamined diagnostics, record how the hypothesis
+  was selected, and label reused history as exploratory or retrospective robustness
+  evidence.
+- Selection-contaminated history can decide whether an idea deserves more research;
+  it cannot independently confirm the idea or support a deployment claim.
 - Once a hypothesis becomes interesting enough to influence a decision, freeze
   its primary definition, population, timing, metrics and gate before the next
   confirmatory result.
-- Do not respond to weak evidence by searching more parameters, filters, horizons,
-  models, vendors or datasets until one works.
+- Do not conduct unbounded searches over parameters, filters, horizons, models,
+  vendors or datasets until something works. A small, economically or empirically
+  motivated successor hypothesis is allowed when its selection history is explicit,
+  its test is bounded, and its evidentiary status is not overstated.
 - Use hashes, immutable manifests and exact reproduction at meaningful decision
   boundaries. Do not require release-grade ceremony for every scratch notebook or
   disposable diagnostic.
@@ -137,6 +159,13 @@ When the unresolved question is genuinely future performance, freeze the survivi
 strategy or model and accumulate prospective evidence. Additional historical
 optimization is not a substitute for time. Historical segments already involved
 in hypothesis development must not be relabeled as untouched validation.
+
+Prospective evidence is not a prerequisite for every exploratory or
+research-direction decision. Use retrospective robustness to decide cheaply
+whether a candidate deserves the cost of waiting for new observations. When
+prospective evidence is collected, a prediction is prospective only if it was
+sealed before its decision timestamp; generating it before the final label matures
+is not sufficient.
 
 ## Application to Phase D
 

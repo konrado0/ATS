@@ -396,9 +396,12 @@ claim with artifact-derived checks and an explicit qualification. See
 
 The frozen mechanical verdict is `STOP`. Phase D3 execution, portfolio/backtest
 translation, optimization, and deployment are `NO` pending owner review. The
-negative result is retained as the bounded decision; do not search additional
-indicators, horizons, objectives, models, subgroups, or thresholds until one
-works.
+negative result is retained as the bounded decision for that exact rich-state
+contract. It does not establish that every ML representation is ineffective.
+One diagnostic may motivate a separately named and frozen retrospective
+robustness question, provided its selection history is disclosed and it is not
+presented as untouched confirmation. Do not search additional indicators,
+horizons, objectives, models, subgroups, or thresholds until one works.
 
 The original continue rule required material and stable incremental information
 over both conventional models, an economically credible selective opportunity

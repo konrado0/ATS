@@ -11,7 +11,7 @@ pooled-ML swing-opportunity experiment—justify further engineering.
 
 ## Current checkpoint
 
-Status as of 2026-09-02:
+Status as of 2026-09-03:
 
 - The architecture study and local storage/query/backtester benchmarks are
   complete.
@@ -64,6 +64,10 @@ Status as of 2026-09-02:
   metrics and the verdict, while reclassifying—not independently recomputing—
   the remaining stored gate inputs. Phase D3 and portfolio/backtest
   work remain unauthorized pending owner review.
+- A C+P+X/no-market-state follow-up is being designed as explicitly retrospective
+  hypothesis-development evidence, with prospective monitoring conditional on the
+  retrospective result. It does not overturn the accepted Phase D2 `STOP` or
+  relabel reused history as untouched evidence.
 
 The automatic Phase D2 authorization overlay activated from committed baseline
 `1dc9bbd`. The authorized study is now complete. The next gate is **owner review
@@ -86,6 +90,7 @@ Authoritative current documents:
 - [Phase D2 bounded audit repair](RESEARCH/PHASE_D2_AUDIT_REPAIR.md)
 - [Phase D2 requirement audit](RESEARCH/PHASE_D2_REQUIREMENT_AUDIT.json)
 - [Phase D2 evidence manifest](RESEARCH/PHASE_D2_MANIFEST.json)
+- [draft Phase D2 no-market-state follow-up](RESEARCH/PHASE_D2_NO_M_PROSPECTIVE_PLAN.md)
 - [preserved Phase D1 readiness v2](RESEARCH/PHASE_D1_READINESS_v2.md)
 - [controlling market-state checkpoint](RESEARCH/PRE_PHASE_D_MARKET_STATE_DIAGNOSTIC.md)
 - [recommended architecture](RESEARCH/RECOMMENDED_ARCHITECTURE.md)
@@ -243,6 +248,13 @@ baseline is failure, not success.
 
 The following distinctions should survive every future report:
 
+- Exploration is allowed, but evidence is tagged according to how the hypothesis
+  and test were selected. Strong claims require cleaner evidence than
+  research-direction decisions.
+- Historical results that helped form a successor hypothesis remain useful for
+  retrospective robustness and research prioritization. They are not independent
+  confirmation, prospective evidence or deployment validation.
+
 - `split_adjusted_price_return` removes known split mechanics but excludes cash
   distributions and preserves dividend price gaps. It is not total return.
 - Stooq-adjusted historical evidence, source/native observations and the newer
@@ -265,14 +277,17 @@ rule is: **additional infrastructure must justify itself through research need.*
 
 For each bounded step, name the decision, cheapest credible experiment,
 must-have validity work, useful diagnostics, deferred work and stop/continue
-rule. Minimum rigor still includes any PIT timing, leakage, denominator,
-missing-state, price-basis or accounting issue capable of changing the result.
-Freeze and reproduce accepted decision evidence, not every disposable diagnostic.
+rule, and declare whether the evidence is exploratory, retrospective robustness,
+prospective confirmation or trading/deployment evidence. Minimum rigor still
+includes any PIT timing, leakage, denominator, missing-state, price-basis or
+accounting issue capable of changing the result. Freeze and reproduce accepted
+decision evidence, not every disposable diagnostic.
 
 Preserve accepted runs, prior versions, negative results and unrelated dirty
-work. Correct bugs within the smallest demonstrated scope. Do not optimize after
-viewing results or let secondary diagnostics silently create new research
-branches.
+work. Correct bugs within the smallest demonstrated scope. Do not alter a frozen
+test after viewing its results or run an unbounded search until something works.
+A secondary diagnostic may motivate one new bounded hypothesis when its selection
+history and weaker evidentiary status remain explicit.
 
 ## Documentation maintenance
 

@@ -3,6 +3,13 @@
 **Status:** draft for owner review; design only; no new fit, prediction,
 outcome access, evaluation, or Phase D3 work is authorized by this document
 
+**Research-philosophy amendment (2026-09-03):** the prospective-only structure
+below is not the controlling execution design. Before execution, revise this
+draft into an explicitly labeled retrospective robustness study with prospective
+monitoring conditional on that result. Reused D2 history may guide the research
+direction but is not independent confirmation. This note changes no accepted D2
+artifact or verdict.
+
 **Proposed contract ID:** `phase-d2-nm-prospective-v1`
 
 **Relationship to accepted evidence:** this is a second, related Phase D query.
