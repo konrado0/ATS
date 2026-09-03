@@ -56,8 +56,8 @@
     },
     {
       "path": "RESEARCH/PHASE_D2_AUDIT_REPAIR.md",
-      "bytes": 6915,
-      "sha256": "7a1b1c504ad5d979cb1462e78d0237d06be2fc0e74e7ff06e15e31bb0271675e"
+      "bytes": 8576,
+      "sha256": "570682d8e137b1d58ca975568ea1334a29b3ca5eb52c67c4c38b40042f9dac16"
     },
     {
       "path": "RESEARCH/PHASE_D2_REQUIREMENT_AUDIT.json",
@@ -76,13 +76,18 @@
     },
     {
       "path": "RESEARCH/prototypes/phase_d2/audit_phase_d2_v2.py",
-      "bytes": 21701,
-      "sha256": "9f82fa49d6b12396e96584107f03ac954f425efea7e8e89e1574a76c082fab3c"
+      "bytes": 24083,
+      "sha256": "882d8c2fb86a9e92c373eb6b2af34dae6ef6eaf269caa6975056e49967bf6d46"
     },
     {
       "path": "source/python/configs/phase_d2_execution.json",
       "bytes": 2709,
       "sha256": "e58c9e0aa2c72fa2e1f41803abde01ec6846254089319b764289883a292da36e"
+    },
+    {
+      "path": "source/python/src/ats_ml/walkforward.py",
+      "bytes": 33015,
+      "sha256": "00023b869ff470c4d3dcd0c5ad36dc742d96d8181f1da771206107543f71d6d9"
     },
     {
       "path": "source/python/src/ats_ml/d2_artifacts.py",
@@ -141,8 +146,8 @@
     },
     {
       "path": "source/python/tests/test_phase_d2_audit_repair.py",
-      "bytes": 2184,
-      "sha256": "0c00d2f91a5b216bd1b1d4a19070e26e12c116b7b7e6922e5b837e57c4448bbe"
+      "bytes": 6572,
+      "sha256": "bf04a1778d99b573776a46e2d71d1dad8ea98371ba5c9ac6442f6e4497ebd3cf"
     },
     {
       "path": "source/python/notebooks/README.md",
@@ -157,17 +162,17 @@
     {
       "path": "source/python/notebooks/execution_report__04_phase_d_pooled_ml_review.json",
       "bytes": 519,
-      "sha256": "7524c020c1a69950931bbe20496f9fefd2bbbcf11b6d29a64f74a954e36309fa"
+      "sha256": "d010bb13ef18b74649b1eddd1ac250acb6c85682c4be2c89d0268a5427a0b44b"
     },
     {
       "path": "source/python/notebooks/build_phase_d_notebook.py",
-      "bytes": 31441,
-      "sha256": "388f0f8a979289725aee272f17826b4a62bbcdccde2fea66682b93fee5675531"
+      "bytes": 32410,
+      "sha256": "895175f82ec4da170f284d8020dbdede0b7c2cb031dd49a1de5a4880295a91bb"
     },
     {
       "path": "source/python/notebooks/04_phase_d_pooled_ml_review.ipynb",
-      "bytes": 408532,
-      "sha256": "dc53032da9eaa44d4db1c0cab3a8e99f73e35b21e251a52e458201c347e28168"
+      "bytes": 410218,
+      "sha256": "22784fef6e739067be6cc2d54c4234da4dabf5c243d289f4e6227d1dc7abab16"
     }
   ],
   "primary_prediction": {
@@ -299,8 +304,9 @@
   },
   "post_result_verification": {
     "focused_phase_d1_tests": "80 passed",
-    "focused_phase_d2_tests": "29 passed",
-    "supported_source_python_suite": "216 passed",
+    "focused_phase_d2_audit_hardening_tests": "19 passed",
+    "focused_phase_d2_tests": "46 passed",
+    "supported_source_python_suite": "233 passed",
     "pre_phase_d_market_state_regressions": "10 passed",
     "activation_checkpoint_d0_v3_validator": "PASS at 1dc9bbd exact committed bytes",
     "activation_checkpoint_d1_v3_validator": "PASS at 1dc9bbd exact committed bytes",
@@ -311,6 +317,8 @@
     "current_independent_reproduction_recompute": "PASS",
     "audit_v2_primary_reproduction_scientific_payload": "EXACT MATCH 397d66ed3c88c8e914c1a6bbdc9af7875f0d553acbd86c48dcb8d3f64eab944c",
     "audit_v2_execution_integrity": "NOT FULLY PROVEN; sequential locked-label admission NOT PROVEN",
+    "audit_v2_fail_closed_classifier": "PASS; full PASS or exact sole sequential-admission qualification only; every direct failure exits nonzero",
+    "d1_synthetic_recreation_proof": "PASS in three consecutive focused runs; retained estimator objects prevent Python object-ID reuse without changing fit semantics",
     "phase_d_notebook": "PASS; 13 code cells; 23 retained outputs; 0 errors; 8 nonempty PNG figures",
     "current_tree_legacy_d0_d1_note": "The legacy D0 validator's only current-tree mismatch is the historical manifest hashes for README.md and RESEARCH/IMPLEMENTATION_ROADMAP.md. Both changed to record D2. Every scientific/contract check passes; current guidance is not rolled back to satisfy a historical manifest."
   },

@@ -371,7 +371,7 @@ def synthetic_prequential_proof(contract: FrozenD0Contract, guard: D1ExecutionGu
         model_name = cells[cell_id]["model"]
         score_parts: list[np.ndarray] = []
         score_ledger_hashes: list[str] = []
-        fit_instance_ids: list[int] = []
+        fit_instances: list[Any] = []
         stages: list[dict[str, Any]] = []
         for inner in outer["inner_score_blocks"]:
             fit_sessions = pd.to_datetime(inner["fit_retained_sessions"])
@@ -384,7 +384,7 @@ def synthetic_prequential_proof(contract: FrozenD0Contract, guard: D1ExecutionGu
                 raise AssertionError("synthetic matrix and target ledgers differ")
             score_ledger = build_semantic_row_ledger(score)
             estimator = _new_estimator(model_name)
-            fit_instance_ids.append(id(estimator))
+            fit_instances.append(estimator)
             estimator.fit(fit.loc[:, list(features)], fit["target"].to_numpy())
             predictions = np.asarray(estimator.predict(score.loc[:, list(features)]), dtype=float)
             if not np.isfinite(predictions).all():
@@ -410,7 +410,7 @@ def synthetic_prequential_proof(contract: FrozenD0Contract, guard: D1ExecutionGu
         final_ledger = build_semantic_row_ledger(final)
         evaluation_ledger = build_semantic_row_ledger(evaluation)
         estimator = _new_estimator(model_name)
-        fit_instance_ids.append(id(estimator))
+        fit_instances.append(estimator)
         estimator.fit(final.loc[:, list(features)], final["target"].to_numpy())
         outer_scores = np.asarray(estimator.predict(evaluation.loc[:, list(features)]), dtype=float)
         if not np.isfinite(outer_scores).all():
@@ -419,7 +419,10 @@ def synthetic_prequential_proof(contract: FrozenD0Contract, guard: D1ExecutionGu
             "model": model_name,
             "inner_stage_count": len(stages),
             "inner_stages": stages,
-            "preprocessing_and_estimator_recreated": len(set(fit_instance_ids)) == 4,
+            "preprocessing_and_estimator_recreated": (
+                len(fit_instances) == 4
+                and len({id(instance) for instance in fit_instances}) == 4
+            ),
             "pooled_score_block_count": len(score_parts),
             "pooled_score_count": len(pooled),
             "pooled_score_ledger_hash": content_hash(score_ledger_hashes),

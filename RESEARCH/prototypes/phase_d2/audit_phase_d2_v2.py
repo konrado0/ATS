@@ -33,6 +33,73 @@ BLOCKS = {
     "stage2c": ["LOCKED_2025_H1", "LOCKED_2025_H2", "LOCKED_2026_H1"],
 }
 PRIMARY_CELLS = {"C_LINEAR", "C_LIGHTGBM", "RICH_LINEAR", "RICH_LIGHTGBM", "RICH_NO_M_LIGHTGBM"}
+AUDIT_PASS = "PASS"
+AUDIT_QUALIFIED_PASS = "PASS WITH EXECUTION-INTEGRITY QUALIFICATION"
+AUDIT_FAIL = "FAIL"
+AUDIT_NOT_PROVEN = "NOT PROVEN"
+SEQUENTIAL_ADMISSION_CHECK = "sequential_locked_label_admission"
+EXPECTED_INTEGRITY_CHECK_IDS = {
+    "pit_membership_and_information_timing",
+    "official_denominator_60",
+    "exact_label_anchors_and_availability",
+    "endpoint_derived_purge",
+    "fold_local_preprocessing",
+    "identity_predictors_absent",
+    "identity_neutral_ties",
+    "common_score_and_outcome_populations",
+    "ablation_population_identical",
+    "actual_minimums",
+    "prediction_not_regenerated",
+    "stage_information_order",
+    "logical_and_physical_reconciliation",
+    SEQUENTIAL_ADMISSION_CHECK,
+}
+
+
+def classify_audit(
+    *,
+    independent_core_status: str | None,
+    scientific_stop_verified: bool | None,
+    accepted_verdict: str | None,
+    integrity_checks: list[dict[str, Any]],
+    sealed_evidence_status: str | None,
+) -> str:
+    """Classify the overall audit without absorbing unexpected gaps into qualification."""
+    check_statuses = [item.get("status") for item in integrity_checks]
+    if (
+        sealed_evidence_status == AUDIT_FAIL
+        or independent_core_status == AUDIT_FAIL
+        or AUDIT_FAIL in check_statuses
+    ):
+        return AUDIT_FAIL
+    if (
+        sealed_evidence_status != AUDIT_PASS
+        or independent_core_status != AUDIT_PASS
+        or scientific_stop_verified is not True
+        or accepted_verdict != "STOP"
+    ):
+        return AUDIT_NOT_PROVEN
+
+    check_ids = [item.get("check_id") for item in integrity_checks]
+    if len(check_ids) != len(set(check_ids)) or set(check_ids) != EXPECTED_INTEGRITY_CHECK_IDS:
+        return AUDIT_NOT_PROVEN
+    if any(status not in {AUDIT_PASS, AUDIT_NOT_PROVEN} for status in check_statuses):
+        return AUDIT_NOT_PROVEN
+
+    not_proven = {
+        item["check_id"]
+        for item in integrity_checks
+        if item["status"] == AUDIT_NOT_PROVEN
+    }
+    if not not_proven:
+        return AUDIT_PASS
+    if not_proven == {SEQUENTIAL_ADMISSION_CHECK}:
+        return AUDIT_QUALIFIED_PASS
+    return AUDIT_NOT_PROVEN
+
+
+def audit_exit_code(audit_status: str) -> int:
+    return 0 if audit_status in {AUDIT_PASS, AUDIT_QUALIFIED_PASS} else 1
 
 
 def canonical_hash(value: Any) -> str:
@@ -335,6 +402,7 @@ def build_audit(prediction_dir: Path, evaluation_root: Path) -> dict[str, Any]:
     }
     integrity = derive_integrity(prediction_dir, evaluation_root, seals)
     accepted_verdict = read_json(evaluation_root / "final" / "verdict.json")
+    accepted_frozen_verdict = accepted_verdict.get("frozen_phase_d_research_verdict")
     coverage = {
         "independently_recomputed": [
             "2023 within-representation model selection",
@@ -367,14 +435,17 @@ def build_audit(prediction_dir: Path, evaluation_root: Path) -> dict[str, Any]:
             item["check_id"]: item["status"] for item in integrity["checks"]
         },
         "independent_coverage": coverage,
-        "accepted_mechanical_verdict": accepted_verdict["frozen_phase_d_research_verdict"],
+        "accepted_mechanical_verdict": accepted_frozen_verdict,
         "d3_execution_authorized": "NO",
         "portfolio_backtest_work_authorized": "NO",
     })
-    if not negative["scientific_stop_verified"] or accepted_verdict["frozen_phase_d_research_verdict"] != "STOP":
-        audit_status = "NOT PROVEN"
-    else:
-        audit_status = "PASS WITH EXECUTION-INTEGRITY QUALIFICATION"
+    audit_status = classify_audit(
+        independent_core_status=core.get("status"),
+        scientific_stop_verified=negative.get("scientific_stop_verified"),
+        accepted_verdict=accepted_frozen_verdict,
+        integrity_checks=integrity["checks"],
+        sealed_evidence_status=AUDIT_PASS,
+    )
     return {
         "schema_version": "ats.phase_d2.audit.v2",
         "audit_status": audit_status,
@@ -451,7 +522,7 @@ def main() -> int:
         "scientific_logical_hash": audit["scientific_logical_hash"],
         "output_dir": str(args.output_dir),
     }, indent=2, sort_keys=True))
-    return 0 if audit["scientific_stop_status"] == "STOP — VERIFIED" else 1
+    return audit_exit_code(audit["audit_status"])
 
 
 if __name__ == "__main__":

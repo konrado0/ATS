@@ -176,6 +176,7 @@ cells = [
         )
 
         status_table = pd.DataFrame([
+            ("Overall audit", audit["audit_status"]),
             ("Scientific Phase D verdict", audit["scientific_stop_status"]),
             ("Execution integrity", audit["execution_integrity"]["status"]),
             ("Prediction regenerated", str(audit["prediction_regenerated"]).upper()),
@@ -561,6 +562,12 @@ cells = [
         leave-top-contributor result, annual gate input, or every other stored gate input. Those
         remaining stored values are reclassified, not fully recomputed. That narrower claim is more
         accurate than the original statement that every decisive metric and gate had been matched.
+
+        The hardened overall classifier is fail-closed. `PASS WITH EXECUTION-INTEGRITY
+        QUALIFICATION` is allowed only when the independent core passes, the scientific `STOP` is
+        independently reproduced, the accepted verdict is `STOP`, no integrity item fails, and the
+        sole `NOT PROVEN` item is `sequential_locked_label_admission`. Any demonstrated integrity or
+        independent-core failure is `FAIL`; any other insufficiency is `NOT PROVEN`.
         """
     ),
     code(
@@ -598,6 +605,11 @@ cells = [
         - No new feature, threshold, model, subgroup, optimization, or deployment branch follows from
           this notebook
 
+        This conclusion is deliberately narrow: the frozen Phase D representation, model-family,
+        threshold, and evaluation contract stopped. It does **not** empirically reject every
+        conceivable machine-learning approach. Untested model families and representations remain
+        deferred, and this result does not authorize searching them.
+
         The forward runtime has been repaired so any future Stage 1 execution must admit labels in
         exact outer-block order and must derive integrity gates from retained evidence. That repair
         improves future auditability; it does not rewrite history or turn the accepted v4 execution
@@ -607,6 +619,7 @@ cells = [
     code(
         """
         assert audit["scientific_stop_status"] == "STOP — VERIFIED"
+        assert audit["audit_status"] == "PASS WITH EXECUTION-INTEGRITY QUALIFICATION"
         assert audit["execution_integrity"]["status"] == "NOT FULLY PROVEN"
         assert audit["prediction_regenerated"] is False
         assert audit["scientific_choice_changed"] is False

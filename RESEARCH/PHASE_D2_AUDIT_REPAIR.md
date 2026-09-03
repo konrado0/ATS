@@ -123,14 +123,41 @@ SciPy, Matplotlib, nbformat, nbclient, and image generation worked in the
 existing repaired environment; no environment change or package installation
 was required.
 
+## Fail-closed classifier hardening
+
+The audit's overall status is now assigned by one pure classifier. A successful
+qualified audit requires the independent core evaluator to pass, independent
+reproduction of the scientific `STOP`, an accepted frozen verdict of `STOP`, no
+failed integrity check, and exactly one `NOT PROVEN` item:
+`sequential_locked_label_admission`. Any integrity `FAIL` or independent-core
+`FAIL` produces overall `FAIL`; any other missing, inconsistent, unexpected, or
+`NOT PROVEN` requirement produces overall `NOT PROVEN`. The command returns
+success only for full `PASS` or this exact qualified pass.
+
+Adversarial tests cover all-pass evidence, the sole permitted historical gap,
+unrelated and unexpected `NOT PROVEN` items, both recognized and unrelated
+integrity failures, independent-core failure, missing scientific or accepted
+`STOP`, combined failures, and process exit status. In-memory primary and
+reproduction reconstruction still returns the existing qualified pass and the
+unchanged scientific logical hash; no sealed publication was overwritten.
+
 ## Verification
 
-- focused Phase D2 suite: **29 passed**;
-- complete supported Python suite: **216 passed**;
+- focused audit-hardening suite: **19 passed**;
+- complete focused Phase D2 suite: **46 passed**;
+- complete supported Python suite: **233 passed**;
 - pre-Phase-D market-state regressions: **10 passed**;
 - primary and reproduction audit-v2 seals: **PASS**;
 - primary/reproduction audit scientific payload: **exact match**;
 - fresh-kernel Phase D notebook: **PASS, zero cell errors, eight PNG figures**.
+
+The full-suite run also exposed a nondeterministic D1 synthetic-proof check:
+the proof retained only fitted estimator object IDs, allowing Python to reuse an
+address after garbage collection. The bounded correction retains the four
+estimator objects through the proof and then verifies four distinct identities.
+It changes neither fitting semantics nor any Phase D2 model, parameter,
+prediction, metric, or verdict. The formerly flaky proof passed three
+consecutive focused runs before the complete suite was repeated.
 
 The pre-calculation repair formulas and scope were frozen in commit `872dbd0`
 before either audit-v2 publication was calculated.

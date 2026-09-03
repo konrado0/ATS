@@ -57,3 +57,142 @@ def test_zero_episode_session_concentration_is_not_proven(tmp_path: Path) -> Non
     result = module.session_concentration(tmp_path, "stage2c")
     assert result["status"] == "NOT PROVEN"
     assert result["session_episode_hhi"] is None
+
+
+def passing_integrity_checks(module) -> list[dict[str, object]]:
+    return [
+        {"check_id": check_id, "status": module.AUDIT_PASS}
+        for check_id in sorted(module.EXPECTED_INTEGRITY_CHECK_IDS)
+    ]
+
+
+def classify(module, checks, **overrides) -> str:
+    arguments = {
+        "independent_core_status": module.AUDIT_PASS,
+        "scientific_stop_verified": True,
+        "accepted_verdict": "STOP",
+        "integrity_checks": checks,
+        "sealed_evidence_status": module.AUDIT_PASS,
+    }
+    arguments.update(overrides)
+    return module.classify_audit(**arguments)
+
+
+def replace_check(checks, check_id: str, status: str) -> list[dict[str, object]]:
+    return [
+        {**item, "status": status} if item["check_id"] == check_id else item
+        for item in checks
+    ]
+
+
+def test_audit_classifier_all_evidence_passes() -> None:
+    module = load_audit_module()
+    assert classify(module, passing_integrity_checks(module)) == module.AUDIT_PASS
+
+
+def test_audit_classifier_allows_only_the_recognized_historical_qualification() -> None:
+    module = load_audit_module()
+    checks = replace_check(
+        passing_integrity_checks(module),
+        module.SEQUENTIAL_ADMISSION_CHECK,
+        module.AUDIT_NOT_PROVEN,
+    )
+    assert classify(module, checks) == module.AUDIT_QUALIFIED_PASS
+
+
+def test_audit_classifier_does_not_absorb_unrelated_not_proven() -> None:
+    module = load_audit_module()
+    checks = replace_check(
+        passing_integrity_checks(module),
+        "endpoint_derived_purge",
+        module.AUDIT_NOT_PROVEN,
+    )
+    assert classify(module, checks) == module.AUDIT_NOT_PROVEN
+
+
+@pytest.mark.parametrize(
+    "check_id",
+    ["sequential_locked_label_admission", "endpoint_derived_purge"],
+)
+def test_audit_classifier_fails_on_any_integrity_failure(check_id: str) -> None:
+    module = load_audit_module()
+    checks = replace_check(passing_integrity_checks(module), check_id, module.AUDIT_FAIL)
+    assert classify(module, checks) == module.AUDIT_FAIL
+
+
+def test_audit_classifier_fails_when_independent_core_fails() -> None:
+    module = load_audit_module()
+    assert classify(
+        module,
+        passing_integrity_checks(module),
+        independent_core_status=module.AUDIT_FAIL,
+    ) == module.AUDIT_FAIL
+
+
+def test_audit_classifier_fails_when_sealed_evidence_is_invalid() -> None:
+    module = load_audit_module()
+    assert classify(
+        module,
+        passing_integrity_checks(module),
+        sealed_evidence_status=module.AUDIT_FAIL,
+    ) == module.AUDIT_FAIL
+
+
+@pytest.mark.parametrize(
+    ("override", "value"),
+    [
+        ("scientific_stop_verified", False),
+        ("accepted_verdict", None),
+        ("accepted_verdict", "CONTINUE"),
+    ],
+)
+def test_audit_classifier_is_not_proven_without_scientific_or_accepted_stop(
+    override: str, value: object
+) -> None:
+    module = load_audit_module()
+    assert classify(
+        module, passing_integrity_checks(module), **{override: value}
+    ) == module.AUDIT_NOT_PROVEN
+
+
+def test_audit_classifier_failure_combinations_cannot_produce_qualified_pass() -> None:
+    module = load_audit_module()
+    checks = replace_check(
+        passing_integrity_checks(module),
+        module.SEQUENTIAL_ADMISSION_CHECK,
+        module.AUDIT_NOT_PROVEN,
+    )
+    checks = replace_check(checks, "actual_minimums", module.AUDIT_FAIL)
+    assert classify(
+        module,
+        checks,
+        independent_core_status=module.AUDIT_FAIL,
+        scientific_stop_verified=False,
+        accepted_verdict="CONTINUE",
+    ) == module.AUDIT_FAIL
+
+
+def test_audit_classifier_rejects_missing_or_unexpected_integrity_requirements() -> None:
+    module = load_audit_module()
+    checks = passing_integrity_checks(module)
+    assert classify(module, checks[:-1]) == module.AUDIT_NOT_PROVEN
+    assert classify(
+        module, [*checks, {"check_id": "unexpected", "status": module.AUDIT_PASS}]
+    ) == module.AUDIT_NOT_PROVEN
+
+
+@pytest.mark.parametrize(
+    ("status", "expected_exit_code"),
+    [
+        ("PASS", 0),
+        ("PASS WITH EXECUTION-INTEGRITY QUALIFICATION", 0),
+        ("FAIL", 1),
+        ("NOT PROVEN", 1),
+        ("unexpected", 1),
+    ],
+)
+def test_audit_process_exit_code_follows_overall_classification(
+    status: str, expected_exit_code: int
+) -> None:
+    module = load_audit_module()
+    assert module.audit_exit_code(status) == expected_exit_code
