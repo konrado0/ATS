@@ -1,0 +1,44 @@
+{
+  "schema_version": "ats.phase_d2_nm.prospective_contract.v3",
+  "contract_id": "phase-d2-nm-prospective-training-binding-20260903-v3",
+  "scientific_contract_id": "phase-d2-nm-followup-20260903-v1",
+  "bindings": {
+    "scientific_contract_sha256": "71439ba7b0e02f3a8c7978e62b27fd6516d1f73db0c28ab997e52ab111bd36dd",
+    "accepted_derived_contract_sha256": "fc23ef7467d02b20f52e542aa8e939907378d91e00a4e7c1c4b6e73c0ccbb657",
+    "phase_d0_v3_contract_sha256": "b41022103c5a0e7f49bed04c04ab77b8149fe449f0a153b3721b1541c123f91a"
+  },
+  "cells": {
+    "RICH_NO_M_LIGHTGBM": {"feature_names": ["proximity_to_max_high_252", "proximity_to_max_close_252", "momentum_12_1", "return_5", "realized_volatility_20", "relative_volume_20", "stock_log_return_20", "stock_log_return_60", "stock_path_efficiency_20", "stock_positive_return_share_20", "stock_drawdown_depth_60", "stock_recovery_from_low_60", "stock_volatility_ratio_20_60", "stock_close_location_value_20", "xrank_momentum_12_1", "xrank_proximity_to_max_high_252", "xrank_realized_volatility_20", "xrank_relative_volume_20"], "model": "LIGHTGBM"},
+    "C_LINEAR": {"feature_names": ["proximity_to_max_high_252", "proximity_to_max_close_252", "momentum_12_1", "return_5", "realized_volatility_20", "relative_volume_20"], "model": "RIDGE"},
+    "C_LIGHTGBM": {"feature_names": ["proximity_to_max_high_252", "proximity_to_max_close_252", "momentum_12_1", "return_5", "realized_volatility_20", "relative_volume_20"], "model": "LIGHTGBM"}
+  },
+  "training_procedure": {
+    "outer_refit_months": [1, 7],
+    "refit_session_rule": "first official WIG decision session in January or July",
+    "estimator_window_calendar_months": 36,
+    "inner_calibration_block_count": 3,
+    "inner_initial_fit_months": 18,
+    "inner_score_block_months": 6,
+    "inner_fit_history_months": [18, 24, 30],
+    "endpoint_purge": "label_endpoint_ts_20 strictly before each inner or final boundary at 08:45 Europe/Warsaw",
+    "final_fit": "all label-mature rows in the trailing window",
+    "threshold": "max(0.010000, numpy linear empirical q90 of finite pooled three-block out-of-fit scores)",
+    "model_definitions": {
+      "RIDGE": {
+        "estimator": "sklearn.linear_model.Ridge",
+        "parameters": {"alpha": 1.0, "fit_intercept": true, "solver": "lsqr", "tol": 1e-06, "max_iter": 10000},
+        "preprocessing": [
+          {"step": "SimpleImputer", "strategy": "median", "add_indicator": false, "keep_empty_features": false},
+          {"step": "StandardScaler", "with_mean": true, "with_std": true}
+        ]
+      },
+      "LIGHTGBM": {
+        "estimator": "lightgbm.LGBMRegressor",
+        "parameters": {"boosting_type": "gbdt", "objective": "regression_l2", "n_estimators": 300, "learning_rate": 0.03, "num_leaves": 15, "max_depth": 4, "min_child_samples": 100, "subsample": 1.0, "colsample_bytree": 1.0, "reg_alpha": 0.1, "reg_lambda": 1.0, "random_state": 20260831, "n_jobs": 1, "deterministic": true, "force_col_wise": true, "verbosity": -1},
+        "preprocessing": [],
+        "missing_value_behavior": "native LightGBM handling"
+      }
+    }
+  },
+  "publication": {"authority": "publisher_post_atomic_finalization_clock", "decision_time": "08:45:00 Europe/Warsaw", "late_status": "permanently_monitoring_only", "horizon_official_sessions": 20, "label_availability_time": "09:00:00 Europe/Warsaw", "official_population": 60, "same_identity_set_across_cells": true}
+}
