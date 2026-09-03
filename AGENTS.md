@@ -44,3 +44,12 @@ expansion to the owner.
 Preserve accepted evidence and unrelated dirty work. Bugs receive the smallest
 contained correction; negative results are retained as decisions, not grown into
 permanent subsystems.
+
+Topic branches are temporary workspaces, not the final home of completed evidence.
+When scoped work is correct, accurately qualified and its required checks pass,
+integrate it into local `master` before declaring the task complete; owner review
+gates follow-on action, not retention of finished knowledge. Prefer fast-forward
+integration and revalidate the integrated state. If integration is unsafe or the
+owner explicitly asked to keep the branch separate, report repository integration
+as `INCOMPLETE` with the exact blocker and next command. Push only when publication
+is explicitly authorized, and always report local/remote synchronization state.
