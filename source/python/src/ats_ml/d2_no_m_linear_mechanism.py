@@ -16,6 +16,7 @@ from ats_ml.contracts import REPOSITORY_ROOT
 from ats_ml.d2_artifacts import (
     D2ArtifactError,
     frame_identity,
+    parquet_identity,
     publish_immutable,
     read_json,
     validate_manifest,
@@ -333,7 +334,9 @@ def _build_prediction(stage: Path) -> dict[str, Any]:
     }
     write_json(stage / "validation.json", validation)
     return {
-        "prediction_identity": frame_identity(frame, sort_by=["block_id", "cell_id", "decision_session", "security_id"]),
+        "prediction_identity": parquet_identity(
+            stage / "predictions.parquet", sort_by=["block_id", "cell_id", "decision_session", "security_id"]
+        ),
         "prediction_sha256": sha256_file(stage / "predictions.parquet"),
         "control_reproduction_hash": content_hash(control_records),
         "common_population_hashes": common_population_hashes,
