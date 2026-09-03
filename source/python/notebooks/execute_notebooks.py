@@ -22,6 +22,7 @@ NOTEBOOKS = (
     "02_research_findings_and_diagnostics.ipynb",
     "03_portfolio_ledger_and_end_to_end_flow.ipynb",
     "04_phase_d_pooled_ml_review.ipynb",
+    "05_phase_d_no_m_followup.ipynb",
 )
 
 

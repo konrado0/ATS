@@ -392,16 +392,47 @@ claim with artifact-derived checks and an explicit qualification. See
 [`PHASE_D2_REQUIREMENT_AUDIT.json`](PHASE_D2_REQUIREMENT_AUDIT.json), and
 [`PHASE_D2_MANIFEST.json`](PHASE_D2_MANIFEST.json).
 
-### Phase D3 — Not authorized; Phase D verdict STOP
+### Phase D2-NM — Retrospective follow-up complete: weak but persistent
+
+The inspected Phase D2 market-state ablation motivated one separately frozen
+research-direction adjudication of the exact accepted 18-feature C+P+X LightGBM
+cell. The plan and machine contract were committed before opening any new
+per-half-year, opportunity-tail, concentration, or influence result. All seven
+complete 2023 H1–2026 H1 blocks are explicitly retrospective
+hypothesis-development and robustness evidence, not independent or prospective
+confirmation.
+
+The no-M cell was already independently fitted and scored at every accepted
+refit, so the sealed prediction table was reused without refitting. Pooled mean
+session IC is 0.04376; paired deltas are +0.02955 versus `C_LINEAR` and +0.04622
+versus `C_LIGHTGBM`, with positive mean deltas in 4/7 and 6/7 half-years. The
+364-episode pooled opportunity tail has a +2.53% mean, +1.24% median, and positive
+descriptive separation from eligible rows and both frequency-matched comparators.
+No frozen dominance boundary triggers. The mechanical result is `WEAK BUT
+PERSISTENT`, rather than strong, because persistence versus `C_LINEAR` reaches
+only four half-years instead of five. A separately coded evaluator independently
+reproduces every classification input and the verdict.
+
+This classification justifies only the frozen three-cell prospective stream. It
+is registered append-only with zero post-freeze predictions because the pinned
+inputs end on 2026-08-18; the accepted 35 later D2 rows remain historical canary
+evidence and are never backfilled. The manual prediction-only command records
+objective generation/seal timestamps, rejects outcomes and duplicates, and marks
+late rows monitoring-only. See
+[`PHASE_D2_NO_M_RESULTS.md`](PHASE_D2_NO_M_RESULTS.md) and
+[`PHASE_D2_NO_M_PROSPECTIVE_RUNBOOK.md`](PHASE_D2_NO_M_PROSPECTIVE_RUNBOOK.md).
+
+### Phase D3 — Not authorized; original Phase D verdict STOP
 
 The frozen mechanical verdict is `STOP`. Phase D3 execution, portfolio/backtest
 translation, optimization, and deployment are `NO` pending owner review. The
 negative result is retained as the bounded decision for that exact rich-state
 contract. It does not establish that every ML representation is ineffective.
-One diagnostic may motivate a separately named and frozen retrospective
-robustness question, provided its selection history is disclosed and it is not
-presented as untouched confirmation. Do not search additional indicators,
-horizons, objectives, models, subgroups, or thresholds until one works.
+The completed no-M diagnostic follow-up supports monitoring and an owner
+discussion of at most one later specifically motivated feature hypothesis. It
+does not implement or authorize that hypothesis. Do not search additional
+indicators, horizons, objectives, models, subgroups, or thresholds until one
+works.
 
 The original continue rule required material and stable incremental information
 over both conventional models, an economically credible selective opportunity

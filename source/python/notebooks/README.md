@@ -12,6 +12,9 @@ the platform. It does not rebuild or modify any canonical publication.
 3. `02_research_findings_and_diagnostics.ipynb` — frozen feature/label conventions, bounded real calculations, diagnostic classifications, and confounding.
 4. `03_portfolio_ledger_and_end_to_end_flow.ipynb` — Phase C contracts, next-open execution, Decimal accounting, invariants, reproduction, and the actual feature-to-ledger boundary.
 5. `04_phase_d_pooled_ml_review.ipynb` — Phase D chronology and pooled-model machinery, model selection, IC/tail/frequency/concentration findings, bounded audit-v2 coverage, and the verified `STOP`.
+6. `05_phase_d_no_m_followup.ipynb` — sealed retrospective no-M rank, tail,
+   concentration and classification evidence, plus the prospective-monitoring
+   boundary; it does not refit models.
 
 The notebooks share vocabulary and should first be read in order. Each repeats its own objectives, paths, retained identities, and imports so it can also execute from a fresh kernel independently.
 
@@ -44,6 +47,9 @@ The wrapper does not install the project, but it now supplies `source\python\src
 - Phase D2 predictions: `phase_d_ml\prediction_runs\phase-d2-predictions-20260902-v4`.
 - Phase D2 evaluation: `phase_d_ml\evaluation_runs\phase-d2-evaluation-20260902-v6`.
 - Phase D2 audit: `audit-v2` beneath the accepted primary and reproduction evaluation roots.
+- Phase D2-NM follow-up: `phase_d_ml\followup_runs\phase-d2-nm-followup-20260903-v1`.
+- Phase D2-NM independent audit: `phase_d_ml\followup_reproductions\phase-d2-nm-followup-20260903-v1-independent`.
+- Phase D2-NM prospective registration: `phase_d_ml\prospective_streams\phase-d2-nm-post-freeze-2026-v1`.
 
 Override paths without editing notebooks by setting any of: `ATS_REPO_ROOT`,
 `ATS_DATA_ROOT`, `ATS_GPW_MANIFEST`, `ATS_US_MANIFEST`, `ATS_PHASE_A_RUN`,
@@ -53,14 +59,14 @@ Override paths without editing notebooks by setting any of: `ATS_REPO_ROOT`,
 
 ## Fresh-kernel execution
 
-Execute all five in documented order, with a new kernel for every notebook:
+Execute all six in documented order, with a new kernel for every notebook:
 
 ```powershell
 & 'D:\Stock\ATS\RESEARCH\prototypes\environment_repair\invoke_repaired_python.ps1' `
   -PythonArgs @('D:\Stock\ATS\source\python\notebooks\execute_notebooks.py')
 ```
 
-The driver overwrites only the five notebook files with their small executed
+The driver overwrites only the six notebook files with their small executed
 outputs and writes `execution_report.json`. It starts a fresh kernel per
 notebook, stops at the first error, and does not write beneath `D:\Stock\data`.
 

@@ -1,0 +1,39 @@
+{
+  "schema_version": "ats.phase_d2_nm.results.v1",
+  "date": "2026-09-03",
+  "plan_freeze_commit": "c44ec50",
+  "primary_run_id": "phase-d2-nm-followup-20260903-v1",
+  "primary_logical_hash": "d5215ca376887be6116a35d59f1ca49cbc56cf0f6d37551ac5925b4f8f0e193c",
+  "independent_audit_status": "PASS",
+  "independent_scientific_logical_hash": "e3b091c5883551c1f1ae128de0d41aea8bacb19e6f972fd4630d5f9d7cfe2a6c",
+  "accepted_prediction_table_logical_hash": "ad9ea68d66fde122e127d502706f8eeaea162749b6f67a38b1a68ac0c06e8466",
+  "no_m_independently_fitted": true,
+  "historical_population": {"sessions": 871, "scored_rows": 51902, "outcome_rows": 51900},
+  "pooled_rank": {
+    "RICH_NO_M_LIGHTGBM": 0.04375537914545246,
+    "delta_vs_C_LINEAR": 0.029554090557298723,
+    "delta_vs_C_LIGHTGBM": 0.04622061516127402,
+    "delta_vs_RICH_LIGHTGBM": 0.009032498987576621,
+    "positive_half_years_vs_C_LINEAR": 4,
+    "positive_half_years_vs_C_LIGHTGBM": 6
+  },
+  "pooled_tail": {
+    "effective_episodes": 364,
+    "represented_securities": 77,
+    "mean_outcome": 0.025274588089408766,
+    "median_outcome": 0.012437949089919909,
+    "minus_eligible": 0.003492018012632657,
+    "minus_C_LINEAR": 0.01774363670819748,
+    "minus_C_LIGHTGBM": 0.016011507457036632
+  },
+  "retrospective_evidence_integrity": "PASS",
+  "retrospective_classification": "WEAK BUT PERSISTENT",
+  "prospective_monitoring_justified": true,
+  "prospective_stream_id": "phase-d2-nm-post-freeze-2026-v1",
+  "prospective_stream_started": true,
+  "prospective_prediction_rows_at_publication": 0,
+  "phase_d3_authorized": false,
+  "portfolio_backtest_authorized": false,
+  "new_feature_block_authorized": false,
+  "deployment_claim": false
+}

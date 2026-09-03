@@ -1,0 +1,151 @@
+{
+  "authority": {
+    "deployment": false,
+    "new_feature_block": false,
+    "phase_d3": false,
+    "portfolio_backtest": false,
+    "prospective_monitoring_justified": true,
+    "prospective_stream_started": true
+  },
+  "date": "2026-09-03",
+  "external_artifacts": {
+    "independent_audit": {
+      "manifest_sha256": "3c4c26ee4c9e22fc8bc39845b234f4666b7bd54fd181efd963a7664cfaa00d04",
+      "path": "D:/Stock/data/ATS/phase_d_ml/followup_reproductions/phase-d2-nm-followup-20260903-v1-independent",
+      "scientific_logical_hash": "e3b091c5883551c1f1ae128de0d41aea8bacb19e6f972fd4630d5f9d7cfe2a6c"
+    },
+    "primary_run": {
+      "logical_hash": "d5215ca376887be6116a35d59f1ca49cbc56cf0f6d37551ac5925b4f8f0e193c",
+      "manifest_sha256": "c72e2bf41a46be7034eb984a6028ad8daabf324a530958885f93c3f2820e6efa",
+      "path": "D:/Stock/data/ATS/phase_d_ml/followup_runs/phase-d2-nm-followup-20260903-v1"
+    },
+    "prospective_stream": {
+      "path": "D:/Stock/data/ATS/phase_d_ml/prospective_streams/phase-d2-nm-post-freeze-2026-v1",
+      "prediction_rows": 0,
+      "registration_sha256": "3383e428331364cfaa48f73f45d1dc9f8c2184008d867c83381649b52e01ecdd"
+    }
+  },
+  "plan_freeze_commit": "c44ec50",
+  "preservation": {
+    "accepted_phase_d2_artifacts_modified": false,
+    "failed_followup_publication_preserved": true,
+    "unrelated_untracked_environment_paths_touched": false
+  },
+  "repository_artifact_hash_basis": "exact bytes; validate the containing commit through git -c core.autocrlf=false archive",
+  "repository_artifacts": [
+    {
+      "bytes": 18441,
+      "path": "README.md",
+      "sha256": "c90aacd7ee3169a365572871c7327b961fcbfba53abe67462043b6143a63f3aa"
+    },
+    {
+      "bytes": 33439,
+      "path": "RESEARCH/IMPLEMENTATION_ROADMAP.md",
+      "sha256": "9a328847cace93c86a0500d95b2905e97892d2ec1b3883450e7daefbc1e72690"
+    },
+    {
+      "bytes": 15142,
+      "path": "RESEARCH/PHASE_D2_NO_M_PROSPECTIVE_PLAN.md",
+      "sha256": "f0a5e2f1ff5d0866c7d409e8289f8850deded3d7e8b66969b801895be91127b8"
+    },
+    {
+      "bytes": 8749,
+      "path": "RESEARCH/PHASE_D2_NO_M_RESULTS.md",
+      "sha256": "70c48962f07ebf4047f0ba049a7285284cec926246d5e7bec949d53fb8afb96f"
+    },
+    {
+      "bytes": 1701,
+      "path": "RESEARCH/PHASE_D2_NO_M_RESULTS.json",
+      "sha256": "f924e750d7448de0bac8e6b1c8a960f2b18b036244201b03cea0a397718c4275"
+    },
+    {
+      "bytes": 2997,
+      "path": "RESEARCH/PHASE_D2_NO_M_PROSPECTIVE_RUNBOOK.md",
+      "sha256": "a920130ba91c0cdded3b9ea7162977dc9387b76479a8cac1b3a65295e62ae629"
+    },
+    {
+      "bytes": 605,
+      "path": "RESEARCH/prototypes/phase_d2_no_m/run_followup.py",
+      "sha256": "290fbc128a50f756b18b4c2f2cdec8422e4eb6c6c847d287844d2738296d8b5b"
+    },
+    {
+      "bytes": 13872,
+      "path": "RESEARCH/prototypes/phase_d2_no_m/audit_followup.py",
+      "sha256": "bf2e678cb0d8029c8ae0776626d72a084ff86eee8cece382609aa2e180bb4f4f"
+    },
+    {
+      "bytes": 1720,
+      "path": "RESEARCH/prototypes/phase_d2_no_m/prospective.py",
+      "sha256": "1b34240e4e04491f7ce7097f6a424a29355f4631134d7a906402d3478e095625"
+    },
+    {
+      "bytes": 4346,
+      "path": "RESEARCH/prototypes/phase_d2_no_m/build_manifest.py",
+      "sha256": "83feaf23a9bb07b2dc7b170a5fa3783c20401543ff0b655fe8fc3b395a3e2847"
+    },
+    {
+      "bytes": 934,
+      "path": "RESEARCH/prototypes/phase_d2_no_m/validate_manifest.py",
+      "sha256": "2dc816c71b8490a283708820fe1991a68fc5f31775e533a992afc0585421c923"
+    },
+    {
+      "bytes": 8367,
+      "path": "source/python/configs/phase_d2_no_m_followup.json",
+      "sha256": "a3624204fd4d0a3cbfcc1828270f3d317811baf714bc12689c95abdb20ef02bc"
+    },
+    {
+      "bytes": 34329,
+      "path": "source/python/src/ats_ml/d2_no_m.py",
+      "sha256": "f44a47a8806b3d50ef9159bd5a5edb1dcd6ee7eca2bc6f6460cda37cb0194372"
+    },
+    {
+      "bytes": 14652,
+      "path": "source/python/src/ats_ml/d2_no_m_prospective.py",
+      "sha256": "6b3df575d8c275f5650a3c0cd83ef1441d4ee1339ef87213faa1e63e24f3de55"
+    },
+    {
+      "bytes": 8424,
+      "path": "source/python/tests/test_phase_d2_no_m.py",
+      "sha256": "65d79acc88d0e6e1978120578a50b224c36052a651706b2af9ac62f8631dcc64"
+    },
+    {
+      "bytes": 5847,
+      "path": "source/python/notebooks/README.md",
+      "sha256": "11d94ca7bbd6c10d690fd4aff754c2db5e211ffc7f505b3d7f250c8d82086e76"
+    },
+    {
+      "bytes": 3800,
+      "path": "source/python/notebooks/execute_notebooks.py",
+      "sha256": "24a1abdcd5085927889f717d9c50df71cfc32421229b19e89ca981c5dcbe5bb2"
+    },
+    {
+      "bytes": 8070,
+      "path": "source/python/notebooks/build_phase_d_no_m_notebook.py",
+      "sha256": "4ffe271b8bc1f4fe0f876fc3f4e3cbe6be4d8d74f72b20d6774bfc7796018cb0"
+    },
+    {
+      "bytes": 129005,
+      "path": "source/python/notebooks/05_phase_d_no_m_followup.ipynb",
+      "sha256": "c5ee3f8c67be3fba2475aa3c983becd1f81a5da42173f4856d7a5beb6323c53b"
+    },
+    {
+      "bytes": 533,
+      "path": "source/python/notebooks/execution_report__05_phase_d_no_m_followup.json",
+      "sha256": "0bfc8296c112f1dc943a83cc3781c0af28c4ea53aa5232b0a8d981069342015f"
+    }
+  ],
+  "result_commit": "containing_git_commit",
+  "retrospective_classification": "WEAK BUT PERSISTENT",
+  "schema_version": "ats.phase_d2_nm.evidence_manifest.v1",
+  "status": "PASS",
+  "validation": {
+    "accepted_prediction_validation": "PASS",
+    "focused_phase_d_d2_tests": "91 passed",
+    "fresh_kernel_notebook": "PASS; 7 code cells; 10 retained outputs; 0 errors; 3 nonempty PNG figures",
+    "independent_reproduction": "PASS",
+    "market_state_regressions": "10 passed",
+    "new_adversarial_tests": "14 passed",
+    "primary_followup_validation": "PASS",
+    "supported_python_suite": "247 passed"
+  }
+}

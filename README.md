@@ -64,16 +64,22 @@ Status as of 2026-09-03:
   metrics and the verdict, while reclassifying—not independently recomputing—
   the remaining stored gate inputs. Phase D3 and portfolio/backtest
   work remain unauthorized pending owner review.
-- A C+P+X/no-market-state follow-up is being designed as explicitly retrospective
-  hypothesis-development evidence, with prospective monitoring conditional on the
-  retrospective result. It does not overturn the accepted Phase D2 `STOP` or
-  relabel reused history as untouched evidence.
+- The separately frozen C+P+X/no-market-state follow-up is complete as
+  retrospective hypothesis-development evidence. Across seven half-years its
+  pooled mean session IC was 0.04376, with deltas of +0.02955 versus `C_LINEAR`
+  and +0.04622 versus `C_LIGHTGBM`; persistence was 4/7 and 6/7 half-years. The
+  mechanical classification is `WEAK BUT PERSISTENT`. An append-only prospective
+  stream is registered, currently with zero post-freeze predictions because the
+  pinned inputs end on 2026-08-18. This does not overturn the accepted Phase D2
+  `STOP`, relabel history as prospective, or authorize D3, a portfolio test, a
+  feature block, or deployment.
 
 The automatic Phase D2 authorization overlay activated from committed baseline
-`1dc9bbd`. The authorized study is now complete. The next gate is **owner review
-of the retained negative Phase D2 result**; this checkpoint does not authorize
-new ML research, Phase D3 execution, portfolio translation, optimization, or
-deployment.
+`1dc9bbd`. The authorized study and bounded D2-NM research-direction follow-up
+are complete. The next gate is **owner interpretation of the weak-persistent
+no-M result while prospective evidence accumulates**; this checkpoint does not
+authorize new ML research, Phase D3 execution, portfolio translation,
+optimization, or deployment.
 
 Authoritative current documents:
 
@@ -90,7 +96,10 @@ Authoritative current documents:
 - [Phase D2 bounded audit repair](RESEARCH/PHASE_D2_AUDIT_REPAIR.md)
 - [Phase D2 requirement audit](RESEARCH/PHASE_D2_REQUIREMENT_AUDIT.json)
 - [Phase D2 evidence manifest](RESEARCH/PHASE_D2_MANIFEST.json)
-- [draft Phase D2 no-market-state follow-up](RESEARCH/PHASE_D2_NO_M_PROSPECTIVE_PLAN.md)
+- [frozen Phase D2 no-market-state follow-up](RESEARCH/PHASE_D2_NO_M_PROSPECTIVE_PLAN.md)
+- [Phase D2 no-market-state results](RESEARCH/PHASE_D2_NO_M_RESULTS.md)
+- [Phase D2 no-market-state machine results](RESEARCH/PHASE_D2_NO_M_RESULTS.json)
+- [Phase D2 no-market-state prospective runbook](RESEARCH/PHASE_D2_NO_M_PROSPECTIVE_RUNBOOK.md)
 - [preserved Phase D1 readiness v2](RESEARCH/PHASE_D1_READINESS_v2.md)
 - [controlling market-state checkpoint](RESEARCH/PRE_PHASE_D_MARKET_STATE_DIAGNOSTIC.md)
 - [recommended architecture](RESEARCH/RECOMMENDED_ARCHITECTURE.md)
@@ -234,7 +243,7 @@ Reference run/validation commands and accepted manifest conventions are kept in:
 | Pre-Phase D market state | Complete | Carry the compact numerical block as context; do not turn it into a timing strategy. |
 | Phase D0 | v3 frozen; v2 preserved | Final chronology amendment locks January/July refits, trailing 36-month windows, three-block prequential calibration, complete-block evidence mappings and unchanged scientific definitions. |
 | Phase D1 | v3 complete — PASS | 80 focused tests, 187 full regressions and immutable structural run `phase-d1-v3-structural-ed315ee058c7e0e7ce51`; every structural minimum passes and no real predictive operation occurred. Accepted v2 evidence remains unchanged. |
-| Phase D2/D3 | D2 STOP verified / D3 not authorized | Audit v2 preserves the accepted predictions and verifies the negative result. Historical execution integrity is NOT FULLY PROVEN because sequential label admission was not retained; independent coverage is explicitly bounded. No D3 or portfolio translation. |
+| Phase D2/D3 | D2 STOP verified; D2-NM weak-persistent; D3 not authorized | Audit v2 preserves the accepted original predictions and verifies the negative full-rich result. The retrospective no-M follow-up supports prospective monitoring only; its stream is registered with zero qualifying post-freeze rows. No D3, portfolio translation, new feature block, or deployment. |
 | Phase E/F | Trigger-driven / later | Optimize measured pain and add richer reporting only when the completed vertical slice demonstrates a need. |
 
 Phase D is a pooled learner but not an always-invested portfolio. It evaluates
