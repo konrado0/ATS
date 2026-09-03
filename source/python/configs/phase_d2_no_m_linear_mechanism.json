@@ -1,0 +1,128 @@
+{
+  "schema_version": "ats.phase_d2_nm_linear_mechanism.contract.v1",
+  "contract_id": "phase-d2-no-m-linear-mechanism-20260903-v1",
+  "status": "FROZEN_BEFORE_REAL_MODEL_FIT",
+  "evidence_level": "RETROSPECTIVE_HYPOTHESIS_DEVELOPMENT_AND_ROBUSTNESS",
+  "selection_history": "Selected after inspection of accepted Phase D2 and D2-NM results.",
+  "decision": "Determine whether the frozen C+P+X representation provides stable incremental rank information under Ridge and whether frozen LightGBM materially outperforms Ridge with C+P+X held fixed.",
+  "accepted_inputs": {
+    "feature_registry_sha256": "733bacb9c1132d98eacb4a190cfb3cd96b0163207af46f3745002206b3705ef6",
+    "prediction_run_id": "phase-d2-predictions-20260902-v4",
+    "prediction_table_logical_hash": "ad9ea68d66fde122e127d502706f8eeaea162749b6f67a38b1a68ac0c06e8466",
+    "d2_nm_followup_run_id": "phase-d2-nm-followup-20260903-v1",
+    "feature_allowlist_source": "accepted_prediction_run.derived_contract.cells.RICH_NO_M_LIGHTGBM.feature_names",
+    "prospective_stream_must_remain_byte_identical": true
+  },
+  "output": {
+    "prediction_root": "D:/Stock/data/ATS/phase_d_ml/mechanism_runs",
+    "primary_prediction_run_id": "phase-d2-no-m-linear-mechanism-20260903-v1",
+    "reproduction_prediction_run_id": "phase-d2-no-m-linear-mechanism-20260903-v1-reproduction",
+    "evaluation_root": "D:/Stock/data/ATS/phase_d_ml/mechanism_evaluation_runs",
+    "evaluation_run_id": "phase-d2-no-m-linear-mechanism-evaluation-20260903-v1",
+    "independent_evaluation_root": "D:/Stock/data/ATS/phase_d_ml/mechanism_reproductions",
+    "independent_evaluation_run_id": "phase-d2-no-m-linear-mechanism-independent-20260903-v1",
+    "overwrite": false,
+    "mutable_latest_pointer": false
+  },
+  "cells": {
+    "RICH_NO_M_LINEAR": {"features": "C+P+X", "model": "RIDGE", "role": "new_mechanism_cell"},
+    "C_LINEAR": {"features": "C", "model": "RIDGE", "role": "control_same_estimator_feature_baseline"},
+    "C_LIGHTGBM": {"features": "C", "model": "LIGHTGBM", "role": "control_conventional_comparator"},
+    "RICH_NO_M_LIGHTGBM": {"features": "C+P+X", "model": "LIGHTGBM", "role": "control_existing_nonlinear_procedure"}
+  },
+  "ridge": {
+    "imputer": {"class": "sklearn.impute.SimpleImputer", "strategy": "median", "add_indicator": false, "fitted_per_fit": true},
+    "standardizer": {"class": "sklearn.preprocessing.StandardScaler", "with_mean": true, "with_std": true, "fitted_per_fit": true},
+    "estimator": {"class": "sklearn.linear_model.Ridge", "alpha": 1.0, "fit_intercept": true, "solver": "lsqr", "tol": 0.000001, "max_iter": 10000},
+    "fail_if_any_feature_has_no_finite_training_value": true,
+    "tuning_permitted": false
+  },
+  "scientific_object": {
+    "target": "label__open_to_open__20",
+    "return_basis": "split_adjusted_price_return",
+    "cash_distributions_included": false,
+    "known_dividend_price_gaps_retained": true,
+    "official_universe": "PIT_TOP60",
+    "official_denominator": 60,
+    "decision_time": "08:45:00 Europe/Warsaw",
+    "information_lag_sessions": 1,
+    "refit_months": [1, 7],
+    "training_window_calendar_months": 36,
+    "endpoint_purge": "label_endpoint_ts_strictly_before_refit_decision_ts",
+    "preserve_null_features_until_model_policy": true,
+    "identity_is_not_a_predictor_or_tie_breaker": true
+  },
+  "historical_populations": [
+    {"id": "RETRO_2023_H1", "start": "2023-01-02", "end": "2023-06-30"},
+    {"id": "RETRO_2023_H2", "start": "2023-07-03", "end": "2023-12-29"},
+    {"id": "RETRO_2024_H1", "start": "2024-01-02", "end": "2024-06-28"},
+    {"id": "RETRO_2024_H2", "start": "2024-07-01", "end": "2024-12-30"},
+    {"id": "RETRO_2025_H1", "start": "2025-01-02", "end": "2025-06-30"},
+    {"id": "RETRO_2025_H2", "start": "2025-07-01", "end": "2025-12-30"},
+    {"id": "RETRO_2026_H1", "start": "2026-01-02", "end": "2026-06-30"}
+  ],
+  "stage1": {
+    "prediction_only": true,
+    "block_scoped_label_admission": true,
+    "outer_outcomes_loaded_before_prediction_seal": false,
+    "recreate_preprocessing_and_estimator_each_fit": true,
+    "identical_semantic_rows_all_cells": true,
+    "forbidden_prediction_fields_containing": ["label", "outcome", "return", "ic", "classification", "candidate", "threshold", "episode"],
+    "control_cells": ["C_LINEAR", "C_LIGHTGBM", "RICH_NO_M_LIGHTGBM"],
+    "control_reproduction": "exact_logical_score_hash_per_block_from_accepted_prediction_table",
+    "control_mismatch_verdict": "NOT PROVEN",
+    "required_bindings": ["input_manifests", "git_blob_hashes", "environment", "code_fingerprints", "feature_allowlists", "model_parameters", "walk_forward_plan", "fit_audit", "score_row_ledgers", "score_hashes"]
+  },
+  "evaluation": {
+    "rank_only": true,
+    "calculate_candidate_thresholds": false,
+    "calculate_episodes": false,
+    "calculate_tail_returns": false,
+    "same_security_session_rows": true,
+    "minimum_paired_observations_per_session": 45,
+    "require_nonconstant_predictions_and_outcomes": true,
+    "rank_tie_method": "average",
+    "pooled_weighting": "equal_defined_session",
+    "contrasts": [
+      {"id": "RIDGE_REPRESENTATION", "candidate": "RICH_NO_M_LINEAR", "comparator": "C_LINEAR"},
+      {"id": "NONLINEAR_INCREMENT", "candidate": "RICH_NO_M_LIGHTGBM", "comparator": "RICH_NO_M_LINEAR"},
+      {"id": "RIDGE_VS_C_LINEAR", "candidate": "RICH_NO_M_LINEAR", "comparator": "C_LINEAR"},
+      {"id": "RIDGE_VS_C_LIGHTGBM", "candidate": "RICH_NO_M_LINEAR", "comparator": "C_LIGHTGBM"},
+      {"id": "LIGHTGBM_VS_C_LINEAR", "candidate": "RICH_NO_M_LIGHTGBM", "comparator": "C_LINEAR"},
+      {"id": "LIGHTGBM_VS_C_LIGHTGBM", "candidate": "RICH_NO_M_LIGHTGBM", "comparator": "C_LIGHTGBM"}
+    ],
+    "required_outputs_per_contrast": ["pooled_mean_delta", "pooled_median_delta", "half_year_mean_deltas", "median_half_year_mean_delta", "positive_half_year_count", "positive_session_count", "positive_session_fraction", "moving_block_95_interval", "leave_one_half_year_out", "leave_largest_contributing_security_out_including_ties", "largest_positive_contribution_share_by_security", "largest_positive_contribution_share_by_half_year"],
+    "bootstrap": {"method": "deterministic_circular_moving_block", "block_sessions": 20, "samples": 5000, "seed": 20260831, "rng": "numpy.random.Generator(numpy.random.PCG64(20260831))", "quantiles": [0.025, 0.975], "quantile_method": "linear", "minimum_defined_fraction": 0.99, "paired_indices": true},
+    "contribution": {"half_year": "sum_positive_session_delta_in_half_year_over_sum_all_positive_session_deltas", "security": "largest_decrease_in_pooled_mean_delta_when_security_removed_without_refit", "exact_ties_retained": true, "zero_positive_total_share": null}
+  },
+  "broad_increment": {
+    "pooled_mean_delta_strictly_greater_than": 0.005,
+    "minimum_positive_half_years": 5,
+    "median_half_year_mean_delta_strictly_positive": true,
+    "every_leave_one_half_year_out_delta_strictly_positive": true,
+    "every_tied_largest_security_out_delta_strictly_positive": true,
+    "maximum_security_positive_contribution_share_exclusive": 0.50,
+    "maximum_half_year_positive_contribution_share_exclusive": 0.50,
+    "all_validity_control_seal_and_independent_checks_pass": true
+  },
+  "verdict_order": ["NOT PROVEN", "REPRESENTATION ROBUST — RIDGE SUFFICIENT", "REPRESENTATION ROBUST — NONLINEARITY ADDS", "NONLINEARITY-DEPENDENT — WEAK", "NOT ROBUST"],
+  "verdict_rules": {
+    "NOT PROVEN": "Any timing, population, control-hash, prediction-seal, model-definition, or independent-reproduction requirement fails.",
+    "REPRESENTATION ROBUST — RIDGE SUFFICIENT": "RICH_NO_M_LINEAR passes BROAD_INCREMENT separately against C_LINEAR and C_LIGHTGBM, while RICH_NO_M_LIGHTGBM does not pass BROAD_INCREMENT against RICH_NO_M_LINEAR.",
+    "REPRESENTATION ROBUST — NONLINEARITY ADDS": "RICH_NO_M_LINEAR passes BROAD_INCREMENT separately against C_LINEAR and C_LIGHTGBM, and RICH_NO_M_LIGHTGBM passes BROAD_INCREMENT against RICH_NO_M_LINEAR.",
+    "NONLINEARITY-DEPENDENT — WEAK": "RICH_NO_M_LINEAR fails BROAD_INCREMENT against at least one conventional comparator, RICH_NO_M_LIGHTGBM passes BROAD_INCREMENT against RICH_NO_M_LINEAR, and RICH_NO_M_LIGHTGBM has positive pooled deltas and at least four of seven positive half-years separately against C_LINEAR and C_LIGHTGBM.",
+    "NOT ROBUST": "Every other scientifically valid result."
+  },
+  "result_dependent_action": {
+    "REPRESENTATION ROBUST — RIDGE SUFFICIENT": "Discuss a separately frozen prospective Ridge stream; do not run the 48-month experiment.",
+    "REPRESENTATION ROBUST — NONLINEARITY ADDS": "Retain the current prospective LightGBM stream; further historical work requires owner review.",
+    "NONLINEARITY-DEPENDENT — WEAK": "Authorize discussion, not execution, of the bounded 36m-versus-48m rank-only diagnostic.",
+    "NOT ROBUST": "Stop new model/window/feature research; allow only the existing prospective stream to accumulate.",
+    "NOT PROVEN": "Stop and repair only the smallest demonstrated integrity defect.",
+    "automatic_follow_on_authorization": false
+  },
+  "nongating_diagnostics": ["half_year_ridge_lightgbm_cpx_score_spearman", "ridge_coefficient_signs_and_standardized_magnitudes_by_refit", "prediction_dispersion_and_rank_turnover_by_refit", "missing_value_rates_by_feature_and_half_year", "2023_H1_level_decomposition"],
+  "deferred": ["48_or_60_month_windows", "new_T_Bollinger_or_TA_features", "feature_deletion_or_coefficient_selection", "ridge_alpha_tuning", "lightgbm_tuning", "alternative_estimators_or_objectives", "thresholds_candidates_episodes_or_opportunity_tails", "other_horizons_labels_universes_or_vendors", "total_return", "portfolio_simulation", "execution", "deployment"],
+  "permitted_conclusions": ["retrospective_model_mechanism_verdict", "discussion_only_of_the_prespecified_result_dependent_action"],
+  "unauthorized": ["prospective_confirmation_claim", "overturn_original_D2_STOP", "alpha_claim", "portfolio_or_backtest", "deployment", "automatic_follow_on_execution"]
+}
