@@ -3,6 +3,8 @@ from __future__ import annotations
 import math
 import os
 import shutil
+import hashlib
+import subprocess
 import tempfile
 from pathlib import Path
 from typing import Any, Callable
@@ -25,6 +27,7 @@ LEGACY_STREAM_ROOT = STREAMS_ROOT / LEGACY_STREAM_ID
 SUPERSESSION_ROOT = STREAMS_ROOT / "supersessions"
 PROSPECTIVE_CONTRACT_PATH = Path(__file__).resolve().parents[2] / "configs/phase_d2_no_m_prospective_v2.json"
 DERIVED_CONTRACT_PATH = PREDICTION_ROOT / "derived_contract.json"
+REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
 EXPECTED_CELLS = (NO_M, *COMPARATORS)
 OUTCOME_TOKENS = ("label", "outcome", "return_20", "forward", "target_value")
 SCORER_COLUMNS = {
@@ -41,6 +44,16 @@ INPUT_FILES = (
 
 def _now_utc() -> pd.Timestamp:
     return pd.Timestamp.now(tz="UTC")
+
+
+def _committed_sha256(relative: str) -> str:
+    result = subprocess.run(
+        ["git", "-c", "core.autocrlf=false", "show", f"HEAD:{relative}"],
+        cwd=REPOSITORY_ROOT, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False,
+    )
+    if result.returncode:
+        raise D2ArtifactError(f"cannot verify committed operational contract: {relative}")
+    return hashlib.sha256(result.stdout).hexdigest()
 
 
 def _atomic_directory(destination: Path, build: Callable[[Path], None]) -> None:
@@ -90,7 +103,11 @@ def _verified_contract_binding() -> dict[str, Any]:
     }
     if declared != actual:
         raise D2ArtifactError("corrupt prospective contract hash binding")
-    return {"operational_contract_sha256": sha256_file(PROSPECTIVE_CONTRACT_PATH), **actual, "cells": expected}
+    return {
+        "operational_contract_sha256": _committed_sha256("source/python/configs/phase_d2_no_m_prospective_v2.json"),
+        **actual,
+        "cells": expected,
+    }
 
 
 def _load_input_package(package_dir: Path) -> tuple[dict[str, Any], dict[str, pd.DataFrame | dict[str, Any]]]:
