@@ -25,6 +25,7 @@ FILES = [
     "RESEARCH/prototypes/phase_d2_no_m/validate_manifest.py",
     "source/python/configs/phase_d2_no_m_followup.json",
     "source/python/configs/phase_d2_no_m_prospective_v2.json",
+    "source/python/configs/phase_d2_no_m_prospective_v3.json",
     "source/python/src/ats_ml/d2_no_m.py",
     "source/python/src/ats_ml/d2_no_m_prospective.py",
     "source/python/tests/test_phase_d2_no_m.py",
@@ -82,15 +83,22 @@ def main() -> None:
                 "status": "NON_OPERATIONAL_SUPERSEDED_EMPTY_REGISTRATION",
                 "prediction_rows": 0,
             },
-            "repaired_prospective_stream": {
+            "superseded_publication_repaired_stream": {
                 "path": "D:/Stock/data/ATS/phase_d_ml/prospective_streams/phase-d2-nm-post-freeze-2026-v2",
                 "registration_sha256": sha256_file(Path("D:/Stock/data/ATS/phase_d_ml/prospective_streams/phase-d2-nm-post-freeze-2026-v2/registration.json")),
+                "supersession_marker_sha256": sha256_file(Path("D:/Stock/data/ATS/phase_d_ml/prospective_streams/supersessions/phase-d2-nm-post-freeze-2026-v2.json")),
+                "status": "NON_OPERATIONAL_SUPERSEDED_EMPTY_REGISTRATION",
+                "prediction_rows": 0,
+            },
+            "fully_repaired_prospective_stream": {
+                "path": "D:/Stock/data/ATS/phase_d_ml/prospective_streams/phase-d2-nm-post-freeze-2026-v3",
+                "registration_sha256": sha256_file(Path("D:/Stock/data/ATS/phase_d_ml/prospective_streams/phase-d2-nm-post-freeze-2026-v3/registration.json")),
                 "prediction_rows": 0,
             },
         },
         "validation": {
-            "prospective_and_manifest_adversarial_tests": "15 passed",
-            "supported_python_suite": "252 passed",
+            "focused_phase_d2_nm_tests": "29 passed",
+            "supported_python_suite": "258 passed",
             "market_state_regressions": "10 passed",
             "accepted_prediction_validation": "PASS",
             "primary_followup_validation": "PASS",
@@ -105,7 +113,7 @@ def main() -> None:
         "authority": {
             "prospective_monitoring_justified": True,
             "prospective_stream_started": True,
-            "prospective_stream_version": "phase-d2-nm-post-freeze-2026-v2",
+            "prospective_stream_version": "phase-d2-nm-post-freeze-2026-v3",
             "phase_d3": False,
             "portfolio_backtest": False,
             "new_feature_block": False,

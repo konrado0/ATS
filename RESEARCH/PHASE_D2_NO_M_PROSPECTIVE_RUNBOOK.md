@@ -1,13 +1,15 @@
-# Phase D2-NM prospective prediction runbook — repaired v2
+# Phase D2-NM prospective prediction runbook — repaired v3
 
 This is a manual, prediction-only procedure. There is no daemon, service, or
 scheduler. Stream v1 is preserved as a non-operational, superseded empty
-registration. All new work uses `phase-d2-nm-post-freeze-2026-v2`.
+registrations. V2 repaired publication timing but did not bind the full training
+procedure; it also remained empty. All new work uses
+`phase-d2-nm-post-freeze-2026-v3`.
 
 ## Required immutable input package
 
 Create one versioned directory containing these files and bind every SHA-256 in
-`input_config.json` (schema `ats.phase_d2_nm.prospective_input.v2`):
+`input_config.json` (schema `ats.phase_d2_nm.prospective_input.v3`):
 
 - `observations.parquet`: exactly 60 unique official identities per decision
   session, with the frozen feature columns, `model_exclusion_reason`, preceding
@@ -22,6 +24,14 @@ Create one versioned directory containing these files and bind every SHA-256 in
   decision session; and
 - `official_calendar.parquet`: the ordered, unique official session calendar,
   extending through every frozen 20-session target endpoint.
+
+The submitted `walk_forward_block.json` is not authoritative. The scorer and
+publisher independently re-derive its complete contents with the canonical
+D0-v3 planner from `official_calendar.parquet` and require byte-equivalent JSON
+semantics. This enforces the first official January/July refit session, trailing
+36 calendar months, three six-month prequential calibration blocks with
+18/24/30-month fit histories, and exact `label_endpoint_ts_20 < boundary_ts`
+purges for every inner and final fit.
 
 The config lists the requested sessions and target records. Each target record
 must bind the preceding official information session, decision session, exact
@@ -38,20 +48,25 @@ From `D:\Stock\ATS`:
 $atsPython = 'D:\Stock\ATS\RESEARCH\environment\invoke_ats_python.ps1'
 & $atsPython 'D:\Stock\ATS\RESEARCH\prototypes\phase_d2_no_m\prospective.py' `
   score-pinned `
-  --package-dir 'D:\absolute\immutable\input-package-v2' `
-  --output-dir 'D:\absolute\immutable\score-package-v2'
+  --package-dir 'D:\absolute\immutable\input-package-v3' `
+  --output-dir 'D:\absolute\immutable\score-package-v3'
 ```
 
 The scorer fits exactly `RICH_NO_M_LIGHTGBM`, `C_LINEAR`, and `C_LIGHTGBM` and
 atomically finalizes a directory containing `predictions.parquet`,
 `scorer_audit.json`, and `manifest.json`. It emits no outcomes, publication
-timestamp, eligibility, or monitoring claim.
+timestamp, eligibility, or monitoring claim. Its audit records the canonical
+block proof, exact Ridge and LightGBM parameters, Ridge median imputation and
+standardization, LightGBM native-missing behavior, and Git-blob SHA-256 values
+for the frozen D0-v3 configuration and training implementation. Any change to a
+fit window, calibration block, purge boundary, estimator parameter,
+preprocessing step, or committed implementation fingerprint fails closed.
 
 ```powershell
 & $atsPython 'D:\Stock\ATS\RESEARCH\prototypes\phase_d2_no_m\prospective.py' `
   publish-batch `
-  --score-package 'D:\absolute\immutable\score-package-v2' `
-  --batch-id 'post-freeze-2026-09-04-v2'
+  --score-package 'D:\absolute\immutable\score-package-v3' `
+  --batch-id 'post-freeze-2026-09-04-v3'
 ```
 
 The publisher re-verifies the scorer sidecar and manifest, every pinned input

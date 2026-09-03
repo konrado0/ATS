@@ -49,7 +49,7 @@ The wrapper does not install the project, but it now supplies `source\python\src
 - Phase D2 audit: `audit-v2` beneath the accepted primary and reproduction evaluation roots.
 - Phase D2-NM follow-up: `phase_d_ml\followup_runs\phase-d2-nm-followup-20260903-v1`.
 - Phase D2-NM independent audit: `phase_d_ml\followup_reproductions\phase-d2-nm-followup-20260903-v1-independent`.
-- Phase D2-NM repaired prospective registration: `phase_d_ml\prospective_streams\phase-d2-nm-post-freeze-2026-v2`; v1 is preserved and explicitly superseded empty.
+- Phase D2-NM fully repaired prospective registration: `phase_d_ml\prospective_streams\phase-d2-nm-post-freeze-2026-v3`; v1 and v2 are preserved and explicitly superseded empty.
 
 Override paths without editing notebooks by setting any of: `ATS_REPO_ROOT`,
 `ATS_DATA_ROOT`, `ATS_GPW_MANIFEST`, `ATS_US_MANIFEST`, `ATS_PHASE_A_RUN`,

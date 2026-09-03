@@ -69,8 +69,10 @@ Status as of 2026-09-03:
   pooled mean session IC was 0.04376, with deltas of +0.02955 versus `C_LINEAR`
   and +0.04622 versus `C_LIGHTGBM`; persistence was 4/7 and 6/7 half-years. The
   mechanical classification is `WEAK BUT PERSISTENT`. An append-only prospective
-  stream is registered, currently with zero post-freeze predictions because the
-  pinned inputs end on 2026-08-18. This does not overturn the accepted Phase D2
+  stream is registered under the fully repaired v3 admission contract, currently
+  with zero post-freeze predictions because the pinned inputs end on 2026-08-18.
+  V3 re-derives every walk-forward block and binds exact model parameters,
+  preprocessing, and committed training-code fingerprints. This does not overturn the accepted Phase D2
   `STOP`, relabel history as prospective, or authorize D3, a portfolio test, a
   feature block, or deployment.
 
