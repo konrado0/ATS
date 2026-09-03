@@ -78,7 +78,7 @@ ax.set_title("Pooled model and representation levels"); plt.xticks(rotation=20, 
 """),
     code("""
 names = ["RIDGE_VS_C_LINEAR", "RIDGE_VS_C_LIGHTGBM", "NONLINEAR_INCREMENT", "LIGHTGBM_VS_C_LINEAR", "LIGHTGBM_VS_C_LIGHTGBM"]
-summary = pd.DataFrame([{ 
+summary = pd.DataFrame([{
     "contrast": name,
     "mean_delta": contrasts[name]["pooled_mean_delta"],
     "median_delta": contrasts[name]["pooled_median_delta"],
@@ -137,4 +137,3 @@ no portfolio, return, alpha, prospective-confirmation, or deployment claim here.
 
 nbf.write(nb, path)
 print(path)
-

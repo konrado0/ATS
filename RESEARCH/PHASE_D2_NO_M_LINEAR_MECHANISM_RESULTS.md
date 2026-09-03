@@ -116,4 +116,3 @@ Per the frozen action rule, discussion of a bounded 36m-versus-48m rank-only
 diagnostic is permitted. Execution is not authorized. The existing prospective
 LightGBM stream remains byte-for-byte unchanged and may continue to accumulate
 under its existing contract.
-
