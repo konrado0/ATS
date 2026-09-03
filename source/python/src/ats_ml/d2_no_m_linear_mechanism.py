@@ -90,11 +90,20 @@ def _git_binding(relative: str) -> dict[str, Any]:
     blob_id = subprocess.run(
         ["git", "rev-parse", f"HEAD:{relative}"], cwd=REPOSITORY_ROOT, check=True, capture_output=True, text=True
     ).stdout.strip()
+    worktree_blob_id = subprocess.run(
+        ["git", "hash-object", "--", relative], cwd=REPOSITORY_ROOT, check=True, capture_output=True, text=True
+    ).stdout.strip()
     committed_sha = hashlib.sha256(blob).hexdigest()
     worktree_sha = sha256_file(REPOSITORY_ROOT / relative)
-    if committed_sha != worktree_sha:
-        raise D2ArtifactError(f"worktree differs from committed bytes: {relative}")
-    return {"git_blob": blob_id, "committed_sha256": committed_sha, "worktree_sha256": worktree_sha}
+    if worktree_blob_id != blob_id:
+        raise D2ArtifactError(f"worktree content differs from committed Git blob: {relative}")
+    return {
+        "git_blob": blob_id,
+        "worktree_git_blob": worktree_blob_id,
+        "committed_sha256": committed_sha,
+        "worktree_raw_sha256": worktree_sha,
+        "git_clean_filter_match": True,
+    }
 
 
 def _implementation_binding() -> dict[str, Any]:
