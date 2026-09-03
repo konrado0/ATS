@@ -1,17 +1,17 @@
 {
   "canonical_data_writes": false,
-  "executed_at_utc": "2026-09-03T11:30:00.151582+00:00",
+  "executed_at_utc": "2026-09-03T14:03:36.078517+00:00",
   "fresh_kernel_per_notebook": true,
   "network_required": false,
   "results": [
     {
-      "bytes": 129005,
+      "bytes": 129654,
       "cell_errors": 0,
       "code_cells": 7,
-      "elapsed_seconds": 4.571,
+      "elapsed_seconds": 4.74,
       "notebook": "05_phase_d_no_m_followup.ipynb",
       "retained_outputs": 10,
-      "sha256": "c5ee3f8c67be3fba2475aa3c983becd1f81a5da42173f4856d7a5beb6323c53b"
+      "sha256": "ca3387680de4ac78968e8f972f46fa004b3a766d924b3f25ff98314699c00280"
     }
   ],
   "schema_version": "ats.review_notebook_execution.v1"

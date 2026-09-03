@@ -5,7 +5,8 @@
     "phase_d3": false,
     "portfolio_backtest": false,
     "prospective_monitoring_justified": true,
-    "prospective_stream_started": true
+    "prospective_stream_started": true,
+    "prospective_stream_version": "phase-d2-nm-post-freeze-2026-v2"
   },
   "date": "2026-09-03",
   "external_artifacts": {
@@ -19,10 +20,17 @@
       "manifest_sha256": "c72e2bf41a46be7034eb984a6028ad8daabf324a530958885f93c3f2820e6efa",
       "path": "D:/Stock/data/ATS/phase_d_ml/followup_runs/phase-d2-nm-followup-20260903-v1"
     },
-    "prospective_stream": {
+    "repaired_prospective_stream": {
+      "path": "D:/Stock/data/ATS/phase_d_ml/prospective_streams/phase-d2-nm-post-freeze-2026-v2",
+      "prediction_rows": 0,
+      "registration_sha256": "d0f548a5992650a10364eb0af8645ddb1f40b079b42f83c19b34a3b61d9789de"
+    },
+    "superseded_empty_prospective_stream": {
       "path": "D:/Stock/data/ATS/phase_d_ml/prospective_streams/phase-d2-nm-post-freeze-2026-v1",
       "prediction_rows": 0,
-      "registration_sha256": "3383e428331364cfaa48f73f45d1dc9f8c2184008d867c83381649b52e01ecdd"
+      "registration_sha256": "3383e428331364cfaa48f73f45d1dc9f8c2184008d867c83381649b52e01ecdd",
+      "status": "NON_OPERATIONAL_SUPERSEDED_EMPTY_REGISTRATION",
+      "supersession_marker_sha256": "e2feb8e363592456d4547c852b9cd5c7a92dcdf2c2f376d2ece0526ef774553c"
     }
   },
   "plan_freeze_commit": "c44ec50",
@@ -31,12 +39,12 @@
     "failed_followup_publication_preserved": true,
     "unrelated_untracked_environment_paths_touched": false
   },
-  "repository_artifact_hash_basis": "exact committed bytes from git -c core.autocrlf=false archive; manifest correction derived from commit 4b5d7ba",
+  "repository_artifact_hash_basis": "git_blob_committed_bytes",
   "repository_artifacts": [
     {
-      "bytes": 18150,
+      "bytes": 18590,
       "path": "README.md",
-      "sha256": "e39b52d833ea6eaa242b6ee9c64252a33082ebe60be59ecde44f0fb5fdea3d52"
+      "sha256": "b4fb720f4084b0c46ac13822521af7256d0914af7d9704e253fd93cfd2c86c15"
     },
     {
       "bytes": 32983,
@@ -49,19 +57,19 @@
       "sha256": "f0a5e2f1ff5d0866c7d409e8289f8850deded3d7e8b66969b801895be91127b8"
     },
     {
-      "bytes": 8749,
+      "bytes": 9379,
       "path": "RESEARCH/PHASE_D2_NO_M_RESULTS.md",
-      "sha256": "70c48962f07ebf4047f0ba049a7285284cec926246d5e7bec949d53fb8afb96f"
+      "sha256": "56e25100b754f429d8f597e4c66636fe5f867169917fdc79137dbdabc4e7d0c5"
     },
     {
-      "bytes": 1701,
+      "bytes": 1914,
       "path": "RESEARCH/PHASE_D2_NO_M_RESULTS.json",
-      "sha256": "f924e750d7448de0bac8e6b1c8a960f2b18b036244201b03cea0a397718c4275"
+      "sha256": "bac131ba1fa7b1bfa8245e10a77fc54bf815cd29833da0b6046c2ad58397b074"
     },
     {
-      "bytes": 2997,
+      "bytes": 4318,
       "path": "RESEARCH/PHASE_D2_NO_M_PROSPECTIVE_RUNBOOK.md",
-      "sha256": "a920130ba91c0cdded3b9ea7162977dc9387b76479a8cac1b3a65295e62ae629"
+      "sha256": "9181e38aa201ab07cd837ba438e944587f6a748806c29edc447c473e43f27055"
     },
     {
       "bytes": 605,
@@ -74,19 +82,19 @@
       "sha256": "bf2e678cb0d8029c8ae0776626d72a084ff86eee8cece382609aa2e180bb4f4f"
     },
     {
-      "bytes": 1720,
+      "bytes": 1685,
       "path": "RESEARCH/prototypes/phase_d2_no_m/prospective.py",
-      "sha256": "1b34240e4e04491f7ce7097f6a424a29355f4631134d7a906402d3478e095625"
+      "sha256": "152012250c7f4f4225b8c2ae079da0bd9d96efa6a728a58f3dc52b9ab667eb41"
     },
     {
-      "bytes": 4346,
+      "bytes": 5871,
       "path": "RESEARCH/prototypes/phase_d2_no_m/build_manifest.py",
-      "sha256": "83feaf23a9bb07b2dc7b170a5fa3783c20401543ff0b655fe8fc3b395a3e2847"
+      "sha256": "46076e92293f8f12f8664c4c4b334e8aced004e52d86f111d35fe402a00f51a9"
     },
     {
-      "bytes": 934,
+      "bytes": 3447,
       "path": "RESEARCH/prototypes/phase_d2_no_m/validate_manifest.py",
-      "sha256": "2dc816c71b8490a283708820fe1991a68fc5f31775e533a992afc0585421c923"
+      "sha256": "51dfc665937edf43313fbd1987e134de3eeaa5e1ad76497f6ba13ee105acf1a5"
     },
     {
       "bytes": 8367,
@@ -94,24 +102,39 @@
       "sha256": "a3624204fd4d0a3cbfcc1828270f3d317811baf714bc12689c95abdb20ef02bc"
     },
     {
+      "bytes": 1702,
+      "path": "source/python/configs/phase_d2_no_m_prospective_v2.json",
+      "sha256": "b27c5dd43767aacd42601a27289ef6630fc63e1aafbf0ab23f85e82f5f15a506"
+    },
+    {
       "bytes": 34329,
       "path": "source/python/src/ats_ml/d2_no_m.py",
       "sha256": "f44a47a8806b3d50ef9159bd5a5edb1dcd6ee7eca2bc6f6460cda37cb0194372"
     },
     {
-      "bytes": 14652,
+      "bytes": 25608,
       "path": "source/python/src/ats_ml/d2_no_m_prospective.py",
-      "sha256": "6b3df575d8c275f5650a3c0cd83ef1441d4ee1339ef87213faa1e63e24f3de55"
+      "sha256": "a51e0d77a3ee9cc9d208e3f9403b13be8f87452109e072c6935a7f0e555b3bd5"
     },
     {
-      "bytes": 8424,
+      "bytes": 4505,
       "path": "source/python/tests/test_phase_d2_no_m.py",
-      "sha256": "65d79acc88d0e6e1978120578a50b224c36052a651706b2af9ac62f8631dcc64"
+      "sha256": "8add06a835e518ca7e4f64ce4a154de03350c06ef2e13ecefa5b94536f097dc1"
     },
     {
-      "bytes": 5769,
+      "bytes": 11238,
+      "path": "source/python/tests/test_phase_d2_no_m_prospective.py",
+      "sha256": "cb467c1bdfe3df8abd906b7cea9e35d76541a47eeb4b359248f2967854fb4ffb"
+    },
+    {
+      "bytes": 1961,
+      "path": "source/python/tests/test_phase_d2_no_m_manifest.py",
+      "sha256": "f3fcc41fe8c77bd5d7d71bba8c01b4ded93a22a907d3e7dbf483f4876c844b82"
+    },
+    {
+      "bytes": 5827,
       "path": "source/python/notebooks/README.md",
-      "sha256": "2ec3f0a1ae9256d88cacab0c211a555adeed836ee6c4077d26c9bed19ea9a863"
+      "sha256": "58101db1cc1ce322c1b7e3fb0a7e66a2910e469e567cdbc81abae37ee083a061"
     },
     {
       "bytes": 3684,
@@ -119,19 +142,19 @@
       "sha256": "5187c42a9509dcf49d076d458e83bfd9df221081d02d0abc9601bec020c0c7f4"
     },
     {
-      "bytes": 8070,
+      "bytes": 8503,
       "path": "source/python/notebooks/build_phase_d_no_m_notebook.py",
-      "sha256": "4ffe271b8bc1f4fe0f876fc3f4e3cbe6be4d8d74f72b20d6774bfc7796018cb0"
+      "sha256": "8d5bcb43663bbc38d028db022c6eb37f36d7bab3e66dc2a79a87bca63d3f7462"
     },
     {
-      "bytes": 128371,
+      "bytes": 129012,
       "path": "source/python/notebooks/05_phase_d_no_m_followup.ipynb",
-      "sha256": "b1f1112f06170b20747d5a8e7713cdce193e7d4e46833aee5d004fd77dc469e1"
+      "sha256": "0f7fbbc7f7e691686f8e01199422557a87ea18dd63e0b02e105c3624de72bec6"
     },
     {
-      "bytes": 515,
+      "bytes": 514,
       "path": "source/python/notebooks/execution_report__05_phase_d_no_m_followup.json",
-      "sha256": "10010a6d1842fef11b96a6b61e61f4a5a52ff1780783ad7aceea00ae323a4cf4"
+      "sha256": "f2fc947ca2eb7d88b0164b48ee901bd7a75b1ab53b668aa9633baaf8be786758"
     }
   ],
   "result_commit": "containing_git_commit",
@@ -140,12 +163,11 @@
   "status": "PASS",
   "validation": {
     "accepted_prediction_validation": "PASS",
-    "focused_phase_d_d2_tests": "91 passed",
     "fresh_kernel_notebook": "PASS; 7 code cells; 10 retained outputs; 0 errors; 3 nonempty PNG figures",
     "independent_reproduction": "PASS",
     "market_state_regressions": "10 passed",
-    "new_adversarial_tests": "14 passed",
     "primary_followup_validation": "PASS",
-    "supported_python_suite": "247 passed"
+    "prospective_and_manifest_adversarial_tests": "15 passed",
+    "supported_python_suite": "252 passed"
   }
 }

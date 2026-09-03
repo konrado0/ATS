@@ -1,0 +1,15 @@
+{
+  "schema_version": "ats.phase_d2_nm.prospective_contract.v2",
+  "contract_id": "phase-d2-nm-prospective-publication-20260903-v2",
+  "scientific_contract_id": "phase-d2-nm-followup-20260903-v1",
+  "bindings": {
+    "scientific_contract_sha256": "71439ba7b0e02f3a8c7978e62b27fd6516d1f73db0c28ab997e52ab111bd36dd",
+    "accepted_derived_contract_sha256": "fc23ef7467d02b20f52e542aa8e939907378d91e00a4e7c1c4b6e73c0ccbb657"
+  },
+  "cells": {
+    "RICH_NO_M_LIGHTGBM": {"feature_names": ["proximity_to_max_high_252", "proximity_to_max_close_252", "momentum_12_1", "return_5", "realized_volatility_20", "relative_volume_20", "stock_log_return_20", "stock_log_return_60", "stock_path_efficiency_20", "stock_positive_return_share_20", "stock_drawdown_depth_60", "stock_recovery_from_low_60", "stock_volatility_ratio_20_60", "stock_close_location_value_20", "xrank_momentum_12_1", "xrank_proximity_to_max_high_252", "xrank_realized_volatility_20", "xrank_relative_volume_20"], "model": "LIGHTGBM"},
+    "C_LINEAR": {"feature_names": ["proximity_to_max_high_252", "proximity_to_max_close_252", "momentum_12_1", "return_5", "realized_volatility_20", "relative_volume_20"], "model": "RIDGE"},
+    "C_LIGHTGBM": {"feature_names": ["proximity_to_max_high_252", "proximity_to_max_close_252", "momentum_12_1", "return_5", "realized_volatility_20", "relative_volume_20"], "model": "LIGHTGBM"}
+  },
+  "publication": {"authority": "publisher_post_atomic_finalization_clock", "decision_time": "08:45:00 Europe/Warsaw", "late_status": "permanently_monitoring_only", "horizon_official_sessions": 20, "label_availability_time": "09:00:00 Europe/Warsaw", "official_population": 60, "same_identity_set_across_cells": true}
+}

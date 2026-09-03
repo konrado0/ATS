@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-import json
 import math
+import os
+import shutil
+import tempfile
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 import numpy as np
 import pandas as pd
@@ -15,219 +17,350 @@ from ats_ml.walkforward import _new_estimator
 from ats_research.hashing import content_hash, logical_frame_hash, sha256_file
 
 
-STREAM_ID = "phase-d2-nm-post-freeze-2026-v1"
-STREAM_ROOT = Path("D:/Stock/data/ATS/phase_d_ml/prospective_streams") / STREAM_ID
+LEGACY_STREAM_ID = "phase-d2-nm-post-freeze-2026-v1"
+STREAM_ID = "phase-d2-nm-post-freeze-2026-v2"
+STREAMS_ROOT = Path("D:/Stock/data/ATS/phase_d_ml/prospective_streams")
+STREAM_ROOT = STREAMS_ROOT / STREAM_ID
+LEGACY_STREAM_ROOT = STREAMS_ROOT / LEGACY_STREAM_ID
+SUPERSESSION_ROOT = STREAMS_ROOT / "supersessions"
+PROSPECTIVE_CONTRACT_PATH = Path(__file__).resolve().parents[2] / "configs/phase_d2_no_m_prospective_v2.json"
+DERIVED_CONTRACT_PATH = PREDICTION_ROOT / "derived_contract.json"
+EXPECTED_CELLS = (NO_M, *COMPARATORS)
 OUTCOME_TOKENS = ("label", "outcome", "return_20", "forward", "target_value")
-REQUIRED_COLUMNS = {
+SCORER_COLUMNS = {
     "information_session", "decision_session", "decision_ts", "cell_id", "security_id",
-    "model_score", "threshold", "candidate", "prediction_generation_ts", "publication_seal_ts",
-    "target_start_session", "target_endpoint_session", "label_availability_ts",
-    "prospective_eligible", "monitoring_only", "exclusion_reason",
+    "model_score", "threshold", "candidate", "prediction_generation_ts",
     "official_expected_count", "model_exclusion_reason",
 }
+PUBLISHER_ONLY_COLUMNS = {"prospective_eligible", "monitoring_only", "exclusion_reason"}
+INPUT_FILES = (
+    "observations.parquet", "training_labels.parquet", "walk_forward_block.json",
+    "pit_membership.parquet", "official_calendar.parquet",
+)
 
 
-def validate_prediction_batch(frame: pd.DataFrame) -> dict[str, Any]:
-    missing = REQUIRED_COLUMNS - set(frame.columns)
-    if missing:
-        raise D2ArtifactError(f"prospective prediction batch lacks columns: {sorted(missing)}")
-    forbidden = sorted(column for column in frame.columns if any(token in column.lower() for token in OUTCOME_TOKENS) and column != "label_availability_ts")
-    if forbidden:
-        raise D2ArtifactError(f"outcome-bearing prediction artifact rejected: {forbidden}")
-    expected_cells = {NO_M, *COMPARATORS}
-    if set(frame["cell_id"].astype(str)) != expected_cells:
-        raise D2ArtifactError("prospective batch must contain exactly the frozen three cells")
-    keys = ["security_id", "decision_session"]
-    populations = {
-        cell: group[keys].astype({"security_id": str}).sort_values(keys, kind="mergesort").reset_index(drop=True)
-        for cell, group in frame.groupby("cell_id", sort=True)
+def _now_utc() -> pd.Timestamp:
+    return pd.Timestamp.now(tz="UTC")
+
+
+def _atomic_directory(destination: Path, build: Callable[[Path], None]) -> None:
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    if destination.exists():
+        raise D2ArtifactError(f"append-only destination already exists: {destination}")
+    stage = Path(tempfile.mkdtemp(prefix=f".{destination.name}.", dir=destination.parent))
+    try:
+        build(stage)
+        os.replace(stage, destination)
+    except BaseException:
+        shutil.rmtree(stage, ignore_errors=True)
+        raise
+
+
+def _atomic_json(path: Path, value: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists():
+        raise D2ArtifactError(f"append-only file already exists: {path}")
+    fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
+    os.close(fd)
+    temp_path = Path(temporary)
+    try:
+        write_json(temp_path, value)
+        os.replace(temp_path, path)
+    except BaseException:
+        temp_path.unlink(missing_ok=True)
+        raise
+
+
+def _verified_contract_binding() -> dict[str, Any]:
+    operational = read_json(PROSPECTIVE_CONTRACT_PATH)
+    scientific = load_contract()
+    derived = read_json(DERIVED_CONTRACT_PATH)
+    expected = {
+        cell: {"feature_names": derived["cells"][cell]["feature_names"], "model": derived["cells"][cell]["model"]}
+        for cell in EXPECTED_CELLS
     }
-    first = populations[sorted(populations)[0]]
-    if any(not first.equals(populations[cell]) for cell in sorted(populations)[1:]):
-        raise D2ArtifactError("prospective cell populations differ")
-    if frame.duplicated(["cell_id", *keys]).any():
-        raise D2ArtifactError("conflicting duplicate prediction rows")
-    decision_ts = pd.to_datetime(frame["decision_ts"], utc=True)
-    seal_ts = pd.to_datetime(frame["publication_seal_ts"], utc=True)
-    timely = seal_ts.le(decision_ts)
-    scored = np.isfinite(pd.to_numeric(frame["model_score"], errors="coerce"))
-    if not frame["candidate"].eq(frame["model_score"].gt(frame["threshold"])).all():
+    if operational.get("scientific_contract_id") != scientific.get("contract_id"):
+        raise D2ArtifactError("corrupt prospective scientific-contract binding")
+    if operational.get("cells") != expected:
+        raise D2ArtifactError("prospective feature allowlist or model definition differs from accepted D2")
+    declared = operational.get("bindings", {})
+    actual = {
+        "scientific_contract_sha256": sha256_file(CONTRACT_PATH),
+        "accepted_derived_contract_sha256": sha256_file(DERIVED_CONTRACT_PATH),
+    }
+    if declared != actual:
+        raise D2ArtifactError("corrupt prospective contract hash binding")
+    return {"operational_contract_sha256": sha256_file(PROSPECTIVE_CONTRACT_PATH), **actual, "cells": expected}
+
+
+def _load_input_package(package_dir: Path) -> tuple[dict[str, Any], dict[str, pd.DataFrame | dict[str, Any]]]:
+    config_path = package_dir / "input_config.json"
+    config = read_json(config_path)
+    if config.get("schema_version") != "ats.phase_d2_nm.prospective_input.v2":
+        raise D2ArtifactError("unexpected prospective input schema")
+    files = config.get("files", {})
+    loaded: dict[str, pd.DataFrame | dict[str, Any]] = {}
+    for name in INPUT_FILES:
+        path = package_dir / name
+        record = files.get(name, {})
+        if not path.is_file() or record.get("sha256") != sha256_file(path):
+            raise D2ArtifactError(f"pinned prospective input mismatch: {name}")
+        loaded[name] = read_json(path) if path.suffix == ".json" else pd.read_parquet(path)
+    return config, loaded
+
+
+def _calendar_and_targets(config: dict[str, Any], loaded: dict[str, pd.DataFrame | dict[str, Any]]) -> tuple[pd.DatetimeIndex, dict[pd.Timestamp, dict[str, Any]]]:
+    calendar_frame = loaded["official_calendar.parquet"]
+    assert isinstance(calendar_frame, pd.DataFrame)
+    if set(calendar_frame.columns) != {"session_date"}:
+        raise D2ArtifactError("official calendar artifact must contain only session_date")
+    calendar = pd.DatetimeIndex(pd.to_datetime(calendar_frame["session_date"])).normalize()
+    if calendar.has_duplicates or not calendar.is_monotonic_increasing:
+        raise D2ArtifactError("pinned official calendar is duplicate or unordered")
+    positions = {value: index for index, value in enumerate(calendar)}
+    targets: dict[pd.Timestamp, dict[str, Any]] = {}
+    for row in config.get("targets", []):
+        decision = pd.Timestamp(row["decision_session"]).normalize()
+        index = positions.get(decision)
+        if index is None or index == 0 or index + 20 >= len(calendar):
+            raise D2ArtifactError("target decision session lacks the frozen calendar context")
+        endpoint = calendar[index + 20]
+        expected = {
+            "information_session": calendar[index - 1], "decision_session": decision,
+            "decision_ts": decision.tz_localize("Europe/Warsaw") + pd.Timedelta(hours=8, minutes=45),
+            "target_start_session": decision, "target_endpoint_session": endpoint,
+            "label_availability_ts": endpoint.tz_localize("Europe/Warsaw") + pd.Timedelta(hours=9),
+        }
+        for field, value in expected.items():
+            supplied = pd.Timestamp(row[field])
+            if field.endswith("_ts"):
+                if supplied.tzinfo is None or supplied.tz_convert("UTC") != value.tz_convert("UTC"):
+                    raise D2ArtifactError(f"invalid frozen target timing: {field}")
+            elif supplied.normalize().tz_localize(None) != value.normalize().tz_localize(None):
+                raise D2ArtifactError(f"invalid frozen target timing: {field}")
+        targets[decision] = expected
+    declared = {pd.Timestamp(value).normalize() for value in config.get("decision_sessions", [])}
+    if not declared or set(targets) != declared:
+        raise D2ArtifactError("target bindings differ from requested decision sessions")
+    return calendar, targets
+
+
+def _validate_population_and_timing(observations: pd.DataFrame, membership: pd.DataFrame, targets: dict[pd.Timestamp, dict[str, Any]]) -> None:
+    required = {"security_id", "decision_session", "official_membership"}
+    if required - set(membership.columns):
+        raise D2ArtifactError("pinned PIT membership artifact lacks required columns")
+    official = membership.loc[membership["official_membership"].fillna(False)].copy()
+    official["decision_session"] = pd.to_datetime(official["decision_session"]).dt.normalize()
+    official["security_id"] = official["security_id"].astype(str)
+    if official.duplicated(["decision_session", "security_id"]).any():
+        raise D2ArtifactError("duplicate identities in pinned PIT membership")
+    if official.groupby("decision_session").size().ne(60).any():
+        raise D2ArtifactError("pinned PIT membership must contain exactly 60 unique identities per session")
+    obs = observations.copy()
+    obs["decision_session"] = pd.to_datetime(obs["decision_session"]).dt.normalize()
+    obs["information_session"] = pd.to_datetime(obs["information_session"]).dt.normalize()
+    obs["security_id"] = obs["security_id"].astype(str)
+    if set(obs["decision_session"].unique()) != set(targets):
+        raise D2ArtifactError("observation sessions differ from the pinned request")
+    if obs.duplicated(["decision_session", "security_id"]).any():
+        raise D2ArtifactError("duplicate identities in prospective observations")
+    for session, group in obs.groupby("decision_session", sort=True):
+        expected = targets[pd.Timestamp(session)]
+        member_ids = set(official.loc[official["decision_session"].eq(session), "security_id"])
+        if len(group) != 60 or group["security_id"].nunique() != 60 or set(group["security_id"]) != member_ids:
+            raise D2ArtifactError("prospective identities do not exactly match pinned PIT TOP60 membership")
+        if not group["information_session"].eq(expected["information_session"]).all():
+            raise D2ArtifactError("information_session is not the preceding official session")
+        if not pd.to_datetime(group["decision_ts"], utc=True).eq(expected["decision_ts"].tz_convert("UTC")).all():
+            raise D2ArtifactError("decision_ts is not exactly 08:45 Europe/Warsaw")
+        if "official_expected_count" not in group or not group["official_expected_count"].eq(60).all():
+            raise D2ArtifactError("official denominator 60 is not visible")
+
+
+def validate_scorer_predictions(frame: pd.DataFrame, observations: pd.DataFrame, membership: pd.DataFrame, targets: dict[pd.Timestamp, dict[str, Any]]) -> dict[str, Any]:
+    missing = SCORER_COLUMNS - set(frame.columns)
+    if missing:
+        raise D2ArtifactError(f"scorer prediction package lacks columns: {sorted(missing)}")
+    forbidden = sorted(
+        column for column in frame.columns
+        if any(token in column.lower() for token in OUTCOME_TOKENS)
+        or column.lower().startswith("publication_")
+        or column.lower() in PUBLISHER_ONLY_COLUMNS
+    )
+    if forbidden:
+        raise D2ArtifactError(f"outcome or publisher-authority column rejected: {forbidden}")
+    if set(frame["cell_id"].astype(str)) != set(EXPECTED_CELLS):
+        raise D2ArtifactError("prospective batch must contain exactly the frozen three cells")
+    if frame.duplicated(["cell_id", "security_id", "decision_session"]).any():
+        raise D2ArtifactError("duplicate prediction identity")
+    _validate_population_and_timing(observations, membership, targets)
+    base = observations[["security_id", "decision_session"]].copy()
+    base["security_id"] = base["security_id"].astype(str)
+    base["decision_session"] = pd.to_datetime(base["decision_session"]).dt.normalize()
+    base = base.sort_values(["decision_session", "security_id"]).reset_index(drop=True)
+    for cell, group in frame.groupby("cell_id", sort=True):
+        keys = group[["security_id", "decision_session"]].copy()
+        keys["security_id"] = keys["security_id"].astype(str)
+        keys["decision_session"] = pd.to_datetime(keys["decision_session"]).dt.normalize()
+        if not keys.sort_values(["decision_session", "security_id"]).reset_index(drop=True).equals(base):
+            raise D2ArtifactError(f"{cell} population differs from the exact TOP60 observation population")
+    if not frame["candidate"].eq(pd.to_numeric(frame["model_score"], errors="coerce").gt(frame["threshold"])).all():
         raise D2ArtifactError("strict prospective threshold rule failed")
-    if not frame["prospective_eligible"].eq(timely & scored).all():
-        raise D2ArtifactError("objective prospective eligibility differs from seal timestamp")
-    if not frame["monitoring_only"].eq((~timely) & scored).all():
-        raise D2ArtifactError("late prediction is not permanently monitoring-only")
-    if frame.loc[(~timely) & scored, "exclusion_reason"].astype(str).ne("SEALED_AFTER_DECISION_TS").any():
-        raise D2ArtifactError("late prediction exclusion reason is not explicit")
-    if frame["official_expected_count"].ne(60).any() or frame.groupby(["cell_id", "decision_session"])["security_id"].nunique().gt(60).any():
-        raise D2ArtifactError("official denominator 60 is not visible")
-    unscored = ~scored
-    if frame.loc[unscored, "model_exclusion_reason"].astype(str).str.len().eq(0).any():
+    scored = np.isfinite(pd.to_numeric(frame["model_score"], errors="coerce"))
+    if frame.loc[~scored, "model_exclusion_reason"].astype(str).str.len().eq(0).any():
         raise D2ArtifactError("unscored official rows require a visible exclusion reason")
-    if frame.loc[unscored, "exclusion_reason"].astype(str).ne(frame.loc[unscored, "model_exclusion_reason"].astype(str)).any():
-        raise D2ArtifactError("unscored official row exclusion reason was not preserved")
     unknown = frame["model_exclusion_reason"].astype(str).str.contains("UNKNOWN_(?:SPLIT|MEMBERSHIP)_STATE", regex=True)
     if (unknown & scored).any():
         raise D2ArtifactError("unknown split or membership state was scored")
-    return {
-        "status": "PASS", "rows": len(frame), "decision_sessions": int(frame["decision_session"].nunique()),
-        "prospective_rows": int((timely & scored).sum()), "monitoring_only_rows": int(((~timely) & scored).sum()),
-        "cells": sorted(expected_cells), "outcome_columns_absent": True,
-        "official_denominator": 60, "visible_exclusion_rows": int(unscored.sum()),
-    }
+    return {"status": "PASS", "rows": len(frame), "decision_sessions": len(targets), "cells": list(EXPECTED_CELLS), "official_rows_per_cell_session": 60, "outcome_columns_absent": True, "publisher_columns_absent": True}
 
 
-def _existing_keys(root: Path) -> pd.DataFrame:
-    pieces = [pd.read_parquet(path) for path in root.glob("batches/*/predictions.parquet")]
-    if not pieces:
-        return pd.DataFrame(columns=["cell_id", "security_id", "decision_session", "model_score", "threshold", "candidate"])
-    return pd.concat(pieces, ignore_index=True)
+def _verify_score_package(score_package: Path) -> tuple[pd.DataFrame, dict[str, Any], dict[pd.Timestamp, dict[str, Any]], dict[str, Any]]:
+    prediction_path = score_package / "predictions.parquet"
+    audit_path = score_package / "scorer_audit.json"
+    manifest_path = score_package / "manifest.json"
+    if not prediction_path.is_file() or not audit_path.is_file() or not manifest_path.is_file():
+        raise D2ArtifactError("complete scorer-generated audit sidecar and manifest are required")
+    audit, manifest = read_json(audit_path), read_json(manifest_path)
+    if audit.get("schema_version") != "ats.phase_d2_nm.scorer_audit.v2":
+        raise D2ArtifactError("invalid scorer audit schema")
+    for name in ("predictions.parquet", "scorer_audit.json"):
+        record, path = manifest.get("files", {}).get(name, {}), score_package / name
+        if record.get("bytes") != path.stat().st_size or record.get("sha256") != sha256_file(path):
+            raise D2ArtifactError(f"scorer package manifest mismatch: {name}")
+    binding = _verified_contract_binding()
+    if audit.get("contract_binding") != binding:
+        raise D2ArtifactError("corrupt scorer contract binding")
+    if audit.get("cells") != binding["cells"]:
+        raise D2ArtifactError("scorer audit feature allowlists or models changed")
+    package_dir = Path(audit.get("input_package", ""))
+    config, loaded = _load_input_package(package_dir)
+    if audit.get("input_config_sha256") != sha256_file(package_dir / "input_config.json"):
+        raise D2ArtifactError("scorer audit input-config hash changed")
+    expected_inputs = {name: config["files"][name]["sha256"] for name in INPUT_FILES}
+    if audit.get("pinned_input_hashes") != expected_inputs:
+        raise D2ArtifactError("scorer audit pinned-input hashes changed")
+    _calendar, targets = _calendar_and_targets(config, loaded)
+    observations, membership = loaded["observations.parquet"], loaded["pit_membership.parquet"]
+    assert isinstance(observations, pd.DataFrame) and isinstance(membership, pd.DataFrame)
+    frame = pd.read_parquet(prediction_path)
+    validation = validate_scorer_predictions(frame, observations, membership, targets)
+    if audit.get("prediction_sha256") != sha256_file(prediction_path):
+        raise D2ArtifactError("scorer audit prediction hash changed")
+    return frame, validation, targets, audit
 
 
-def initialize_stream(*, registered_ts: str, reason: str) -> Path:
-    if STREAM_ROOT.exists():
-        raise D2ArtifactError(f"append-only prospective stream already exists: {STREAM_ROOT}")
-    STREAM_ROOT.mkdir(parents=True)
-    registration = {
-        "schema_version": "ats.phase_d2_nm.prospective_registration.v1",
-        "stream_id": STREAM_ID,
-        "contract_id": load_contract()["contract_id"],
-        "contract_sha256": sha256_file(CONTRACT_PATH),
-        "registered_ts": pd.Timestamp(registered_ts).isoformat(),
-        "status": "ACTIVE_NO_ELIGIBLE_POST_FREEZE_SESSION",
-        "reason": reason,
-        "accepted_35_sessions": "HISTORICAL_CANARY_ONLY",
-        "missed_predictions_are_never_backfilled": True,
-        "notification_or_scheduler": None,
-    }
-    registration["logical_hash"] = content_hash(registration)
-    write_json(STREAM_ROOT / "registration.json", registration)
-    write_json(STREAM_ROOT / "manifest.json", {
-        "schema_version": "ats.phase_d2_nm.prospective_stream.v1", "stream_id": STREAM_ID,
-        "files": file_inventory(STREAM_ROOT), "mutable_latest_pointer": False,
-    })
+def initialize_repaired_stream(*, reason: str, now_provider: Callable[[], pd.Timestamp] = _now_utc) -> Path:
+    binding = _verified_contract_binding()
+    if not (LEGACY_STREAM_ROOT / "registration.json").is_file():
+        raise D2ArtifactError("legacy empty registration is missing")
+    if list(LEGACY_STREAM_ROOT.glob("batches/*/predictions.parquet")):
+        raise D2ArtifactError("legacy stream is not empty and cannot be superseded by this repair")
+    legacy_hash = sha256_file(LEGACY_STREAM_ROOT / "registration.json")
+    completed = pd.Timestamp(now_provider()).tz_convert("UTC")
+    marker = {"schema_version": "ats.phase_d2_nm.stream_supersession.v1", "stream_id": LEGACY_STREAM_ID, "status": "NON_OPERATIONAL_SUPERSEDED_EMPTY_REGISTRATION", "prediction_rows": 0, "registration_sha256": legacy_hash, "superseded_by": STREAM_ID, "publisher_completed_ts": completed.isoformat(), "reason": reason}
+    marker["logical_hash"] = content_hash(marker)
+    _atomic_json(SUPERSESSION_ROOT / f"{LEGACY_STREAM_ID}.json", marker)
+
+    def build(stage: Path) -> None:
+        registration = {"schema_version": "ats.phase_d2_nm.prospective_registration.v2", "stream_id": STREAM_ID, "status": "ACTIVE_EMPTY_AWAITING_ELIGIBLE_SESSION", "publisher_completed_ts": completed.isoformat(), "contract_binding": binding, "supersedes": LEGACY_STREAM_ID, "legacy_registration_sha256": legacy_hash, "missed_predictions_are_never_backfilled": True, "late_publications_are_permanently_monitoring_only": True, "reason": reason}
+        registration["logical_hash"] = content_hash(registration)
+        write_json(stage / "registration.json", registration)
+        write_json(stage / "manifest.json", {"schema_version": "ats.phase_d2_nm.prospective_stream.v2", "stream_id": STREAM_ID, "files": file_inventory(stage), "mutable_latest_pointer": False})
+    _atomic_directory(STREAM_ROOT, build)
     return STREAM_ROOT
 
 
-def append_prediction_batch(input_path: Path, *, batch_id: str) -> Path:
-    if not STREAM_ROOT.is_dir() or not (STREAM_ROOT / "registration.json").is_file():
-        raise D2ArtifactError("prospective stream is not registered")
-    if not batch_id or "latest" in batch_id.lower() or "current" in batch_id.lower():
+def append_prediction_batch(score_package: Path, *, batch_id: str, now_provider: Callable[[], pd.Timestamp] = _now_utc) -> Path:
+    if not (STREAM_ROOT / "registration.json").is_file():
+        raise D2ArtifactError("repaired prospective stream is not registered")
+    if not batch_id or any(token in batch_id.lower() for token in ("latest", "current")):
         raise D2ArtifactError("immutable batch ID is required")
-    frame = pd.read_parquet(input_path)
-    validation = validate_prediction_batch(frame)
-    existing = _existing_keys(STREAM_ROOT)
-    key_cols = ["cell_id", "security_id", "decision_session"]
-    overlap = frame.merge(existing[key_cols], on=key_cols, how="inner") if len(existing) else pd.DataFrame()
-    if len(overlap):
+    frame, validation, targets, audit = _verify_score_package(score_package)
+    keys = ["cell_id", "security_id", "decision_session"]
+    existing = [pd.read_parquet(path, columns=keys) for path in STREAM_ROOT.glob("batches/*/predictions.parquet")]
+    if existing and len(frame.merge(pd.concat(existing), on=keys, how="inner")):
         raise D2ArtifactError("conflicting duplicate prospective prediction rejected")
-    destination = STREAM_ROOT / "batches" / batch_id
-    if destination.exists():
-        raise D2ArtifactError("append-only prediction batch already exists")
-    destination.mkdir(parents=True)
-    frame.sort_values(["decision_session", "cell_id", "security_id"], kind="mergesort").to_parquet(
-        destination / "predictions.parquet", index=False, compression="zstd", use_dictionary=False
-    )
-    write_json(destination / "validation.json", validation)
-    write_json(destination / "manifest.json", {
-        "schema_version": "ats.phase_d2_nm.prospective_batch.v1", "batch_id": batch_id,
-        "input_sha256": sha256_file(input_path), "files": file_inventory(destination),
-    })
+    destination, receipt_path = STREAM_ROOT / "batches" / batch_id, STREAM_ROOT / "receipts" / f"{batch_id}.json"
+    started = pd.Timestamp(now_provider()).tz_convert("UTC")
+
+    def build(stage: Path) -> None:
+        output = frame.copy()
+        sessions = pd.to_datetime(output["decision_session"]).dt.normalize()
+        for field in ("target_start_session", "target_endpoint_session", "label_availability_ts"):
+            output[field] = [targets[value][field] for value in sessions]
+        output.sort_values(["decision_session", "cell_id", "security_id"], kind="mergesort").to_parquet(stage / "predictions.parquet", index=False, compression="zstd", use_dictionary=False)
+        write_json(stage / "validation.json", validation)
+        write_json(stage / "source_scorer_audit.json", audit)
+        write_json(stage / "manifest.json", {"schema_version": "ats.phase_d2_nm.prospective_batch.v2", "batch_id": batch_id, "source_score_package_manifest_sha256": sha256_file(score_package / "manifest.json"), "files": file_inventory(stage)})
+    _atomic_directory(destination, build)
+    completed = pd.Timestamp(now_provider()).tz_convert("UTC")
+    if completed < started:
+        raise D2ArtifactError("publisher clock moved backward")
+    session_records = []
+    for decision, target in sorted(targets.items()):
+        decision_ts = target["decision_ts"].tz_convert("UTC")
+        timely = completed <= decision_ts
+        session_records.append({"decision_session": decision.strftime("%Y-%m-%d"), "decision_ts": decision_ts.isoformat(), "publication_completed_ts": completed.isoformat(), "prospective_eligible": bool(timely), "monitoring_only": bool(not timely), "exclusion_reason": "" if timely else "PUBLISHED_AFTER_DECISION_TS"})
+    receipt = {"schema_version": "ats.phase_d2_nm.publication_receipt.v2", "stream_id": STREAM_ID, "batch_id": batch_id, "publication_started_ts": started.isoformat(), "publication_completed_ts": completed.isoformat(), "batch_manifest_sha256": sha256_file(destination / "manifest.json"), "eligibility_authority": "publisher_post_atomic_finalization_clock", "sessions": session_records}
+    receipt["logical_hash"] = content_hash(receipt)
+    _atomic_json(receipt_path, receipt)
     return destination
 
 
-def score_pinned_package(package_dir: Path, *, output_path: Path) -> Path:
-    """Fit/score only the frozen three cells from an explicit immutable input package."""
-    generation_ts = pd.Timestamp.now(tz="UTC")
-    config = read_json(package_dir / "input_config.json")
-    if config.get("schema_version") != "ats.phase_d2_nm.prospective_input.v1":
-        raise D2ArtifactError("unexpected prospective input schema")
-    files = config.get("files", {})
-    for name in ("observations.parquet", "training_labels.parquet", "walk_forward_block.json"):
-        path = package_dir / name
-        if not path.is_file() or sha256_file(path) != files.get(name, {}).get("sha256"):
-            raise D2ArtifactError(f"pinned prospective input mismatch: {name}")
-    observations = pd.read_parquet(package_dir / "observations.parquet")
-    labels = pd.read_parquet(package_dir / "training_labels.parquet")
-    block = read_json(package_dir / "walk_forward_block.json")
+def score_pinned_package(package_dir: Path, *, output_dir: Path) -> Path:
+    """Fit and score the frozen cells; emit an audited score package without publication claims."""
+    generation_ts, binding = _now_utc(), _verified_contract_binding()
+    config, loaded = _load_input_package(package_dir)
+    observations, labels, block, membership = loaded["observations.parquet"], loaded["training_labels.parquet"], loaded["walk_forward_block.json"], loaded["pit_membership.parquet"]
+    assert isinstance(observations, pd.DataFrame) and isinstance(labels, pd.DataFrame) and isinstance(block, dict) and isinstance(membership, pd.DataFrame)
+    _calendar, targets = _calendar_and_targets(config, loaded)
+    _validate_population_and_timing(observations, membership, targets)
     if block.get("refit_session") != config.get("refit_session"):
         raise D2ArtifactError("prospective refit binding mismatch")
     decision_sessions = [str(value) for value in config.get("decision_sessions", [])]
-    if not decision_sessions or set(decision_sessions) - set(block.get("evaluation_sessions", [])):
+    if set(decision_sessions) - set(block.get("evaluation_sessions", [])):
         raise D2ArtifactError("requested sessions are absent from the pinned walk-forward block")
     admitted, admission = SequentialLabelAdmissionFirewall({"blocks": [block]}).admit(block)
     if set(pd.to_datetime(labels["decision_session"]).dt.strftime("%Y-%m-%d")) - set(admitted):
         raise D2ArtifactError("training-label input exceeds the block-scoped admission set")
     refit_ts = pd.Timestamp(block["refit_session"]).tz_localize("Europe/Warsaw") + pd.Timedelta(hours=8, minutes=45)
-    endpoints = pd.to_datetime(labels["label_endpoint_ts_20"], utc=True)
-    if not endpoints.lt(refit_ts.tz_convert("UTC")).all():
+    if not pd.to_datetime(labels["label_endpoint_ts_20"], utc=True).lt(refit_ts.tz_convert("UTC")).all():
         raise D2ArtifactError("training-label package reaches or exceeds the refit timestamp")
-    accepted = read_json(PREDICTION_ROOT / "derived_contract.json")
-    cells = {cell: accepted["cells"][cell] for cell in (NO_M, *COMPARATORS)}
-    outputs: list[pd.DataFrame] = []
-    audits: list[dict[str, Any]] = []
+    outputs, audits = [], []
     outer_all = observations.loc[observations["decision_session"].isin(pd.to_datetime(decision_sessions))].copy()
-    if outer_all.groupby("decision_session")["security_id"].nunique().ne(60).any():
-        raise D2ArtifactError("prospective input does not preserve the official denominator 60")
-    for cell_id, cell in cells.items():
-        features = tuple(cell["feature_names"])
-        inner_values: list[np.ndarray] = []
-        inner_audits: list[dict[str, Any]] = []
+    for cell_id, cell in binding["cells"].items():
+        features, inner_values, inner_audits = tuple(cell["feature_names"]), [], []
         for inner in block["inner_score_blocks"]:
-            fit, fit_proof = _actual_fit(
-                observations, labels, inner["fit_retained_sessions"], inner["fit_boundary_session"], features,
-                int(inner["minimum_qualifying_sessions"]), int(inner["minimum_model_rows"]), "Europe/Warsaw",
-            )
+            fit, fit_proof = _actual_fit(observations, labels, inner["fit_retained_sessions"], inner["fit_boundary_session"], features, int(inner["minimum_qualifying_sessions"]), int(inner["minimum_model_rows"]), "Europe/Warsaw")
             score, score_proof = _score_rows(observations, inner["score_sessions"], features, int(inner["score_minimum_qualifying_sessions"]))
             estimator = _new_estimator(str(cell["model"])); estimator.fit(fit[list(features)], fit["label__open_to_open__20"])
-            values = np.asarray(estimator.predict(score[list(features)]), float)
-            inner_values.append(values)
+            values = np.asarray(estimator.predict(score[list(features)]), float); inner_values.append(values)
             inner_audits.append({"fit": fit_proof, "score": score_proof, "score_hash": logical_frame_hash(pd.DataFrame({"score": values}))})
-        pooled = np.concatenate(inner_values)
-        threshold = max(0.01, float(np.quantile(pooled, 0.90, method="linear")))
-        final, final_proof = _actual_fit(
-            observations, labels, block["final_fit"]["retained_sessions"], block["final_fit"]["boundary_session"], features,
-            int(block["final_fit"]["minimum_qualifying_sessions"]), int(block["final_fit"]["minimum_model_rows"]), "Europe/Warsaw",
-        )
+        threshold = max(0.01, float(np.quantile(np.concatenate(inner_values), 0.90, method="linear")))
+        final, final_proof = _actual_fit(observations, labels, block["final_fit"]["retained_sessions"], block["final_fit"]["boundary_session"], features, int(block["final_fit"]["minimum_qualifying_sessions"]), int(block["final_fit"]["minimum_model_rows"]), "Europe/Warsaw")
         score, score_proof = _score_rows(observations, decision_sessions, features, 0)
         estimator = _new_estimator(str(cell["model"])); estimator.fit(final[list(features)], final["label__open_to_open__20"])
-        score_values = np.asarray(estimator.predict(score[list(features)]), float)
-        value_map = {(str(row.security_id), pd.Timestamp(row.decision_session)): value for row, value in zip(score.itertuples(), score_values)}
+        values = np.asarray(estimator.predict(score[list(features)]), float)
+        value_map = {(str(row.security_id), pd.Timestamp(row.decision_session)): value for row, value in zip(score.itertuples(), values)}
         output = outer_all[["security_id", "decision_session", "information_session", "decision_ts", "official_expected_count", "model_exclusion_reason"]].copy()
-        output["cell_id"] = cell_id
-        output["model_score"] = [value_map.get((str(row.security_id), pd.Timestamp(row.decision_session)), math.nan) for row in output.itertuples()]
-        output["threshold"] = threshold
-        output["candidate"] = output["model_score"].gt(threshold)
+        output["cell_id"], output["model_score"] = cell_id, [value_map.get((str(row.security_id), pd.Timestamp(row.decision_session)), math.nan) for row in output.itertuples()]
+        output["threshold"], output["candidate"], output["prediction_generation_ts"] = threshold, output["model_score"].gt(threshold), generation_ts
         outputs.append(output)
-        audits.append({"cell_id": cell_id, "features": list(features), "inner": inner_audits, "final_fit": final_proof, "outer_score": score_proof, "threshold": threshold})
+        audits.append({"cell_id": cell_id, "features": list(features), "model": cell["model"], "inner": inner_audits, "final_fit": final_proof, "outer_score": score_proof, "threshold": threshold})
     frame = pd.concat(outputs, ignore_index=True)
-    targets = {str(row["decision_session"]): row for row in config.get("targets", [])}
-    frame["prediction_generation_ts"] = generation_ts
-    frame["publication_seal_ts"] = pd.Timestamp.now(tz="UTC")
-    for name in ("target_start_session", "target_endpoint_session", "label_availability_ts"):
-        frame[name] = frame["decision_session"].dt.strftime("%Y-%m-%d").map(lambda key: targets[key][name])
-    timely = pd.to_datetime(frame["publication_seal_ts"], utc=True).le(pd.to_datetime(frame["decision_ts"], utc=True))
-    scored = np.isfinite(frame["model_score"])
-    frame["prospective_eligible"] = timely & scored
-    frame["monitoring_only"] = (~timely) & scored
-    frame["exclusion_reason"] = np.where(~scored, frame["model_exclusion_reason"], np.where(~timely, "SEALED_AFTER_DECISION_TS", ""))
-    validate_prediction_batch(frame)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    if output_path.exists():
-        raise D2ArtifactError("prediction-only output is append-only")
-    frame.to_parquet(output_path, index=False, compression="zstd", use_dictionary=False)
-    write_json(output_path.with_suffix(".audit.json"), {"label_admission": admission, "fit_audit": audits, "input_config_sha256": sha256_file(package_dir / "input_config.json")})
-    return output_path
+    validation = validate_scorer_predictions(frame, observations, membership, targets)
+
+    def build(stage: Path) -> None:
+        frame.to_parquet(stage / "predictions.parquet", index=False, compression="zstd", use_dictionary=False)
+        audit = {"schema_version": "ats.phase_d2_nm.scorer_audit.v2", "input_package": str(package_dir.resolve()), "input_config_sha256": sha256_file(package_dir / "input_config.json"), "pinned_input_hashes": {name: config["files"][name]["sha256"] for name in INPUT_FILES}, "contract_binding": binding, "cells": binding["cells"], "label_admission": admission, "fit_audit": audits, "validation": validation, "prediction_sha256": sha256_file(stage / "predictions.parquet")}
+        write_json(stage / "scorer_audit.json", audit)
+        write_json(stage / "manifest.json", {"schema_version": "ats.phase_d2_nm.score_package.v2", "files": file_inventory(stage)})
+    _atomic_directory(output_dir, build)
+    return output_dir
 
 
-def record_missed_session(*, decision_session: str, reason: str) -> Path:
-    session = pd.Timestamp(decision_session).strftime("%Y-%m-%d")
-    destination = STREAM_ROOT / "missed" / f"{session}.json"
-    if destination.exists():
-        raise D2ArtifactError("missed-session record is append-only")
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    write_json(destination, {
-        "schema_version": "ats.phase_d2_nm.missed_session.v1", "decision_session": session,
-        "status": "MISSED_PERMANENTLY_INELIGIBLE", "reason": reason, "backfill_permitted": False,
-    })
+def record_missed_session(*, decision_session: str, reason: str, now_provider: Callable[[], pd.Timestamp] = _now_utc) -> Path:
+    session, destination = pd.Timestamp(decision_session).strftime("%Y-%m-%d"), STREAM_ROOT / "missed" / f"{pd.Timestamp(decision_session).strftime('%Y-%m-%d')}.json"
+    _atomic_json(destination, {"schema_version": "ats.phase_d2_nm.missed_session.v2", "decision_session": session, "publisher_recorded_ts": pd.Timestamp(now_provider()).tz_convert("UTC").isoformat(), "status": "MISSED_PERMANENTLY_INELIGIBLE", "reason": reason, "backfill_permitted": False})
     return destination

@@ -4,9 +4,6 @@ import pandas as pd
 import pytest
 
 from ats_ml.d2_no_m import BLOCK_MAP, FULL_RICH, NO_M, classify, load_contract, verify_scientific_object
-import ats_ml.d2_no_m_prospective as prospective
-from ats_ml.d2_no_m_prospective import validate_prediction_batch
-from ats_ml.d2_artifacts import D2ArtifactError
 from ats_ml.d2_metrics import episode_anchor_flags, fractional_boundary_weights
 
 
@@ -90,73 +87,4 @@ def test_retrospective_classification_boundaries(delta_linear, delta_tree, posit
     assert classify(*args, validity_pass=False)["classification"] == "NOT PROVEN"
 
 
-def _prospective_frame(seal: str) -> pd.DataFrame:
-    rows = []
-    for cell in (NO_M, "C_LINEAR", "C_LIGHTGBM"):
-        rows.append({
-            "information_session": "2026-09-02", "decision_session": "2026-09-03",
-            "decision_ts": "2026-09-03T08:45:00+02:00", "cell_id": cell, "security_id": "A",
-            "model_score": 0.02, "threshold": 0.01, "candidate": True,
-            "prediction_generation_ts": seal, "publication_seal_ts": seal,
-            "target_start_session": "2026-09-03", "target_endpoint_session": "2026-10-01",
-            "label_availability_ts": "2026-10-01T09:00:00+02:00",
-            "prospective_eligible": pd.Timestamp(seal) <= pd.Timestamp("2026-09-03T08:45:00+02:00"),
-            "monitoring_only": pd.Timestamp(seal) > pd.Timestamp("2026-09-03T08:45:00+02:00"),
-            "exclusion_reason": "" if pd.Timestamp(seal) <= pd.Timestamp("2026-09-03T08:45:00+02:00") else "SEALED_AFTER_DECISION_TS",
-            "official_expected_count": 60, "model_exclusion_reason": "",
-        })
-    return pd.DataFrame(rows)
-
-
-def test_prediction_sealed_before_0845_is_prospective() -> None:
-    assert validate_prediction_batch(_prospective_frame("2026-09-03T08:44:59+02:00"))["prospective_rows"] == 3
-
-
-def test_prediction_sealed_after_0845_is_monitoring_only() -> None:
-    assert validate_prediction_batch(_prospective_frame("2026-09-03T08:45:01+02:00"))["monitoring_only_rows"] == 3
-
-
-def test_prediction_artifact_rejects_outcomes_and_wrong_cells() -> None:
-    frame = _prospective_frame("2026-09-03T08:44:59+02:00").assign(label__open_to_open__20=0.1)
-    with pytest.raises(D2ArtifactError, match="outcome-bearing"):
-        validate_prediction_batch(frame)
-    with pytest.raises(D2ArtifactError, match="exactly the frozen three cells"):
-        validate_prediction_batch(frame.drop(columns="label__open_to_open__20").iloc[:-1])
-
-
-def test_zero_candidate_session_is_valid_and_unknown_state_fails_closed() -> None:
-    frame = _prospective_frame("2026-09-03T08:44:59+02:00")
-    frame["model_score"] = 0.0
-    frame["candidate"] = False
-    assert validate_prediction_batch(frame)["status"] == "PASS"
-    frame["model_score"] = float("nan")
-    frame["prospective_eligible"] = False
-    frame["model_exclusion_reason"] = "UNKNOWN_SPLIT_STATE"
-    frame["exclusion_reason"] = "UNKNOWN_SPLIT_STATE"
-    assert validate_prediction_batch(frame)["visible_exclusion_rows"] == 3
-    frame.loc[0, "model_score"] = 0.02
-    frame.loc[0, "candidate"] = True
-    frame.loc[0, "prospective_eligible"] = True
-    with pytest.raises(D2ArtifactError, match="unknown split or membership"):
-        validate_prediction_batch(frame)
-
-
-def test_append_only_publication_conflicts_and_missed_sessions(tmp_path, monkeypatch) -> None:
-    stream = tmp_path / "stream"
-    monkeypatch.setattr(prospective, "STREAM_ROOT", stream)
-    prospective.initialize_stream(registered_ts="2026-09-03T06:00:00Z", reason="fixture")
-    batch = tmp_path / "batch.parquet"
-    _prospective_frame("2026-09-03T08:44:59+02:00").to_parquet(batch, index=False)
-    assert prospective.append_prediction_batch(batch, batch_id="fixture-v1").is_dir()
-    with pytest.raises(D2ArtifactError, match="conflicting duplicate"):
-        prospective.append_prediction_batch(batch, batch_id="fixture-v2")
-    assert prospective.record_missed_session(decision_session="2026-09-04", reason="missing input").is_file()
-    with pytest.raises(D2ArtifactError, match="append-only"):
-        prospective.record_missed_session(decision_session="2026-09-04", reason="retry")
-
-
-def test_wrong_official_denominator_is_rejected() -> None:
-    frame = _prospective_frame("2026-09-03T08:44:59+02:00")
-    frame["official_expected_count"] = 59
-    with pytest.raises(D2ArtifactError, match="official denominator 60"):
-        validate_prediction_batch(frame)
+# Prospective-publication tests live in test_phase_d2_no_m_prospective.py.

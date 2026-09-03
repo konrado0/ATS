@@ -39,7 +39,8 @@ from IPython.display import display, Markdown
 
 RUN = Path("D:/Stock/data/ATS/phase_d_ml/followup_runs/phase-d2-nm-followup-20260903-v1")
 AUDIT = Path("D:/Stock/data/ATS/phase_d_ml/followup_reproductions/phase-d2-nm-followup-20260903-v1-independent")
-STREAM = Path("D:/Stock/data/ATS/phase_d_ml/prospective_streams/phase-d2-nm-post-freeze-2026-v1")
+STREAM = Path("D:/Stock/data/ATS/phase_d_ml/prospective_streams/phase-d2-nm-post-freeze-2026-v2")
+SUPERSESSION = Path("D:/Stock/data/ATS/phase_d_ml/prospective_streams/supersessions/phase-d2-nm-post-freeze-2026-v1.json")
 required = ["manifest.json", "per_half_year.json", "classification.json", "concentration.json", "direct_no_m_vs_full_rich.json"]
 assert all((RUN / name).is_file() for name in required)
 results = json.loads((RUN / "per_half_year.json").read_text())
@@ -48,8 +49,11 @@ concentration = json.loads((RUN / "concentration.json").read_text())
 direct = json.loads((RUN / "direct_no_m_vs_full_rich.json").read_text())
 audit = json.loads((AUDIT / "audit.json").read_text())
 registration = json.loads((STREAM / "registration.json").read_text())
+supersession = json.loads(SUPERSESSION.read_text())
 assert classification["classification"] == "WEAK BUT PERSISTENT"
 assert audit["status"] == "PASS" and audit["classification"] == classification["classification"]
+assert supersession["prediction_rows"] == 0
+assert supersession["status"] == "NON_OPERATIONAL_SUPERSEDED_EMPTY_REGISTRATION"
 print("Sealed primary and independent audit loaded: PASS")
 """),
     md("""
@@ -152,14 +156,16 @@ input and returned `{audit['status']}`.
 display(Markdown(f'''
 ## Prospective boundary
 
-Stream `{registration['stream_id']}` is registered with status
-`{registration['status']}`. It contains zero post-freeze predictions because the
-pinned inputs end on 2026-08-18. The accepted July–August rows remain historical
-canary evidence and are never backfilled into prospective status.
+Repaired stream `{registration['stream_id']}` is registered with status
+`{registration['status']}`. The preserved v1 registration is
+`{supersession['status']}` and had {supersession['prediction_rows']} predictions.
+The accepted July–August rows remain historical canary evidence and are never
+backfilled into prospective status.
 
-A later row qualifies only when objectively sealed no later than 08:45
-Europe/Warsaw. Fewer than 40 timely decision sessions makes the early checkpoint
-`INSUFFICIENT`, not failure.
+A later batch qualifies only when publisher-recorded completion after atomic
+finalization is no later than 08:45 Europe/Warsaw. Scorer-supplied publication
+times have no authority. Fewer than 40 timely decision sessions makes the early
+checkpoint `INSUFFICIENT`, not failure.
 '''))
 """),
     md("""

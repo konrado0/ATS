@@ -123,19 +123,27 @@ classification. Status is `PASS`; scientific logical hash is
 
 ## Prospective status and boundary
 
-The append-only stream
-`phase-d2-nm-post-freeze-2026-v1` is registered and active. It starts with zero
-prospective predictions because the pinned feature inputs end on 2026-08-18;
-inventing a current row or replaying July–August after the freeze would be a
-backfill. The accepted 35 sessions remain historical canary evidence only.
+The original empty registration, `phase-d2-nm-post-freeze-2026-v1`, is preserved
+byte-for-byte and is now explicitly recorded as
+`NON_OPERATIONAL_SUPERSEDED_EMPTY_REGISTRATION`. It contained zero predictions,
+so no prospective evidence was damaged. The repaired append-only stream is
+`phase-d2-nm-post-freeze-2026-v2`, currently
+`ACTIVE_EMPTY_AWAITING_ELIGIBLE_SESSION` with zero predictions. The accepted 35
+sessions remain historical canary evidence only and are not backfilled.
 
-The manual scoring command accepts an explicit hash-pinned observation/label/
-walk-forward package, admits labels only for the current refit block, fits exactly
-the three frozen cells, emits no outcomes, and objectively marks rows sealed
-after 08:45 Europe/Warsaw as monitoring-only. Publications are append-only and
-conflicting duplicates fail closed. There is no daemon or scheduler. Fewer than
-40 timely `POST_FREEZE_2026` sessions will make the early checkpoint
-`INSUFFICIENT`, not failed.
+The v2 scorer accepts an explicit hash-pinned observation, label, walk-forward,
+PIT membership, and official-calendar package. It admits labels only for the
+current refit block and emits an atomic score package with no outcomes and no
+publication claims. The publisher independently verifies the scorer audit,
+package manifest, input hashes, scientific and operational contracts, accepted
+feature allowlists and models, exact 60-member PIT identity set for all three
+cells, one-session information lag, 08:45 decision timestamp, and exact
+20-session target timestamps. Only after the batch directory is atomically
+finalized does the publisher capture completion time and issue an immutable
+receipt. Eligibility comes only from that post-finalization time; a late batch is
+monitoring-only forever. There is no daemon or scheduler. Fewer than 40 timely
+`POST_FREEZE_2026` sessions will make the early checkpoint `INSUFFICIENT`, not
+failed.
 
 ## Remaining caveats and authority
 
@@ -148,7 +156,7 @@ conflicting duplicates fail closed. There is no daemon or scheduler. Fewer than
   retaining known dividend gaps.
 - Opportunity rows and episodes are not trades; costs, sizing, fills, liquidity,
   cash, turnover, and portfolio returns were not tested.
-- The registered prospective stream has zero qualifying post-freeze sessions at
+- The repaired prospective stream has zero qualifying post-freeze sessions at
   publication and supplies no prospective performance evidence yet.
 
 Retrospective evidence integrity: `PASS`
@@ -157,7 +165,7 @@ Retrospective classification: `WEAK BUT PERSISTENT`
 
 Prospective monitoring justified: `YES`
 
-Prospective stream started: `YES`
+Prospective stream started: `YES — v2 active empty; v1 superseded empty`
 
 Phase D3 authorized: `NO`
 
