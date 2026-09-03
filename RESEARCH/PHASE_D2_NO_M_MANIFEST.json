@@ -31,17 +31,17 @@
     "failed_followup_publication_preserved": true,
     "unrelated_untracked_environment_paths_touched": false
   },
-  "repository_artifact_hash_basis": "exact bytes; validate the containing commit through git -c core.autocrlf=false archive",
+  "repository_artifact_hash_basis": "exact committed bytes from git -c core.autocrlf=false archive; manifest correction derived from commit 4b5d7ba",
   "repository_artifacts": [
     {
-      "bytes": 18441,
+      "bytes": 18150,
       "path": "README.md",
-      "sha256": "c90aacd7ee3169a365572871c7327b961fcbfba53abe67462043b6143a63f3aa"
+      "sha256": "e39b52d833ea6eaa242b6ee9c64252a33082ebe60be59ecde44f0fb5fdea3d52"
     },
     {
-      "bytes": 33439,
+      "bytes": 32983,
       "path": "RESEARCH/IMPLEMENTATION_ROADMAP.md",
-      "sha256": "9a328847cace93c86a0500d95b2905e97892d2ec1b3883450e7daefbc1e72690"
+      "sha256": "487804551be2d712b9c2c4ae5c7300b945563ea2832e4bbe794f6c29792f10f3"
     },
     {
       "bytes": 15142,
@@ -109,14 +109,14 @@
       "sha256": "65d79acc88d0e6e1978120578a50b224c36052a651706b2af9ac62f8631dcc64"
     },
     {
-      "bytes": 5847,
+      "bytes": 5769,
       "path": "source/python/notebooks/README.md",
-      "sha256": "11d94ca7bbd6c10d690fd4aff754c2db5e211ffc7f505b3d7f250c8d82086e76"
+      "sha256": "2ec3f0a1ae9256d88cacab0c211a555adeed836ee6c4077d26c9bed19ea9a863"
     },
     {
-      "bytes": 3800,
+      "bytes": 3684,
       "path": "source/python/notebooks/execute_notebooks.py",
-      "sha256": "24a1abdcd5085927889f717d9c50df71cfc32421229b19e89ca981c5dcbe5bb2"
+      "sha256": "5187c42a9509dcf49d076d458e83bfd9df221081d02d0abc9601bec020c0c7f4"
     },
     {
       "bytes": 8070,
@@ -124,14 +124,14 @@
       "sha256": "4ffe271b8bc1f4fe0f876fc3f4e3cbe6be4d8d74f72b20d6774bfc7796018cb0"
     },
     {
-      "bytes": 129005,
+      "bytes": 128371,
       "path": "source/python/notebooks/05_phase_d_no_m_followup.ipynb",
-      "sha256": "c5ee3f8c67be3fba2475aa3c983becd1f81a5da42173f4856d7a5beb6323c53b"
+      "sha256": "b1f1112f06170b20747d5a8e7713cdce193e7d4e46833aee5d004fd77dc469e1"
     },
     {
-      "bytes": 533,
+      "bytes": 515,
       "path": "source/python/notebooks/execution_report__05_phase_d_no_m_followup.json",
-      "sha256": "0bfc8296c112f1dc943a83cc3781c0af28c4ea53aa5232b0a8d981069342015f"
+      "sha256": "10010a6d1842fef11b96a6b61e61f4a5a52ff1780783ad7aceea00ae323a4cf4"
     }
   ],
   "result_commit": "containing_git_commit",
